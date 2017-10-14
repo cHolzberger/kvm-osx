@@ -1,0 +1,21 @@
+#!/bin/bash
+
+modprobe vfio-pci
+
+for dev in "$@"; do
+	echo "Binding $dev"
+	dir="/sys/bus/pci/devices/$dev"
+	if [ ! -d "$dir" ];then
+		echo "Nonexisting device $dev"
+	fi
+
+        vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
+        device=$(cat /sys/bus/pci/devices/$dev/device)
+        if [ -e "$dir/driver/unbind" ]; then
+                echo "$dev" > "$dir/driver/unbind"
+        fi
+        echo -n $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
+done
+#echo 1b73 1100 > /sys/bus/pci/drivers/vfio-pci/new_id
+#echo 1002 679a >  /sys/bus/pci/drivers/vfio-pci/new_id
+#echo 1002 aaa0 > /sys/bus/pci/drivers/vfio-pci/new_id

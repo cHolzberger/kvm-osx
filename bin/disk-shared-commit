@@ -1,0 +1,32 @@
+#!/bin/bash
+set -e
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+
+source $SCRIPT_DIR/config-common
+source $SCRIPT_DIR/config-machine
+
+baseimage () {
+qemu-img info $1  | grep "backing file:" | sed -e "s/backing file: //g" | xargs echo
+}
+
+echo "Usage:"
+echo "disk-shared-commit machine disk new_base_name"
+
+OLD_DISK="$MACHINE_DISKS/$2.qcow2"
+OLD_BASE=`baseimage $OLD_DISK`
+NEW_BASE="$SHARED_DISKS/$3.qcow2"
+
+echo "Comming $OLD_DISK from $MACHINE to new base image $NEW_NAME"
+
+echo "OLD DISK: $OLD_DISK"
+echo "OLD BASE: $OLD_BASE"
+echo "NEW BASE: $NEW_BASE"
+
+echo "Cloning: $OLD_BASE ..."
+cp "$OLD_BASE" "$NEW_BASE"
+
+echo "Rebasing: $OLD_DISK"
+qemu-img rebase -b "$NEW_BASE" "$OLD_DISK"
+
+echo "Commiting differences"
+qemu-img commit "$OLD_DISK"

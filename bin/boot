@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -e
+
+echo "KVM Machine boot"
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/config-common
+source $SCRIPT_DIR/config-machine
+
+if [ "x$MACHINE" == "x" ]; then
+	echo "Usage:"
+	echo "$0 [machine-name]"
+	exit 3
+fi
+
+if [ ! -d "$MACHINE_PATH" ]; then
+	echo "Machine $MACHINE does not exists"
+	echo "Reason: $MACHINE_PATH does not exist"
+	exit 1
+fi
+
+if [ ! -e "$MACHINE_PATH/config" ]; then
+	echo "Can't load $MACHINE"
+	echo "Reason: 'config' does not exist in $MACHINE_PATH"
+	exit 2
+fi
+
+echo -e "\tRunning from: $SCRIPT_DIR"
+echo -e "\tLoading Machine $MACHINE"
+echo -e "\tConfiguration: "
+echo "---"
+cat "$MACHINE_PATH/config"
+echo "---"
+source $MACHINE_PATH/config
+
+cd $RUNTIME_PATH
+
+source kvm/common.sh
+
+source kvm/net.sh
+source kvm/hdd.sh
+source kvm/hugepages.sh
+source kvm/pt.sh
+
+echo "OPTS: ${QEMU_OPTS[@]}"
+echo "CLOVER_OPTS: ${CLOVER_OPTS[@]}"
+
+source kvm/run-clover.sh

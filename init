@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "Creating TUN Network..."
+modprobe tun
+brctl addbr br0
+
+./bin/create-bridge.sh
+./bin/cpu-performance.sh
+#mount -t ramfs none shared-disks
+#cp shared-disks.template/* shared-disks/
+# 20 GB
+
+echo "Enabeling Hugepages..."
+./bin/reserve_hugepages.sh
+echo "Disabeling KSM"
+echo -n 0 > /sys/kernel/mm/ksm/run
+
+echo "Disableding Transparent Hugepages"
+echo -n "never" > /sys/kernel/mm/transparent_hugepage/enabled
+
+echo "Setting ignore msrs"
+echo -n 1 > /sys/module/kvm/parameters/ignore_msrs

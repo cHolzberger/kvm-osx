@@ -1,0 +1,3 @@
+#!/bin/bash 
+
+printf '52:54:00:AB:%02X:%02X\n' $((RANDOM%256)) $((RANDOM%256))
