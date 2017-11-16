@@ -26,6 +26,8 @@ if [ ! -e "$MACHINE_PATH/config" ]; then
 fi
 
 BIOS="efi"
+OS="win"
+
 echo -e "\tRunning from: $SCRIPT_DIR"
 echo -e "\tLoading Machine $MACHINE"
 echo -e "\tConfiguration: "
@@ -36,11 +38,11 @@ source $MACHINE_PATH/config
 
 cd $RUNTIME_PATH
 
-source kvm/common.sh
+source kvm/common-$OS.sh
 source kvm/bios-$BIOS.sh
 source kvm/cpu-$CPU_MODEL.sh
 
-source kvm/hdd-$BOOTLOADER.sh
+source kvm/hdd-$HDD_MODE.sh
 source kvm/hugepages.sh
 
 source kvm/usb-$USB_MODE.sh
@@ -52,4 +54,6 @@ echo "OPTS: ${QEMU_OPTS[@]}"
 echo "CLOVER_OPTS: ${CLOVER_OPTS[@]}"
 echo "EXTRA OPTS: ${QEMU_EXTRA_OPTS[@]}"
 cpu-pin.sh $MACHINE &
+io-pin.sh $MACHINE &
 source kvm/run-clover.sh
+

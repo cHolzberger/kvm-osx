@@ -1,17 +1,5 @@
 CMD="qemu-system-x86_64"
-
-EFI_ROM=efi/ovmf.$OVM_VERS.efi
-EFI_VARS=efi/ovmf.$OVM_VERS.vars
-
-if [ ! -e "$EFI_ROM" ]; then
-	echo "EFI ROM $EFI_ROM does not exist"
-	exit -1
-fi
-
-if [ ! -e "$EFI_VARS" ]; then
-	echo "EFI VARS $EFI_VARS does not exist"
-	exit -1
-fi
+MON_PATH="$VM_PREFIX/$MACHINE/var"
 
 OIFS="$IFS"
 IFS=","
@@ -22,15 +10,15 @@ IFS="$OIFS"
 
 echo $CMD \
         ${CLOVER_OPTS[@]} \
-        ${QEMU_OPTS[@]} \
-        -drive file=$EFI_ROM,if=pflash,format=raw,readonly=on \
-        -drive file=$EFI_VARS,if=pflash,format=raw \
-
+        ${QEMU_OPTS[@]} 
 
 # qemu gets io priority
 $CMD \
        ${CLOVER_OPTS[@]} \
         ${QEMU_OPTS[@]} \
 	${QEMU_EXTRA_OPTS[@]} \
-	-daemonize
+	--daemonize \
+	-pidfile $MON_PATH/pid
 
+QEMU_PID=$(cat $MON_PATH/pid)
+echo "QEMU pid is $QEMU_PID"

@@ -16,7 +16,7 @@ IFS=","
 #
 QEMU_OPTS+=(
  -cpu "${CPU[*]}","${CPUFLAGS[*]}"
- -smp "$NUM_CPUS,sockets=1,cores=$NUM_CPUS,threads=1"
+ -smp "$NUM_CPUS,sockets=$NUM_CPUS,cores=1,threads=1"
 )
 
 IFS="$OIFS"

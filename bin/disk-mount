@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+IMG=$1
+modprobe nbd max_part=8
+qemu-nbd --connect=/dev/nbd0 $IMG
+
+partprobe /dev/nbd0
+mkdir /mnt/qcow
+mount /dev/nbd0p1 /mnt/qcow

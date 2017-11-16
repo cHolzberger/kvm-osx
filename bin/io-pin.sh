@@ -21,20 +21,20 @@ SOCKET=$MACHINE_PATH/var/control
 
 source $MACHINE_PATH/config
 
-echo "CPU Pinning for $MACHINE with socket $SOCKET"
+echo "IO Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"
-tasks=$( echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-cpus" }' | nc -NU "$SOCKET" |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo )
+tasks=$( echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-iothreads" }' | nc -NU "$SOCKET" |  sed -e "s/[,}{]/\n/g" | grep thread-id | cut -d":" -f 2 | xargs echo )
 
-echo "Using CPUs: ${USE_CPUS[*]}"
+echo "Using CPUs: ${IO_CPUS[*]}"
 echo $tasks
 i=0
 
 for t in $tasks ; do
-	taskset -pc ${USE_CPUS[$i]} $t
+	taskset -pc ${IO_CPUS[$i]} $t
 	# be nice to cpu threads ;)
-	renice -15 $t
+	renice -10 $t
 	#chrt --rr -p 10 $t
 
-	echo "Using Real CPU ${USE_CPUS[$i]} for VCPU $i"
+	echo "Using Real CPU ${USE_CPUS[$i]} for IOThread $i"
 	let i=$i+1
 done

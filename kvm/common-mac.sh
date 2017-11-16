@@ -1,22 +1,3 @@
-CPU=(
-Penryn
-kvm=on
-vmware-cpuid-freq=on
-l3-cache=on
-)
-
-CPUFLAGS=(
-+x2apic
-+invtsc
--tsc-deadline
-+aes
-+apic
-+xsave
-+avx 
-+xsaveopt
-+smep
-)
-
 #+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
 OIFS="$IFS"
 IFS=","
@@ -27,16 +8,13 @@ IFS=","
 QEMU_OPTS=(	
  -enable-kvm 
  -m $MEM 
- -machine pc-q35-2.10 
+ -machine pc-q35-2.10,accel=kvm,usb=off,vmport=off
  -name "$MACHINE"
  -realtime mlock=off
  -rtc base=utc,driftfix=slew 
  -global kvm-pit.lost_tick_policy=discard 
  -smbios type=2
- -global ICH9_LPC.disable_s3=on
- -global ICH9_LPC.disable_s4=on
  -global kvm-pit.lost_tick_policy=discard
- -usbdevice tablet
  )
 
 if [ "x$UUID" != "x" ]; then

@@ -7,8 +7,6 @@ QEMU_OPTS+=(
 
 # CLOVER BOOT
 QEMU_OPTS+=(  
-	-device ide-drive,bus=ide.0,drive=CloverHDD 
-	-drive id=CloverHDD,if=none,index=0,file=$DISKS_PATH/clover.qcow2,$QCOW2_OPTS
 	-device isa-applesmc,osk="ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc" 
 )
 #DRIVES

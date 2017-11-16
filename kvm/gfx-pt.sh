@@ -21,9 +21,7 @@ CLOVER_OPTS+=( -device ioh3420,bus=pcie.0,slot=1,id=root.1
 	-device vfio-pci,bus=root.1,host=$GFXPCI.1,rombar=0 ) 
 if [ -e $ROMFILE ]; then
 	echo "GFX PT Using ROM: $ROMFILE"
-	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,bus=root.1,multifunction=on,romfile=$ROMFILE,rombar=0 )
-	#CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,bus=root.1,multifunction=on,romfile=$ROMFILE,rombar=0,x-pci-device-id=0x67ff )
-	
+	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,bus=root.1,multifunction=on,romfile=$ROMFILE,rombar=0,x-pci-device-id=0x6718 )
 else
 	echo "GFX PT Without ROM"
 	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,bus=root.1,multifunction=on,rombar=0 )
