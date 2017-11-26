@@ -1,5 +1,9 @@
+#!/bin/bash
+
+source ./config-common
+
 hugepagesize=$(cat /proc/meminfo  | grep Hugepagesize: | cut -d":" -f 2 | sed -e "s/kB//" -e "s/ //g")
-reservedmem=128 # GB
+reservedmem=$RESERVE_RAM # GB
 
 let reservedkb=$reservedmem*1024*1024
 let nr_hugepages=$reservedkb/$hugepagesize
