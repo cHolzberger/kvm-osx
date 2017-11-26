@@ -6,4 +6,7 @@ RUNTIME_PATH=$(dirname "$SCRIPT_DIR")
 VM_PREFIX="/srv/kvm/vms"
 SHARED_DISKS="/srv/kvm/OSX-KVM/shared-disks"
 
+echo "Loading Hostconfig: $VM_PREFIX/config"
+source $VM_PREFIX/config
+
 export PATH="$SCRIPT_DIR:$PATH"
