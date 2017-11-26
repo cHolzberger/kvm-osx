@@ -43,6 +43,6 @@ for t in $tasks ; do
 
 	/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_CPUS[$i]}  -n -10 $t
 	echo /srv/kvm/bin/schedtool -a ${USE_CPUS[$i]} -n -10 $t
-	ionice -c 2 -n 3 -p $t
+	#ionice -c 2 -n 3 -p $t
 	let i=$i+1
 done
