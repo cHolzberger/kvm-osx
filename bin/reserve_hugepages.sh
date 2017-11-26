@@ -1,5 +1,5 @@
 hugepagesize=$(cat /proc/meminfo  | grep Hugepagesize: | cut -d":" -f 2 | sed -e "s/kB//" -e "s/ //g")
-reservedmem=96 # GB
+reservedmem=128 # GB
 
 let reservedkb=$reservedmem*1024*1024
 let nr_hugepages=$reservedkb/$hugepagesize

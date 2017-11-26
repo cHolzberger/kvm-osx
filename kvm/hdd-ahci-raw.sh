@@ -1,13 +1,13 @@
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
-QCOW2_OPTS="cache=none,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off"
-RAW_OPTS="aio=native,cache.direct=on,cache=writethrough,discard=unmap"
+QCOW2_OPTS="cache=none,aio=native,l2-cache-size=40M,discard=unmap,detect-zeroes=off"
+RAW_OPTS="aio=native,cache.direct=on,cache=none,discard=unmap"
 
 function add_lvm_disk() {
 	name=$1
 	dformat=raw
 	QEMU_OPTS+=( 
 	-device ide-hd,bus=ahci0.0,drive=${name}HDD,bootindex=1
-	-drive id=${name}HDD,if=none,file=/dev/qemu1/office_hda,format=$dformat,$RAW_OPTS
+	-drive id=${name}HDD,if=none,file=$DISKS_PATH/system.raw,format=$dformat,$RAW_OPTS
 	)
 }
 

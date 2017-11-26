@@ -21,7 +21,7 @@ IFS=","
 #
 QEMU_OPTS+=(
  -cpu "${CPU[*]}","${CPUFLAGS[*]}"
- -smp "$NUM_CPUS,sockets=1,cores=$NUM_CPUS,threads=1"
+ -smp "$CPU_SMP"
  -global kvm-pit.lost_tick_policy=discard
  -rtc clock=rt,base=utc,driftfix=slew
  -global ICH9-LPC.disable_s3=1

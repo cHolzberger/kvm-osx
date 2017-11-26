@@ -25,4 +25,4 @@ fi
 
 PID=$(cat $MACHINE_PATH/var/pid)
 
-kill $PID
+kill -9 $PID

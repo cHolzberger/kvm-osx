@@ -12,7 +12,7 @@ QEMU_OPTS+=(
 	-device isa-applesmc,osk="ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc" 
 )
 #DRIVES
-QCOW2_OPTS="format=qcow2,cache=writethrough,aio=native,l2-cache-size=40M,cache.direct=on"
+QCOW2_OPTS="format=qcow2,cache=writethrough,aio=native,l2-cache-size=40M,cache.direct=on,discard=unmap"
 QEMU_OPTS+=( 
 	  -device ide-drive,bus=ahci0.1,drive=MacHDD 
 	  -device ide-drive,bus=ahci0.2,drive=DataHDD 

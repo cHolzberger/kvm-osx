@@ -20,21 +20,29 @@ fi
 SOCKET=$MACHINE_PATH/var/control
 
 source $MACHINE_PATH/config
-
+qemu_pid=$(cat $MACHINE_PATH/var/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"
 tasks=$( echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-cpus" }' | nc -NU "$SOCKET" |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo )
+
+
 
 echo "Using CPUs: ${USE_CPUS[*]}"
 echo $tasks
 i=0
 
-for t in $tasks ; do
-	taskset -pc ${USE_CPUS[$i]} $t
-	# be nice to cpu threads ;)
-	renice -15 $t
-	#chrt --rr -p 10 $t
+#echo "setting qemu prio"
+#/srv/kvm/OSX-KVM/bin/chrt -a --rr --pid 10 $qemu_pid
 
+renice -15 $qemu_pid
+for t in $tasks ; do
 	echo "Using Real CPU ${USE_CPUS[$i]} for VCPU $i"
+	#taskset -pc ${USE_CPUS[$i]} $t
+	# be nice to cpu threads ;)
+	echo "Setting CPU Tasks priority"
+
+	/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_CPUS[$i]}  -n -10 $t
+	echo /srv/kvm/bin/schedtool -a ${USE_CPUS[$i]} -n -10 $t
+	ionice -c 2 -n 3 -p $t
 	let i=$i+1
 done

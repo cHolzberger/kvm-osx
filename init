@@ -15,8 +15,15 @@ echo "Enabeling Hugepages..."
 echo "Disabeling KSM"
 echo -n 0 > /sys/kernel/mm/ksm/run
 
+echo "Setting swappiness"
+echo "1" > /proc/sys/vm/swappiness
+
 echo "Disableding Transparent Hugepages"
 echo -n "never" > /sys/kernel/mm/transparent_hugepage/enabled
 
 echo "Setting ignore msrs"
 echo -n 1 > /sys/module/kvm/parameters/ignore_msrs
+
+sysctl -w vm.dirty_background_ratio=3
+sysctl -w vm.dirty_ratio=6
+sysctl -w vm.vfs_cache_pressure=500
