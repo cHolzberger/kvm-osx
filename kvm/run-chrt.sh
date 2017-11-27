@@ -6,7 +6,8 @@ IFS=","
 #CMD="taskset  -c ${USE_CPUS[*]} $CMD"
 #CMD="chrt --rr 15 $CMD"
 #CMD="ionice -c 2 -n 3 $CMD"
-#CMD="/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_CPUS[*]} -n -15 -e $CMD"
+CMD="/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_CPUS[*]} -n -15 -e $CMD"
+CMD="/srv/kvm/OSX-KVM/bin/chrt --rr 5 $CMD"
 IFS="$OIFS"
 
 echo $CMD \
@@ -23,6 +24,3 @@ $CMD \
 
 QEMU_PID=$(cat $MON_PATH/pid)
 echo "QEMU pid is $QEMU_PID"
-
-cpu-pin.sh $MACHINE &
-io-pin.sh $MACHINE &
