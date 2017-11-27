@@ -53,7 +53,6 @@ source kvm/mon.sh
 echo "OPTS: ${QEMU_OPTS[@]}"
 echo "CLOVER_OPTS: ${CLOVER_OPTS[@]}"
 echo "EXTRA OPTS: ${QEMU_EXTRA_OPTS[@]}"
-cpu-pin.sh $MACHINE &
-io-pin.sh $MACHINE &
 source kvm/run-clover.sh
+#source kvm/run-chrt.sh
 
