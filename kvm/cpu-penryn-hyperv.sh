@@ -12,13 +12,6 @@ hv_vapic=on
 #kvm=off,vendor=GenuineIntel,hv_relaxed,hv_vapic,hv_spinlocks=0x1000,+x2apic
 CPUFLAGS=(
 +invtsc
-+aes
-+apic
-+xsave
-+avx 
-+xsaveopt
-+smep
--tsc-deadline
 )
 OIFS="$IFS"
 IFS=","

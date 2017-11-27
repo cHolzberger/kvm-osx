@@ -11,11 +11,7 @@ QEMU_OPTS=(
  -machine pc-q35-2.10,accel=kvm,kernel_irqchip=on,mem-merge=off
  -name "$MACHINE"
  -realtime mlock=off
- -rtc base=utc,driftfix=slew 
  -smbios type=2
- -global ICH9_LPC.disable_s3=on
- -global ICH9_LPC.disable_s4=on
- -global kvm-pit.lost_tick_policy=discard
  )
 
 if [ "x$UUID" != "x" ]; then

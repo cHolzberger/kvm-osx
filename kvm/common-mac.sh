@@ -11,10 +11,7 @@ QEMU_OPTS=(
  -machine pc-q35-2.10,accel=kvm,usb=off,vmport=off
  -name "$MACHINE"
  -realtime mlock=off
- -rtc base=utc,driftfix=slew 
- -global kvm-pit.lost_tick_policy=discard 
  -smbios type=2
- -global kvm-pit.lost_tick_policy=discard
  )
 
 if [ "x$UUID" != "x" ]; then

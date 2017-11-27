@@ -9,6 +9,8 @@ if [ -n "$1" ];then
         ip link set $1 up
         sleep 0.5s
         brctl addif $switch $1
+	up ip link set $switch promisc on
+
         #ip link set $1 master $switch
         exit 0
 else

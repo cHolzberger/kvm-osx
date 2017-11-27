@@ -1,6 +1,6 @@
 #!/bin/bash
-
-source ./config-common
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/config-common
 
 hugepagesize=$(cat /proc/meminfo  | grep Hugepagesize: | cut -d":" -f 2 | sed -e "s/kB//" -e "s/ //g")
 reservedmem=$RESERVE_RAM # GB
