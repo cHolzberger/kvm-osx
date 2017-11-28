@@ -19,7 +19,7 @@ VMPATH="$VM_PREFIX/$VM"
 if [ -e "$VMPATH" ]; then
 	pid=$(cat $VMPATH/var/pid)
 	if [ ! -e "/proc/$pid" ]; then
-		$SCRIPT_DIR/boot $VM
+		$SCRIPT_DIR/boot $VM > /dev/null &
 	else
 		echo $VM allready running
 	fi
