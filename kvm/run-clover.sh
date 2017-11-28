@@ -17,7 +17,7 @@ echo $CMD \
 # set dma
 exec 10> /dev/cpu_dma_latency
 echo -e -n '10' >&10
-echo -e -n '-1' > /proc/sys/kernel/sched_rt_runtime_us
+#echo -e -n '-1' > /proc/sys/kernel/sched_rt_runtime_us
 
 # qemu gets io priority
 $CMD \
