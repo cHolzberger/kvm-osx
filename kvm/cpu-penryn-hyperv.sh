@@ -1,6 +1,5 @@
 CPU=(
 Penryn
-kvm=off
 vmware-cpuid-freq=on
 l3-cache=on
 hv_relaxed=on
@@ -8,6 +7,7 @@ hv_spinlocks=0x1fff
 hv_vapic=on
 )
 
+#kvm=off
 # not working
 #kvm=off,vendor=GenuineIntel,hv_relaxed,hv_vapic,hv_spinlocks=0x1000,+x2apic
 CPUFLAGS=(
