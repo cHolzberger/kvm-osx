@@ -12,7 +12,7 @@ QEMU_OPTS+=(
 	-drive id=CloverHDD,if=none,index=0,file=$DISKS_PATH/clover.qcow2,$QCOW2_OPTS
 )
 #DRIVES
-QCOW2_OPTS="format=qcow2,cache=writeback,aio=threads"
+QCOW2_OPTS="format=qcow2,cache=writeback,aio=threads,discard=unmap"
 QEMU_OPTS+=( 
 	  -device ide-drive,bus=ahci0.1,drive=MacHDD 
 	  -device ide-drive,bus=ahci1.1,drive=DataHDD 
