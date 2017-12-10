@@ -28,13 +28,22 @@ fi
 BIOS="efi"
 OS="win"
 
+WANT_SEAT=$(echo $MACHINE | cut -d":" -f 2)
+WANT_MACHINE=$(echo $MACHINE | cut -d":" -f 1)
+
+SEAT=${WANT_SEAT:-"default"}
+MACHINE=${WANT_MACHINE:-"default"}
+
 echo -e "\tRunning from: $SCRIPT_DIR"
 echo -e "\tLoading Machine $MACHINE"
+echo -e "\tUsing Seat: $SEAT"
 echo -e "\tConfiguration: "
 echo "---"
 cat "$MACHINE_PATH/config"
 echo "---"
+
 source $MACHINE_PATH/config
+source $SEAT_PATH/seat-$SEAT
 
 cd $RUNTIME_PATH
 
