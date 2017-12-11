@@ -1,4 +1,10 @@
 #!/bin/bash
-MACHINE="$1"
+
+WANT_SEAT=$(echo $1 | cut -d":" -f 2)
+WANT_MACHINE=$(echo $1 | cut -d":" -f 1)
+
+SEAT=${WANT_SEAT:-"default"}
+MACHINE=${WANT_MACHINE:-"default"}
+
 MACHINE_PATH="$VM_PREFIX/$MACHINE"
 MACHINE_DISKS="$VM_PREFIX/$MACHINE/disks"

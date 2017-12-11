@@ -4,6 +4,7 @@ set -e
 
 echo "KVM Machine boot"
 SCRIPT_DIR=$(dirname $(readlink -f $0))
+
 source $SCRIPT_DIR/config-common
 source $SCRIPT_DIR/config-machine
 
@@ -28,12 +29,6 @@ fi
 BIOS="efi"
 OS="win"
 
-WANT_SEAT=$(echo $MACHINE | cut -d":" -f 2)
-WANT_MACHINE=$(echo $MACHINE | cut -d":" -f 1)
-
-SEAT=${WANT_SEAT:-"default"}
-MACHINE=${WANT_MACHINE:-"default"}
-
 echo -e "\tRunning from: $SCRIPT_DIR"
 echo -e "\tLoading Machine $MACHINE"
 echo -e "\tUsing Seat: $SEAT"
@@ -43,7 +38,7 @@ cat "$MACHINE_PATH/config"
 echo "---"
 
 source $MACHINE_PATH/config
-source $SEAT_PATH/seat-$SEAT
+source $SEAT_PREFIX/seat-$SEAT
 
 cd $RUNTIME_PATH
 
@@ -57,11 +52,12 @@ source kvm/hugepages.sh
 source kvm/usb-$USB_MODE.sh
 source kvm/gfx-$GFX_MODE.sh
 source kvm/net-$NET_MODE.sh
+if [ "x$SOUND_MODE" != "x" ]; then
+	source kvm/sound-$SOUND_MODE.sh
+fi
 source kvm/mon.sh
 
-echo "OPTS: ${QEMU_OPTS[@]}"
-echo "CLOVER_OPTS: ${CLOVER_OPTS[@]}"
-echo "EXTRA OPTS: ${QEMU_EXTRA_OPTS[@]}"
+echo "OPTS: $(echo  $QEMU_OPTS[@] | sed -e "s/-/-\n/g")"
 source kvm/run-clover.sh
 #source kvm/run-chrt.sh
 
