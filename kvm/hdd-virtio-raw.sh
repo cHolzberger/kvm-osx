@@ -6,7 +6,7 @@ function add_lvm_disk() {
 	name=$1
 	
 	if [ -e "$DISKS_PATH/$name.raw" ]; then
-
+		echo ""
 		dformat=raw
 		QEMU_OPTS+=( 
 		-device virtio-scsi-pci,id=vscsi-$name
@@ -14,7 +14,7 @@ function add_lvm_disk() {
 		-drive id=${name}HDD,if=none,file=$DISKS_PATH/$name.raw,format=$dformat,$RAW_OPTS
 		)
 	else 
-		echo "Disk not existent $disk"
+		echo "Disk not existent $name"
 	fi
 	let INDEX=INDEX+1
 }
