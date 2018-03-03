@@ -43,8 +43,10 @@ echo "enable ksm for host"
 echo -n 1 >  /sys/kernel/mm/ksm/run
 echo -n 0 > /sys/kernel/mm/ksm/merge_across_nodes
 
-echo "Setting minimum performance"
-echo -n 66 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+if [ -e /sys/devices/system/cpu/intel_pstate/min_perf_pct ]; then
+	echo "Setting minimum performance"
+	echo -n 66 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+fi
 echo "Found $CPUCOUNT cpus"
 echo "Setting performance governor"
 
