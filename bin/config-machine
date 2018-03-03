@@ -3,8 +3,8 @@
 WANT_SEAT=$(echo $1 | cut -d":" -f 2)
 WANT_MACHINE=$(echo $1 | cut -d":" -f 1)
 
-SEAT=${WANT_SEAT:-"default"}
 MACHINE=${WANT_MACHINE:-"default"}
+SEAT=${WANT_SEAT:-"$MACHINE"}
 
 MACHINE_PATH="$VM_PREFIX/$MACHINE"
 MACHINE_DISKS="$VM_PREFIX/$MACHINE/disks"
