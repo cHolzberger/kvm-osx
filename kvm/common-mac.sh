@@ -12,7 +12,8 @@ QEMU_OPTS=(
  -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2
- -device isa-applesmc,osk="ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc" 
+ -device "isa-applesmc,osk=\"ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc\""
+ -nographic
 )
 
 if [ "x$UUID" != "x" ]; then

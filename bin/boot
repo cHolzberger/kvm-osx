@@ -10,7 +10,7 @@ source $SCRIPT_DIR/config-machine
 
 if [ "x$MACHINE" == "x" ]; then
 	echo "Usage:"
-	echo "$0 [machine-name]"
+	echo "$0 [machine-name] [seat]"
 	exit 3
 fi
 
@@ -26,39 +26,6 @@ if [ ! -e "$MACHINE_PATH/config" ]; then
 	exit 2
 fi
 
-BIOS="efi"
-OS="win"
 
-echo -e "\tRunning from: $SCRIPT_DIR"
-echo -e "\tLoading Machine $MACHINE"
-echo -e "\tUsing Seat: $SEAT"
-echo -e "\tConfiguration: "
-echo "---"
-cat "$MACHINE_PATH/config"
-echo "---"
-
-source $MACHINE_PATH/config
-source $SEAT_PREFIX/seat-$SEAT
-
-cd $RUNTIME_PATH
-
-source kvm/common-$OS.sh
-source kvm/bios-$BIOS.sh
-source kvm/cpu-$CPU_MODEL.sh
-
-source kvm/hdd-$HDD_MODE.sh
-source kvm/hugepages.sh
-
-source kvm/usb-$USB_MODE.sh
-source kvm/gfx-$GFX_MODE.sh
-source kvm/net-$NET_MODE.sh
-if [ "x$SOUND_MODE" != "x" ]; then
-	source kvm/sound-$SOUND_MODE.sh
-fi
-source kvm/mon.sh
-
-echo "OPTS: $(echo  $QEMU_OPTS[@] | sed -e "s/-/-\n/g")"
-source kvm/run-clover.sh
-#source kvm/run-chrt.sh
-
-
+source $SCRIPT_DIR/cpu-performance.sh
+$SCRIPT_DIR/screen-session "$MACHINE" "$SEAT" 

@@ -5,6 +5,8 @@ echo "VMWare"
 
 QEMU_OPTS+=(
 	-vga vmware
-	-vnc $GFX_VNCPORT
+	-vnc $GFX_VNCPORT,password
 )
- 
+QMP_CMD+=(
+'{ "execute": "set_password", "arguments": { "protocol": "vnc", "password": "secret" } }'
+)

@@ -1,5 +1,6 @@
 CMD="qemu-system-x86_64"
 MON_PATH="$VM_PREFIX/$MACHINE/var"
+SOCKET=$MACHINE_PATH/var/control
 
 set -e 
 OIFS="$IFS"
@@ -9,28 +10,37 @@ IFS=","
 #CMD="ionice -c 2 -n 3 $CMD"
 #CMD="/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_CPUS[*]} -n -15 -e $CMD"
 IFS="$OIFS"
-
-echo $CMD \
-        ${CLOVER_OPTS[@]} \
-        ${QEMU_OPTS[@]} 
-
 # set dma
 exec 10> /dev/cpu_dma_latency
 echo -e -n '10' >&10
 #echo -e -n '-1' > /proc/sys/kernel/sched_rt_runtime_us
 
 # qemu gets io priority
-$CMD \
+
+echo "#!/bin/bash" > $MACHINE_PATH/run
+echo $CMD \
        ${CLOVER_OPTS[@]} \
         ${QEMU_OPTS[@]} \
 	${QEMU_EXTRA_OPTS[@]} \
-	-pidfile $MON_PATH/pid &
-sleep 1
-QEMU_PID=$(cat $MON_PATH/pid)
-echo "QEMU pid is $QEMU_PID"
+	-S \
+	-pidfile $MON_PATH/pid >> $MACHINE_PATH/run
 
-cpu-pin.sh $MACHINE 
-io-pin.sh $MACHINE 
+chmod u+x $VM_PREFIX/$MACHINE/run
 
-while [ -e /proc/$QEMU_PID ] > /dev/null; do sleep 1; done;
+	#--daemonize \
+
+source $SCRIPT_DIR/../kvm/cpu-pin.sh
+source $SCRIPT_DIR/../kvm/io-pin.sh 
+
+# start execution
+QMP_CMD+=(
+'{ "execute": "cont" }' 
+)
+
+echo "Running QMP Commands: ${QMP_CMD[@]}"
+printf "%s\n" "${QMP_CMD[@]}" | tee $VM_PREFIX/$MACHINE/qmp_commands | nc -NU "$SOCKET" 
+
+
+$SCRIPT_DIR/../bin/console $MACHINE
+#while [ -e /proc/$QEMU_PID ] > /dev/null; do sleep 1; done;
 

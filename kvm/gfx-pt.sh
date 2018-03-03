@@ -15,11 +15,11 @@ CLOVER_OPTS+=(
 )
 if [ -e $ROMFILE ]; then
 	echo "GFX PT Using ROM: $ROMFILE"
-	CLOVER_OPTS+=(-device vfio-pci,bus=pcie-port-1,host=$GFXPCI.0,multifunction=on,rombar=1,romfile=$ROMFILE,addr=0.0 )
+	CLOVER_OPTS+=(-device vfio-pci,bus=pcie-port-1,host=$GFXPCI.0,multifunction=on,romfile=$ROMFILE,addr=0.0 )
 #	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,romfile=$ROMFILE,x-vga=on,rombar=0,addr=03.0 )
 else
 	echo "GFX PT Without ROM"
-	CLOVER_OPTS+=(-device vfio-pci,bus=pcie-port-1,host=$GFXPCI.0,multifunction=on,rombar=1,addr=0.0 )
+	CLOVER_OPTS+=(-device vfio-pci,bus=pcie-port-1,host=$GFXPCI.0,multifunction=on,addr=0.0 )
 	#CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,x-vga=on,rombar=0,addr=03.0 )
 fi
 CLOVER_OPTS+=( 
@@ -32,6 +32,5 @@ lspci -s "$GFXPCI"
 
 QEMU_OPTS+=(
 -vga none
--nographic
 )
  

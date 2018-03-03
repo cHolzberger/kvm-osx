@@ -1,0 +1,19 @@
+#!/bin/bash
+
+vm="$1"
+seat="$2"
+#try running command via session 
+
+SCRIPT_PATH=$(dirname $(readlink -f $0))
+echo -e "\tRunning $vm with seat $seat"
+screen -r kvm -x -X stuff ""
+
+if [ "$?" = "1" ]; then
+	#session does not exist, create it
+	screen -t kvm_console -dmS kvm -U -s htop
+
+fi
+
+screen -x -r kvm -X eval \
+	"screen -t '$vm' -L $SCRIPT_PATH/boot.real $vm:$seat " 
+

@@ -3,6 +3,8 @@ Penryn
 kvm=on
 vmware-cpuid-freq=on
 l3-cache=on
+vmx
+rdtscp
 )
 
 # not working

@@ -15,7 +15,10 @@ fi
 
 cat $AUTOSTART_FILE | while read VM; do
 
-VMPATH="$VM_PREFIX/$VM"
+VM_NAME=$(echo $VM | cut -d: -f1)
+VM_SEAT=$(echo $VM | cut -d: -f2)
+VMPATH="$VM_PREFIX/$VM_NAME"
+
 if [ -e "$VMPATH" ]; then
 	pid=$(cat $VMPATH/var/pid)
 	if [ ! -e "/proc/$pid" ]; then

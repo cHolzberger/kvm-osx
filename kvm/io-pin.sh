@@ -1,9 +1,6 @@
 #!/bin/bash
 sleep 5
 # openbsd-nc is important! 
-SCRIPT_DIR=$(dirname $(readlink -f $0))
-source $SCRIPT_DIR/config-common
-source $SCRIPT_DIR/config-machine
 
 if [ "x$MACHINE" == "x" ]; then
 	echo "Usage:"

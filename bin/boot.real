@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -e
+
+echo "KVM Machine boot"
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+
+source $SCRIPT_DIR/config-common
+source $SCRIPT_DIR/config-machine
+
+if [ "x$MACHINE" == "x" ]; then
+	echo "Usage:"
+	echo "$0 [machine-name]"
+	exit 3
+fi
+
+if [ ! -d "$MACHINE_PATH" ]; then
+	echo "Machine $MACHINE does not exists"
+	echo "Reason: $MACHINE_PATH does not exist"
+	exit 1
+fi
+
+if [ ! -e "$MACHINE_PATH/config" ]; then
+	echo "Can't load $MACHINE"
+	echo "Reason: 'config' does not exist in $MACHINE_PATH"
+	exit 2
+fi
+
+BIOS="efi"
+OS="win"
+
+echo -e "\tRunning from: $SCRIPT_DIR"
+echo -e "\tLoading Machine $MACHINE"
+echo -e "\tUsing Seat: $SEAT"
+echo -e "\tConfiguration: "
+echo "---"
+cat "$MACHINE_PATH/config"
+echo "---"
+
+QMP_CMD=(
+'{ "execute": "qmp_capabilities" }'
+)
+
+
+source $MACHINE_PATH/config
+source $SEAT_PREFIX/seat-$SEAT
+
+cd $RUNTIME_PATH
+
+source kvm/common-$OS.sh
+source kvm/bios-$BIOS.sh
+source kvm/cpu-$CPU_MODEL.sh
+
+source kvm/hdd-$HDD_MODE.sh
+source kvm/hugepages.sh
+
+source kvm/usb-$USB_MODE.sh
+source kvm/gfx-$GFX_MODE.sh
+source kvm/net-$NET_MODE.sh
+if [ "x$SOUND_MODE" != "x" ]; then
+	source kvm/sound-$SOUND_MODE.sh
+fi
+source kvm/mon.sh
+
+echo "OPTS: $(echo  $QEMU_OPTS[@] | sed -e "s/-/-\n/g")"
+source kvm/run-clover.sh
+#source kvm/run-chrt.sh
+
+echo "Execution finished"
+echo "[ MACHINE TURNED OFF ]"
+read

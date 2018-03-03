@@ -1,0 +1,15 @@
+*.iso
+pbzx-src/liblzma
+pbzx-src/xz-5.2.2
+pbzx-src/pbzx
+screenlog.*
+*.swp
+.oldgit
+*.swo
+*.sw?
+*~
+shared-disks*
+images
+mac-backup
+nohup.out
+pbzx*

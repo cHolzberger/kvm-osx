@@ -1,9 +1,6 @@
 #!/bin/bash
 sleep 5
 # openbsd-nc is important! 
-SCRIPT_DIR=$(dirname $(readlink -f $0))
-source $SCRIPT_DIR/config-common
-source $SCRIPT_DIR/config-machine
 
 if [ "x$MACHINE" == "x" ]; then
 	echo "Usage:"
@@ -18,8 +15,16 @@ if [ ! -d "$MACHINE_PATH" ]; then
 fi
 
 SOCKET=$MACHINE_PATH/var/control
-
+CMD=$MACHINE_PATH/run
 source $MACHINE_PATH/config
+echo "NUMA Pinning for $MACHINE with socket $SOCKET"
+echo "Using NUMA Node: ${CPU_NUMA_NODE}"
+
+#renice -15 $qemu_pid
+taskset -c "$USE_CPUS_RANGE" numactl --physcpubind="$USE_CPUS_RANGE" --cpunodebind="$CPU_NUMA_NODE" --membind="$CPU_NUMA_NODE" $CMD &
+
+sleep 5
+
 qemu_pid=$(cat $MACHINE_PATH/var/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"

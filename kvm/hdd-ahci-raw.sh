@@ -1,6 +1,6 @@
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
-QCOW2_OPTS="cache=none,aio=native,l2-cache-size=40M,discard=unmap,detect-zeroes=off"
-RAW_OPTS="aio=native,cache.direct=on,cache=none,discard=unmap"
+QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=unmap,detect-zeroes=off"
+RAW_OPTS="aio=native,cache.direct=on,cache=writethrough,discard=unmap"
 
 INDEX=0
 function add_lvm_disk() {

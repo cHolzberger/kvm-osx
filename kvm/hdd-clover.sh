@@ -1,5 +1,5 @@
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
-QCOW2_OPTS="format=qcow2,cache=writeback,aio=threads,discard=unmap"
+QCOW2_OPTS="format=qcow2,cache=writeback,aio=native,discard=unmap,cache.direct=on"
 # AHCI Controller --- ide is ahci on q35
 QEMU_OPTS+=(
 -device ich9-ahci,id=ahci0,multifunction=on

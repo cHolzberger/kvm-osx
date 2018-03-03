@@ -7,6 +7,8 @@ VM_PREFIX="/srv/kvm/vms"
 SEAT_PREFIX="/srv/kvm/seats"
 SHARED_DISKS="/srv/kvm/OSX-KVM/shared-disks"
 
+CPU_NUMA_NODE=0
+
 echo "Loading Hostconfig: $VM_PREFIX/config"
 source $VM_PREFIX/config
 
