@@ -30,20 +30,11 @@ BIOS="efi"
 OS="win"
 
 echo -e "\tRunning from: $SCRIPT_DIR"
-echo -e "\tLoading Machine $MACHINE"
-echo -e "\tUsing Seat: $SEAT"
-echo -e "\tConfiguration: "
-echo "---"
-cat "$MACHINE_PATH/config"
-echo "---"
 
 QMP_CMD=(
 '{ "execute": "qmp_capabilities" }'
 )
 
-
-source $MACHINE_PATH/config
-source $SEAT_PREFIX/seat-$SEAT
 
 cd $RUNTIME_PATH
 

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+echo "KVM INFO"
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+
+source $SCRIPT_DIR/config-common
+source $SCRIPT_DIR/config-machine
+
+echo "Machine: $MACHINE"
+echo "VNC PORT: $GFX_VNCPORT"

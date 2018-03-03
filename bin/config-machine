@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/config-common
+
 WANT_SEAT=$(echo $1 | cut -d":" -f 2)
 WANT_MACHINE=$(echo $1 | cut -d":" -f 1)
 
@@ -8,3 +11,42 @@ SEAT=${WANT_SEAT:-"$MACHINE"}
 
 MACHINE_PATH="$VM_PREFIX/$MACHINE"
 MACHINE_DISKS="$VM_PREFIX/$MACHINE/disks"
+
+if [ "x$MACHINE" == "x" ]; then
+	echo "Usage:"
+	echo "$0 [machine-name]"
+	exit 3
+fi
+
+if [ ! -d "$MACHINE_PATH" ]; then
+	echo "Machine $MACHINE does not exists"
+	echo "Reason: $MACHINE_PATH does not exist"
+	exit 1
+fi
+
+if [ ! -e "$MACHINE_PATH/config" ]; then
+	echo "Can't load $MACHINE"
+	echo "Reason: 'config' does not exist in $MACHINE_PATH"
+	exit 2
+fi
+
+#LOADING MACHINE CONFIG
+source $MACHINE_PATH/config
+
+if [ "x$USE_CPUS" = "x" ]; then
+	echo "Generating USE_CPUS from USE_CPUS_RANGE ($USE_CPUS_RANGE)"
+	START=$(echo $USE_CPUS_RANGE | cut -d"-" -f1)
+	END=$(echo $USE_CPUS_RANGE | cut -d"-" -f2)
+	USE_CPUS=()
+	for i in $(seq $START $END); do
+		USE_CPUS+=($i)
+	done
+	echo "Using CPUs: ${USE_CPUS[@]}"
+fi
+
+#LOADING SEAT
+
+source $SEAT_PREFIX/seat-$SEAT
+
+echo "Loaded Machine: $MACHINE"
+echo "Loaded Seat: $SEAT"
