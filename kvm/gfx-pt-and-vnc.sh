@@ -15,12 +15,10 @@ CLOVER_OPTS+=(
 
 if [ -e $ROMFILE ]; then
 	echo "GFX PT Using ROM: $ROMFILE"
-	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,addr=03.0 )
-#	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,romfile=$ROMFILE,x-vga=on,rombar=0,addr=03.0 )
+	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,addr=03.0,x-vga=on,romfile=$ROMFILE)
 else
 	echo "GFX PT Without ROM"
-	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,addr=03.0 )
-	#CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,x-vga=on,rombar=0,addr=03.0 )
+	CLOVER_OPTS+=(-device vfio-pci,rombar=1,host=$GFXPCI.0,multifunction=on,addr=03.0,x-vga=on )
 fi
 
 echo "Using GFX Card and VNC:"

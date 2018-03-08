@@ -1,8 +1,8 @@
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
-QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=unmap,detect-zeroes=off"
-RAW_OPTS="aio=native,cache.direct=on,cache=writethrough,discard=unmap"
+QCOW2_OPTS="cache=writeback,cache.direct=on,aio=native,l2-cache-size=40M,discard=unmap,detect-zeroes=off"
+RAW_OPTS="aio=native,cache.direct=on,cache=writeback,discard=unmap"
 
-INDEX=0
+INDEX=1
 function add_lvm_disk() {
 	name=$1
 	dformat=${2:-"raw"}
@@ -23,6 +23,21 @@ function add_lvm_disk() {
 QEMU_OPTS+=( 
 	 -device ahci,id=ahci0
 )
+
+# CLOVER BOOT
+if [ -e $DISKS_PATH/clover.qcow2 ]; then
+QEMU_OPTS+=(
+        -device ide-drive,bus=ahci0.0,drive=CloverHDD,bootindex=0
+        -drive id=CloverHDD,if=none,index=0,file=$DISKS_PATH/clover.qcow2,$QCOW2_OPTS
+)
+elif [ -e $DISKS_PATH/clover.raw ]; then
+QEMU_OPTS+=(
+        -device ide-drive,bus=ahci0.0,drive=CloverHDD,bootindex=0
+        -drive id=CloverHDD,if=none,index=0,file=$DISKS_PATH/clover.raw,format=raw,$RAW_OPTS
+)
+
+fi
+
 add_lvm_disk system
 add_lvm_disk data
 add_lvm_disk data qcow2

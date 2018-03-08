@@ -5,6 +5,10 @@ set -e
 echo "KVM Machine boot"
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 
+BIOS="efi"
+OS="win"
+
+
 source $SCRIPT_DIR/config-common
 source $SCRIPT_DIR/config-machine
 
@@ -25,9 +29,6 @@ if [ ! -e "$MACHINE_PATH/config" ]; then
 	echo "Reason: 'config' does not exist in $MACHINE_PATH"
 	exit 2
 fi
-
-BIOS="efi"
-OS="win"
 
 echo -e "\tRunning from: $SCRIPT_DIR"
 

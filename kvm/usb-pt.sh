@@ -7,5 +7,12 @@ QEMU_OPTS+=(
 -device vfio-pci,host=$USBPCI.0,bus=pcie-port-2,addr=0.0
 )
 
+if [ "x$USBPCI_1" != "x" ]; then
+QEMU_OPTS+=(
+-device vfio-pci,host=$USBPCI_1.0,bus=pcie-port-2,addr=1.0
+)
+./vfio-bind 0000:${USBPCI_1}.0
+fi
+
 echo "Using USB Controller:"
 lspci -s "$USBPCI"

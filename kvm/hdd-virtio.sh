@@ -1,5 +1,5 @@
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
-QCOW2_OPTS="cache=none,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off"
+QCOW2_OPTS="cache=directsync,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off"
 
 function adddisk() {
 	name=$1

@@ -28,4 +28,6 @@ fi
 
 
 source $SCRIPT_DIR/cpu-performance.sh
+source $SCRIPT_DIR/hdd-performance.sh
+source $SCRIPT_DIR/reserve_hugepages.sh
 $SCRIPT_DIR/screen-session "$MACHINE" "$SEAT" 

@@ -1,5 +1,7 @@
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
-RAW_OPTS="aio=native,cache.direct=on,cache=none,discard=unmap,detect-zeroes=off"
+
+# Cache=none is important, else bsod in win 10
+RAW_OPTS="aio=native,cache.direct=on,cache=directsync,detect-zeroes=unmap"
 
 INDEX=0
 function add_lvm_disk() {
