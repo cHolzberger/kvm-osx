@@ -4,9 +4,9 @@ DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
 RAW_OPTS="aio=native,cache.direct=on,cache=none"
 QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off,cache.direct=on"
 
-INDEX=0
+: ${INDEX:=0}
 
-DISK_INIT=true
+: ${DISK_INIT:=true}
 
 if [ $DISK_INIT == true ]; then
 	#add own root complex
@@ -64,7 +64,7 @@ function add_virtio_scsi_disk() {
         let INDEX=INDEX+1
 }
 
-
+: ${AHCI_INDEX:=0}
 function add_ahci_disk() {
 	name=$1
 	dformat=raw
@@ -74,13 +74,13 @@ function add_ahci_disk() {
 		echo "disk not found $name"
 		return
 	fi
-
+	# -device ahci,id=ahci$INDEX,bus=pcie_root.1
 	QEMU_OPTS+=( 
-		-device ahci,id=ahci$INDEX,bus=pcie_root.1
-		-device ide-hd,bus=ahci$INDEX.0,drive=${name}HDD,bootindex=$INDEX
+		-device ide-hd,bus=ide.$AHCI_INDEX,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$(diskarg $name)
 	)
         let INDEX=INDEX+1
+        let AHCI_INDEX=AHCI_INDEX+1
 }
 
 
