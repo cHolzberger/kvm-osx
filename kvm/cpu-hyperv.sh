@@ -1,6 +1,6 @@
 CPU=(
 host
-kvm=on
+kvm=off
 l3-cache=on
 hv_relaxed=on
 hv_spinlocks=0x1fff
@@ -9,6 +9,8 @@ hv_time=on
 )
 
 CPUFLAGS=(
++invtsc
++x2apic
 )
 
 OIFS="$IFS"
