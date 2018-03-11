@@ -3,8 +3,6 @@ MON_PATH="$VM_PREFIX/$MACHINE/var"
 SOCKET=$MACHINE_PATH/var/control
 
 set -e 
-OIFS="$IFS"
-IFS=","
 #CMD="taskset  -c ${USE_CPUS[*]} $CMD"
 #CMD="chrt --rr 15 $CMD"
 #CMD="ionice -c 2 -n 3 $CMD"
@@ -18,7 +16,7 @@ echo -e -n '10' >&10
 # qemu gets io priority
 
 echo "#!/bin/bash" > $MACHINE_PATH/run
-echo $CMD \
+IFS=, echo $CMD \
        ${CLOVER_OPTS[@]} \
         ${QEMU_OPTS[@]} \
 	${QEMU_EXTRA_OPTS[@]} \

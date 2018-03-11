@@ -27,6 +27,7 @@ if [ ! -e "$MACHINE_PATH/config" ]; then
 fi
 
 
+source $SCRIPT_DIR/../kvm/lib-helper.sh 
 source $SCRIPT_DIR/cpu-performance.sh
 source $SCRIPT_DIR/hdd-performance.sh
 source $SCRIPT_DIR/reserve_hugepages.sh

@@ -9,7 +9,7 @@ echo 0 > /proc/sys/kernel/numa_balancing || true
 
 CPUCOUNT=$(ls /sys/bus/cpu/devices/ | wc -l)
 
-echo "enable ksm for host"
+	echo "enable ksm for host"
 echo -n 0 >  /sys/kernel/mm/ksm/run
 echo -n 0 > /sys/kernel/mm/ksm/merge_across_nodes
 

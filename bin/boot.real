@@ -39,6 +39,7 @@ QMP_CMD=(
 
 cd $RUNTIME_PATH
 
+source kvm/lib-helper.sh
 source kvm/common-$OS.sh
 source kvm/bios-$BIOS.sh
 source kvm/cpu-$CPU_MODEL.sh

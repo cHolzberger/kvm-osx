@@ -20,34 +20,34 @@ source $MACHINE_PATH/config
 echo "NUMA Pinning for $MACHINE with socket $SOCKET"
 echo "Using NUMA Node: ${CPU_NUMA_NODE}"
 
+_c=$(join_arr ${USE_CPUS[@]})
+if [ "x$USE_IO_CPU" != "x" ]; then
+	QEMU_CPUS="$USE_IO_CPU,$_c"
+else
+	QEMU_CPUS=$_c
+fi
+
 #renice -15 $qemu_pid
-taskset -c "$USE_CPUS_RANGE" numactl --physcpubind="$USE_CPUS_RANGE" --cpunodebind="$CPU_NUMA_NODE" --membind="$CPU_NUMA_NODE" $CMD &
-#$CMD &
+#/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_IO_CPU} -e \
+#	numactl --cpunodebind="$CPU_NUMA_NODE" --membind="$CPU_NUMA_NODE" \
+$CMD &
 sleep 5
 
 qemu_pid=$(cat $MACHINE_PATH/var/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
+echo "Using IO CPU: $USE_IO_CPU"
+echo "Using Guest CPU(s): $QEMU_CPUS" 
 echo "Querying QEMU for VCPU Pids"
 tasks=$( echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-cpus" }' | nc -NU "$SOCKET" |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo )
-
-
-
-echo "Using CPUs: ${USE_CPUS[*]}"
-echo $tasks
 i=0
 
 #echo "setting qemu prio"
 #/srv/kvm/OSX-KVM/bin/chrt -a --rr --pid 10 $qemu_pid
 
+#/srv/kvm/OSX-KVM/bin/schedtool -a $USE_IO_CPU $qemu_pid
 #renice -15 $qemu_pid
 for t in $tasks ; do
 	echo "Using Real CPU ${USE_CPUS[$i]} for VCPU $i"
-	#taskset -pc ${USE_CPUS[$i]} $t
-	# be nice to cpu threads ;)
-	echo "Setting CPU Tasks priority"
-
 	/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_CPUS[$i]}  $t
-	echo /srv/kvm/bin/schedtool -a ${USE_CPUS[$i]} -n -10 $t
-	#ionice -c 2 -n 3 -p $t
 	let i=$i+1
 done

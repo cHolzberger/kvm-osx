@@ -8,11 +8,12 @@ hv_vapic=on
 hv_time=on
 )
 
-#kvm=off
-# not working
-#kvm=off,vendor=GenuineIntel,hv_relaxed,hv_vapic,hv_spinlocks=0x1000,+x2apic
+#hide kvm from guest, enable tsc timer
+
 CPUFLAGS=(
+kvm=off
 +invtsc
++x2apic
 )
 OIFS="$IFS"
 IFS=","

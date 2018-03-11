@@ -14,17 +14,14 @@ GFX_ARGS=""
 if [ -e $ROMFILE ]; then
 	echo "GFX PT Using ROM: $(pwd)/$ROMFILE"
 	GFX_ARGS=",romfile=$(pwd)/$ROMFILE"
-#	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,romfile=$ROMFILE,x-vga=on,rombar=0,addr=03.0 )
 else
 	echo "GFX PT Without ROM"
-	#CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,x-vga=on,rombar=0,addr=03.0 )
 fi
 
 CLOVER_OPTS+=( 
-	-device ioh3420,bus=pcie.0,port=1,chassis=1,addr=1c.0,id=pcie-port-1 
+	-device ioh3420,bus=pcie.0,port=1,chassis=1,addr=1c.0,id=pcie-port-1
 	-device vfio-pci,bus=pcie-port-1,host=$GFXPCI.0,multifunction=on,rombar=1,addr=0.0$GFX_ARGS 
 ) 
-#
 #	-device vfio-pci,host=$GFXPCI.1,addr=0.1,bus=pcie-port-1
 
 echo "Using GFX Card:"
