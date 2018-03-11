@@ -38,7 +38,7 @@ function add_virtio_pci_disk() {
 	fi
 	QEMU_OPTS+=( 
 	-object iothread,id=iothread$name
-	-device virtio-blk-pci,drive=${name}HDD,scsi=off,config-wce=off,bootindex=0,iothread=iothread$name,bus=pcie_root.1
+	-device virtio-blk-pci,drive=${name}HDD,scsi=off,config-wce=off,bootindex=$INDEX,iothread=iothread$name,bus=pcie_root.1
 	-drive id=${name}HDD,if=none,$diskarg
 	)
         let INDEX=INDEX+1
