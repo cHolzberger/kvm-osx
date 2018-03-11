@@ -59,7 +59,7 @@ function add_virtio_scsi_disk() {
 	
 	if [ "x$VSCSI_INDEX" == "x0" ]; then
 		QEMU_OPTS+=(
-		-device virtio-scsi-pci,num_queues=$NUM_CPUS,id=vscsi,bus=pcie_root.1,addr=$(printf "%02x" $INDEX)
+		-device virtio-scsi-pci,num_queues=$NUM_CPUS,id=vscsi
 		)
 	fi
                 QEMU_OPTS+=(
