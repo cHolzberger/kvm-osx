@@ -28,6 +28,7 @@ function diskarg() {
 	fi
 }
 
+: ${VBLK_INDEX:=0}
 function add_virtio_pci_disk() {
 	name=$1
 	diskarg=$(diskarg $name)
@@ -38,13 +39,15 @@ function add_virtio_pci_disk() {
 	fi
 	QEMU_OPTS+=( 
 	-object iothread,id=iothread$name
-	-device virtio-blk-pci,drive=${name}HDD,scsi=off,config-wce=off,bootindex=$INDEX,iothread=iothread$name,bus=pcie_root.1
+	-device virtio-blk-pci,drive=${name}HDD,scsi=off,config-wce=off,bootindex=$INDEX,iothread=iothread$name,bus=pcie_root.1,addr=$(printf "%02x" $INDEX)
 	-drive id=${name}HDD,if=none,$diskarg
 	)
         let INDEX=INDEX+1
+        let VBLK_INDEX=VBLK_INDEX+1
 	echo "Adding Virtio-PCI Disk: $name"
 }
 
+: ${VSCSI_INDEX:=0}
 function add_virtio_scsi_disk() {
         name=$1
 	diskarg=$(diskarg $name)
@@ -56,12 +59,13 @@ function add_virtio_scsi_disk() {
 
                 dformat=raw
                 QEMU_OPTS+=(
-                -device virtio-scsi-pci,id=vscsi-$name,bus=pcie_root.1,slot=$INDEX
+		-device virtio-scsi-pci,id=vscsi-$name,bus=pcie_root.1,addr=$(printf "%02x" $INDEX)
                 -device scsi-hd,bus=vscsi-$name.0,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$diskarg
                 )
 	echo "Adding VirtioSCSI Disk: $name"
         let INDEX=INDEX+1
+        let VSCSI_INDEX=VSCSI_INDEX+1
 }
 
 : ${AHCI_INDEX:=0}

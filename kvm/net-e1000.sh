@@ -1,5 +1,5 @@
 echo "Using E1000 Network"
 QEMU_OPTS+=(
- -device e1000,netdev=net0,id=net0,slot=16,mac=$NET_MACADDR 
+-device e1000,netdev=net0,id=net0,mac=$NET_MACADDR,addr=$(printf "%02x" 16)
  -netdev bridge,id=net0,br=$NET_BR
 )
