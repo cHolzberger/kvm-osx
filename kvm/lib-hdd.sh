@@ -56,11 +56,14 @@ function add_virtio_scsi_disk() {
 		echo "disk not found $name"
 		return
 	fi
-
-                dformat=raw
+	
+	if [ "x$VSCSI_INDEX" == "x0" ]; then
+		QEMU_OPTS+=(
+		-device virtio-scsi-pci,id=vscsi,bus=pcie_root.1,addr=$(printf "%02x" $INDEX)
+		)
+	fi
                 QEMU_OPTS+=(
-		-device virtio-scsi-pci,id=vscsi-$name,bus=pcie_root.1,addr=$(printf "%02x" $INDEX)
-                -device scsi-hd,bus=vscsi-$name.0,drive=${name}HDD,bootindex=$INDEX
+                -device scsi-hd,bus=vscsi.$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$diskarg
                 )
 	echo "Adding VirtioSCSI Disk: $name"
