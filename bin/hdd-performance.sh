@@ -30,7 +30,7 @@ done
 echo "Setra for disks"
 ls -d /dev/sd? | while read i; do
 	echo $i
-	blockdev --setra 64 $i
+	blockdev --setra 128 $i
 done
 echo "Setra for md"
 for i in /dev/md/*; do
@@ -62,6 +62,6 @@ done
 echo "Writeback settings"
 echo -n 20000 > /proc/sys/vm/dirty_writeback_centisecs
 sysctl -w vm.vfs_cache_pressure=50 
-sysctl -w vm.dirty_ratio=5
+sysctl -w vm.dirty_ratio=10
 sysctl -w vm.dirty_background_ratio=25
 
