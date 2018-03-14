@@ -14,7 +14,7 @@ CPUFLAGS=(
 kvm=off
 +invtsc
 +x2apic
-+tsc_deadline
++tsc-deadline
 +tsc-adjust
 )
 OIFS="$IFS"
