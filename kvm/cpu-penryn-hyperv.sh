@@ -22,7 +22,7 @@ IFS=","
 #
 QEMU_OPTS+=(
  -cpu "${CPU[*]}","${CPUFLAGS[*]}"
- -smp "$NUM_CPUS,sockets=$NUM_CPUS,cores=1,threads=1"
+ -smp "$CPU_SMP"
  -rtc clock=rt,base=utc,driftfix=slew
  -global ICH9-LPC.disable_s3=1
  -no-hpet
