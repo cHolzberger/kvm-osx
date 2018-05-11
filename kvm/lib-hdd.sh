@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
-RAW_OPTS="aio=native,cache.direct=on,cache=none"
+RAW_OPTS="aio=native,cache.direct=on,cache=none,discard=unmap"
 QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off,cache.direct=on"
 
 : ${INDEX:=0}
