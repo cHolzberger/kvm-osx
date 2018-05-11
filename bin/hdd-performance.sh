@@ -32,15 +32,16 @@ ls -d /dev/sd? | while read i; do
 	echo $i
 	blockdev --setra 128 $i
 done
+
 echo "Setra for md"
-for i in /dev/md/*; do
+test -d /dev/md && for i in /dev/md/*; do
 	echo $i
 	blockdev --setra 16384 $i
 done
 
 
 echo "Setra for lvm"
-for i in /dev/vg-*/*; do
+test -d /dev/vg-* && for i in /dev/vg-*/*; do
 	echo $i
 	blockdev --setra 16384 $i
 done

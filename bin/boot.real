@@ -44,11 +44,13 @@ source kvm/common-$OS.sh
 source kvm/bios-$BIOS.sh
 source kvm/cpu-$CPU_MODEL.sh
 
-source kvm/hdd-$HDD_MODE.sh
-source kvm/hugepages.sh
-
 source kvm/usb-$USB_MODE.sh
 source kvm/gfx-$GFX_MODE.sh
+source kvm/hdd-$HDD_MODE.sh
+if [ "$USE_HUGEPAGES" = "1" ]; then
+	source kvm/hugepages.sh
+fi
+
 source kvm/net-$NET_MODE.sh
 if [ "x$SOUND_MODE" != "x" ]; then
 	source kvm/sound-$SOUND_MODE.sh
