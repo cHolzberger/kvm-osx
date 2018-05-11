@@ -3,7 +3,7 @@
 QEMU_OPTS=(	
  -enable-kvm 
  -m $MEM 
- -machine pc-q35-2.10,accel=kvm,usb=off,vmport=off
+ -machine pc-q35-2.9,accel=kvm,usb=off
  -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2
