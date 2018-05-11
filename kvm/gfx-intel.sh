@@ -17,17 +17,20 @@ if [ -e $ROMFILE ]; then
 	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,multifunction=on,addr=02.0,x-vga=on,romfile=$ROMFILE)
 else
 	echo "GFX PT Without ROM"
-	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,addr=0x02,rombar=0 )
+	CLOVER_OPTS+=(-device vfio-pci,host=$GFXPCI.0,addr=0x02,bus=pci.0,x-vga=on )
 fi
 
 echo "Using GFX Card and VNC:"
 lspci -s "$GFXPCI"
 
+
 QEMU_OPTS+=(
-	-vga std
-	-vnc $GFX_VNCPORT,password
+	-nographic
+	-vga none
+#	-vga std
+#	-vnc $GFX_VNCPORT,password
 )
  
 QMP_CMD+=(
-'{ "execute": "set_password", "arguments": { "protocol": "vnc", "password": "secret" } }'
+#'{ "execute": "set_password", "arguments": { "protocol": "vnc", "password": "secret" } }'
 )

@@ -1,6 +1,6 @@
 CPU=(
 host
-kvm=on
+kvm=off
 vmware-cpuid-freq=on
 l3-cache=on
 )

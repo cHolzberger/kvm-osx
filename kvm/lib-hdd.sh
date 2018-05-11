@@ -11,7 +11,7 @@ QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=off,detect-z
 if [ $DISK_INIT == true ]; then
 	#add own root complex
 	QEMU_OPTS+=(
-		-device ioh3420,id=pcie_root.1,bus=pcie.0
+	#	-device ioh3420,id=pcie_root.1,bus=pcie.0
 	)
 	DISK_INIT=false
 fi
