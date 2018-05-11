@@ -62,6 +62,8 @@ done
 echo "Writeback settings"
 echo -n 20000 > /proc/sys/vm/dirty_writeback_centisecs
 sysctl -w vm.vfs_cache_pressure=50 
-sysctl -w vm.dirty_ratio=10
-sysctl -w vm.dirty_background_ratio=25
+#sysctl -w vm.dirty_ratio=10
+#sysctl -w vm.dirty_background_ratio=25
+sysctl -w vm.dirty_bytes=16777216 #16Mb
+sysctl -w vm.dirty_background_bytes=835584 #mb
 sysctl -w vm.swappiness=1
