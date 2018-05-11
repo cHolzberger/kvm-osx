@@ -1,5 +1,4 @@
 #!/bin/bash
-sleep 5
 # openbsd-nc is important! 
 
 if [ "x$MACHINE" == "x" ]; then
@@ -16,7 +15,9 @@ fi
 
 SOCKET=$MACHINE_PATH/var/control
 CMD=$MACHINE_PATH/run
-source $MACHINE_PATH/config
+#source $MACHINE_PATH/config
+
+source $SCRIPT_DIR/config-machine
 echo "NUMA Pinning for $MACHINE with socket $SOCKET"
 echo "Using NUMA Node: ${CPU_NUMA_NODE}"
 
@@ -46,8 +47,13 @@ i=0
 
 #/srv/kvm/OSX-KVM/bin/schedtool -a $USE_IO_CPU $qemu_pid
 #renice -15 $qemu_pid
+echo "USE_CPUS: ${USE_CPUS[@]}"
+
+i=0
 for t in $tasks ; do
 	echo "Using Real CPU ${USE_CPUS[$i]} for VCPU $i"
 	/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_CPUS[$i]}  $t
+	taskset -pc ${USE_CPUS[$i]} $t 
 	let i=$i+1
+
 done
