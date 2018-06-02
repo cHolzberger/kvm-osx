@@ -9,6 +9,7 @@ QEMU_OPTS=(
  -smbios type=2
  -device "isa-applesmc,osk=\"ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc\""
  -nographic
+ -rtc clock=vm,base=utc
 )
 
 if [ "x$UUID" != "x" ]; then

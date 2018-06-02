@@ -21,7 +21,6 @@ QEMU_OPTS+=(
  -smp "$CPU_SMP"
  -no-hpet
  -global kvm-pit.lost_tick_policy=discard
- -rtc clock=rt,base=utc
  -global ICH9-LPC.disable_s3=1
 )
 

@@ -27,7 +27,8 @@ chmod u+x $VM_PREFIX/$MACHINE/run
 
 	#--daemonize \
 
-source $SCRIPT_DIR/../kvm/cpu-pin.sh
+#source $SCRIPT_DIR/../kvm/cpu-pin.sh
+source $SCRIPT_DIR/../kvm/cpu-pin-cpuset.sh
 source $SCRIPT_DIR/../kvm/io-pin.sh 
 
 # start execution

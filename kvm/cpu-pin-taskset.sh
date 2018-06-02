@@ -17,6 +17,7 @@ CMD=$MACHINE_PATH/run
 SOCKET=$MACHINE_PATH/var/control
 
 source $MACHINE_PATH/config
+
 qemu_pid=$(cat $MACHINE_PATH/var/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"

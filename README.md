@@ -26,3 +26,6 @@ https://www.thomas-krenn.com/de/wiki/LVM_Caching_mit_SSDs_einrichten
 
 # ISOLate Cpus and set Hugepagesize (CPU Support needed)
 isolcpus=1-13 nohz_full=1-13 rcu_nocbs=1-13 hugepagesz=1GB hugepages=64 default_hugepagesz=1GB
+
+# mounnt cpuset to /dev/cpuset
+ mount -t cpuset - /dev/cpuset

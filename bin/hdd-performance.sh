@@ -34,14 +34,14 @@ ls -d /dev/sd? | while read i; do
 done
 
 echo "Setra for md"
-test -d /dev/md && for i in /dev/md/*; do
+ls -d /dev/md && for i in /dev/md/*; do
 	echo $i
 	blockdev --setra 16384 $i
 done
 
 
 echo "Setra for lvm"
-test -d /dev/vg-* && for i in /dev/vg-*/*; do
+ls -d /dev/vg-* && for i in /dev/vg-*/*; do
 	echo $i
 	blockdev --setra 16384 $i
 done

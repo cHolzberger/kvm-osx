@@ -32,7 +32,7 @@ fi
 #/srv/kvm/OSX-KVM/bin/schedtool -a ${USE_IO_CPU} -e \
 #	numactl --cpunodebind="$CPU_NUMA_NODE" --membind="$CPU_NUMA_NODE" \
 $CMD &
-sleep 5
+sleep 2
 
 qemu_pid=$(cat $MACHINE_PATH/var/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
