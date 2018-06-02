@@ -1,0 +1,2 @@
+#!/bin/bash
+iscsiadm -m discovery -t sendtargets -p $@

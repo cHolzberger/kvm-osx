@@ -1,0 +1,41 @@
+#!/bin/bash 
+
+echo "USAGE: $0 ISCSI-TARGET ISCSI-PORT IQN NAME"
+
+SERVER="$1" #"10.150.0.1"
+PORT="$2" #"3260"
+TARGET_IQN="$3" #"iqn.2015-12.de.mosaiksoftware"
+TARGET_NAME="$4" #"vm-eset-ra-system"
+echo "==> Discovering Targets and connecting iscsi"
+
+iscsiadm -m discovery -t sendtargets -p $SERVER:$PORT
+iscsiadm -m  node -T $TARGET_IQN:$TARGET_NAME --login
+
+sleep 1
+
+DEVICES=($(lsscsi -t | grep "$TARGET_NAME,t" | awk '{print $4}'))
+IQNS=($(lsscsi -t | grep "$TARGET_NAME,t" | awk '{print $3}' | awk -F , '{print $1}'))
+
+echo "==> found devices"
+
+echo ${DEVICES[@]}
+
+
+WWID=$(/lib/udev/scsi_id -u -g ${DEVICES[0]})
+echo "==> Connected $TARGET_NAME with WWID $WWID"
+
+
+echo "mpath-$TARGET_NAME $WWID" > /tmp/bindings-$TARGET_NAME
+# wait for multipath ... ?! 
+echo "Starting multipath"
+
+multipath -a "$WWID"
+multipath -B -b /tmp/bindings-$TARGET_NAME
+multipath -r
+sleep 5
+
+echo "==> Creating mapper entries"
+dmsetup mknodes $WWID
+kpartx -a -p "p" /dev/mapper/$WWID
+
+ln -s /dev/mapper/$WWID /dev/mapper/mpath-$TARGET_NAME
