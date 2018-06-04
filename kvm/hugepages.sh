@@ -7,5 +7,4 @@ MEM_PATH=/dev/hugetlbfs
 QEMU_OPTS+=( 
  -mem-path $MEM_PATH
  -mem-prealloc
- -balloon none 
 )

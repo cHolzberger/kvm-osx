@@ -47,18 +47,19 @@ for c in ${USE_CPUS[*]}; do
 	C="$CPUSET/kvm/cpu$c"
 	echo "Creating $C"
 	test -d $C || mkdir $C
-	echo -n "$DEF_MEMSET" > $C/mems
-	echo -n $c > $C/cpus
-	echo -n 0 > $C/sched_load_balance
+	/bin/echo -n "$DEF_MEMSET" > $C/mems
+	/bin/echo -n $c > $C/cpus
+	/bin/echo -n 0 > $C/sched_load_balance
 done
 
-echo -n "$qemu_pid" > $CPUSET/kvm/tasks
+echo "Pinning $qemu_pid"
+/bin/echo -n "$qemu_pid" > $CPUSET/kvm/tasks
 renice -15 $qemu_pid
 for t in $tasks ; do
 	c=${USE_CPUS["$i"]}
 	C="$CPUSET/kvm/cpu$c"
 	echo "Using Real CPU $c for VCPU $i"
-	echo "$t to $C/tasks"	
-	echo -n $t > $C/tasks
+	/bin/echo "$t to $C/tasks"	
+	/bin/echo -n $t > $C/tasks
 	let i=$i+1
 done
