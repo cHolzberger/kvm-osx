@@ -1,0 +1,17 @@
+af_packet
+raid1
+br_netfilter
+bridge
+tun
+tap
+vhost
+vhost-net
+
+kvmgt
+vfio-iommu-type1
+vfio-mdev
+
+vhost
+vhost-net 
+vhost-scsi
+
