@@ -4,6 +4,7 @@ DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
 # must be cache=directsync for virtio-blk
 RAW_OPTS_default_="aio=native,cache.direct=on,cache=none,discard=unmap"
 RAW_OPTS_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap"
+#RAW_OPTS_virtio_blk_pci="aio=native,cache.direct=on,cache=directsync,discard=unmap"
 
 QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off,cache.direct=on"
 
