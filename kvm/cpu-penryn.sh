@@ -15,6 +15,7 @@ CPUFLAGS=(
 +apic
 +xsave
 +avx 
++avx2
 +xsaveopt
 +smep
 )

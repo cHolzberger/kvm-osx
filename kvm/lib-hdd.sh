@@ -1,7 +1,10 @@
 #!/bin/bash
 
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
-RAW_OPTS="aio=native,cache.direct=on,cache=none,discard=unmap"
+# must be cache=directsync for virtio-blk
+RAW_OPTS_default_="aio=native,cache.direct=on,cache=none,discard=unmap"
+RAW_OPTS_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap"
+
 QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off,cache.direct=on"
 
 : ${INDEX:=0}
@@ -18,6 +21,9 @@ fi
 
 function diskarg() {
 	name=$1
+	controller=RAW_OPTS_${2:default}
+	
+	RAW_OPTS=${!controller}
 
         if [ -e "$DISKS_PATH/$name.raw" ]; then	
 		echo "file=$DISKS_PATH/$name.raw,format=raw,$RAW_OPTS"
@@ -28,10 +34,13 @@ function diskarg() {
 	fi
 }
 
+# Use case: passathrough host device as pcie disk
+# sometimes giving errors oon windows
 : ${VBLK_INDEX:=0}
 function add_virtio_pci_disk() {
 	name=$1
-	diskarg=$(diskarg $name)
+
+	diskarg=$(diskarg $name virtio_blk_pci)
 
 	if [ $diskarg == "err" ]; then
 		echo "disk not found $name"
@@ -44,8 +53,39 @@ function add_virtio_pci_disk() {
 	)
         let INDEX=INDEX+1
         let VBLK_INDEX=VBLK_INDEX+1
-	echo "Adding Virtio-PCI Disk: $name"
+	echo "Adding Virtio-PCI Disk: $name -> $diskarg"
 }
+
+
+# use case: passthrough host wwn to guest
+# not working atm
+# see https://wiki.libvirt.org/page/Vhost-scsi_target
+: ${VHSCSI_INDEX:=0}
+function add_vhost_scsi_disk() {
+        name=$1
+	diskarg=$(diskarg $name)
+
+	if [ $diskarg == "err" ]; then
+		echo "disk not found $name"
+		return
+	fi
+	
+	if [ "x$VHSCSI_INDEX" == "x0" ]; then
+		QEMU_OPTS+=(
+		-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
+		-device vhost-scsi-pci,iothread=iothread$name,num_queues=8,id=vscsi
+		)
+	fi
+                QEMU_OPTS+=(
+                -device scsi-hd,bus=vscsi.0,scsi-id=$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
+		-drive id=${name}HDD,if=none,$diskarg
+                )
+	echo "Adding VhostSCSI Disk: $name"
+        let INDEX=INDEX+1
+        let VHSCSI_INDEX=VHSCSI_INDEX+1
+}
+
+# Use case: passthrough host device as scsi controller + disks to the vm
 
 : ${VSCSI_INDEX:=0}
 function add_virtio_scsi_disk() {
@@ -59,8 +99,8 @@ function add_virtio_scsi_disk() {
 	
 	if [ "x$VSCSI_INDEX" == "x0" ]; then
 		QEMU_OPTS+=(
-		-object iothread,id=iothread$name
-		-device virtio-scsi-pci,iothread=iothread$name,num_queues=4,id=vscsi
+		-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
+		-device virtio-scsi-pci,iothread=iothread$name,num_queues=8,id=vscsi
 		)
 	fi
                 QEMU_OPTS+=(
@@ -72,6 +112,7 @@ function add_virtio_scsi_disk() {
         let VSCSI_INDEX=VSCSI_INDEX+1
 }
 
+# Use case: compatibility / macos passthrough disk as ahci controller + disk 
 : ${AHCI_INDEX:=0}
 function add_ahci_disk() {
 	name=$1
@@ -82,9 +123,9 @@ function add_ahci_disk() {
 		echo "disk not found $name"
 		return
 	fi
-	# -device ahci,id=ahci$INDEX,bus=pcie_root.1
 	QEMU_OPTS+=( 
-		-device ide-hd,bus=ide.$AHCI_INDEX,drive=${name}HDD,bootindex=$INDEX
+		-device ich9-ahci,id=ahci$INDEX
+		-device ide-hd,bus=ahci$INDEX.$AHCI_INDEX,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$(diskarg $name)
 	)
         let INDEX=INDEX+1

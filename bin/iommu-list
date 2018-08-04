@@ -1,12 +1,24 @@
 BASE=/sys/kernel/iommu_groups
+bold="\033[1m"
+normal="\033[0m"
 
+echo "Scanning $BASE"
 for iommu_group_nr in $(find $BASE -maxdepth 1 -mindepth 1 -exec "basename" "{}" \; | sort -g);do
 	iommu_group=$BASE/$iommu_group_nr
-
-	echo "IOMMU group $iommu_group_nr" 
+	first=1
 	for device in $(\ls -1 "$iommu_group"/devices/); do 
-		if [[ -e "$iommu_group"/devices/"$device"/reset ]]; then echo -en "\t[RESET]"; 
-	fi; 
-	echo -n $'\t';lspci -nns "$device"; 
-	done; 
+		if [[ "$first" == "1" ]]; then
+			echo -en "$bold"
+			echo -n "| $iommu_group_nr: "
+		else
+			echo -en "$normal"
+			echo -n "|\`--- "
+		fi
+		echo -en "$normal"	
+		if [[ -e "$iommu_group"/devices/"$device"/reset ]]; then 
+			echo -en "\t[RESET]"; 
+		fi; 
+		echo -n $'\t';lspci -nns "$device"; 
+		first=0
+	done;
 done
