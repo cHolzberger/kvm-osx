@@ -1,5 +1,4 @@
 #!/bin/bash
-
 ./vfio-bind 0000:${GFXPCI}.0 0000:${GFXPCI}.1 
 
 dev=0000:${GFXPCI}.0

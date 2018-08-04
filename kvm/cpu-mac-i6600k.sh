@@ -2,22 +2,13 @@ CPU=(
 Penryn
 vmware-cpuid-freq=on
 l3-cache=on
-hv_relaxed=on
-hv_spinlocks=0x1fff
-hv_vapic=on
-hv_time=on
 )
 
 #hide kvm from guest, enable tsc timer
 
 CPUFLAGS=(
-kvm=off
 +invtsc
-+x2apic
-+tsc-deadline
-+tsc-adjust
-+avx
-+avx2
++aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
 )
 OIFS="$IFS"
 IFS=","

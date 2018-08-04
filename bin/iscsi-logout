@@ -1,0 +1,6 @@
+#!/bin/bash
+
+TARGET="$1"
+SERVER="$2"
+
+iscsiadm -m node -T $TARGET -p $SERVER --logout

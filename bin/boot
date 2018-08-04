@@ -26,6 +26,15 @@ if [ ! -e "$MACHINE_PATH/config" ]; then
 	exit 2
 fi
 
+if [ -e $MACHINE_PATH/var/pid ]; then
+        p=$(cat $MACHINE_PATH/var/pid)
+        echo "Found pid file... checking if vm is allready running"
+        if [ -e "/proc/$p" ]; then
+                echo "VM allready running"
+                exit 4
+        fi
+        rm $MACHINE_PATH/var/pid
+fi 
 
 source $SCRIPT_DIR/../kvm/lib-helper.sh 
 source $SCRIPT_DIR/cpu-performance.sh
