@@ -1,0 +1,12 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/config-common
+
+running=($($SCRIPT_DIR/machine-list-frozen))
+
+for m in ${running[@]}; do
+	echo "Resuming exceution of $m"
+	"$SCRIPT_DIR/machine-continue" "$m"
+done
+

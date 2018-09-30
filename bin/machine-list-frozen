@@ -1,0 +1,14 @@
+#!/bin/bash
+
+for MACHINE_PATH  in /srv/kvm/vms/*; do
+
+if [ -e $MACHINE_PATH/var/frozen ]; then
+	p=$(cat $MACHINE_PATH/var/pid)
+	if [ -e "/proc/$p" ]; then
+		vm=$(basename $MACHINE_PATH)
+		echo $vm
+	fi	
+fi
+done
+
+
