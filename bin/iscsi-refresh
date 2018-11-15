@@ -1,0 +1,3 @@
+#!/bin/bash
+
+iscsiadm -m discovery -t st -p $@
