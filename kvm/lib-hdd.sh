@@ -25,11 +25,11 @@ function diskarg() {
 	controller=RAW_OPTS_${2:default}
 	
 	RAW_OPTS=${!controller}
-
+	DISK_SERIAL=$HDD_SERIAL_BASE$INDEX
         if [ -e "$DISKS_PATH/$name.raw" ]; then	
-		echo "file=$DISKS_PATH/$name.raw,format=raw,$RAW_OPTS"
+		echo "file=$DISKS_PATH/$name.raw,format=raw,serial=$DISK_SERIAL,$RAW_OPTS"
 	elif [ -e "$DISKS_PATH/$name.qcow2" ]; then
-		echo "file=$DISKS_PATH/$name.qcow2,format=qcow2,$QCOW2_OPTS"
+		echo "file=$DISKS_PATH/$name.qcow2,format=qcow2,serial=$DISK_SERIAL,$QCOW2_OPTS"
 	else
 		echo "err"
 	fi

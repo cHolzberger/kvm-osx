@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "======== DEVICE ${ACTION} =========" >> /tmp/udev.log
+echo "$DEVPATH" >> /tmp/udev.log
+echo "$DEVNAME" >> /tmp/udev.log
+
+if [ "${ACTION}" = "add" ]; then
+	echo "x" >> /tmp/udev.log	
+	/srv/kvm/OSX-KVM/bin/qmp-object-add-input-linux machine-ch $DEVNAME 2>&1 >> /tmp/udev.log
+elif [ "$ACTION" = "remove" ]; then
+	echo "y" >> /tmp/udev.log
+       /srv/kvm/OSX-KVM/bin/qmp-object-del machine-ch $DEVNAME 2>&1 >>/tmp/udev.log
+fi
+
+

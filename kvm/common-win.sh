@@ -2,7 +2,7 @@
 QEMU_OPTS=(	
  -enable-kvm 
  -m $MEM 
- -machine pc-q35-2.10,accel=kvm,kernel_irqchip=on,mem-merge=off
+ -machine pc,accel=kvm,kernel_irqchip=on,mem-merge=off
  -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2

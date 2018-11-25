@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for i in /sys/devices/virtual/block/bcache*; do
+echo $(basename $i)
+	for j in $i/slaves/*; do
+		echo -e "\t$(basename $j)"
+	done
+done

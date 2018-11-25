@@ -8,6 +8,8 @@ SEAT_PREFIX="/srv/kvm/seats"
 SHARED_DISKS="/srv/kvm/OSX-KVM/shared-disks"
 
 CPU_NUMA_NODE=0
+HDD_SERIAL_BASE=S32WJ9CF15999
+USB_MODE=virt
 
 echo "Loading Hostconfig: $VM_PREFIX/config"
 source $VM_PREFIX/config

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-iscsiadm -m discovery -t st -p $@
+IP=$1
+iscsiadm -m discovery -t st -p $IP --op update

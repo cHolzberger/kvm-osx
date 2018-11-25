@@ -1,0 +1,3 @@
+ATTRS{serial}=="0000:0a:00.1", SUBSYSTEM=="input", KERNEL=="event[0-9]*" RUN+="/srv/kvm/OSX-KVM/bin/udev-log"
+
+ATTRS{serial}=="0000:0a:00.0", SUBSYSTEM=="input", KERNEL=="event[0-9]*" RUN+="/srv/kvm/OSX-KVM/bin/udev-log"

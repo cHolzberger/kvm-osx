@@ -1,15 +1,15 @@
 #!/bin/bash
 
 echo "Using GFX Card:"
-echo "VMWare"
+echo "std"
 
+lp="$MACHINE_PATH/var/debugcon.log"
 QEMU_OPTS+=(
-	-device qxl
-	-vnc $GFX_VNCPORT,password
+	-vga none
 	-nographic
+	-debugcon file:$lp -global isa-debugcon.iobase=0x402
 )
  
 QMP_CMD+=(
 '{ "execute": "set_password", "arguments": { "protocol": "vnc", "password": "secret" } }'
-'{ "execute": "set_password", "arguments": { "protocol": "spice", "password": "secret" } }'
 )
