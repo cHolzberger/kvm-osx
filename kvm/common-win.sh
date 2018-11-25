@@ -16,3 +16,4 @@ if [ "x$UUID" != "x" ]; then
 fi
 CLOVER_OPTS=()
 BIOS_OPTS=()
+GFXPT_BUS="pcie.0"

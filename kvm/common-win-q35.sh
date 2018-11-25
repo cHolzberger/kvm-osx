@@ -2,11 +2,13 @@
 QEMU_OPTS=(	
  -enable-kvm 
  -m $MEM 
- -machine pc,accel=kvm,kernel_irqchip=on,mem-merge=off
+ -machine q35,accel=kvm,kernel_irqchip=on,mem-merge=off
  -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2
-	 -rtc clock=vm,base=localtime
+ -rtc clock=vm,base=localtime
+ -object rng-random,id=rng0,filename=/dev/urandom 
+ -device virtio-rng-pci,rng=rng0
  )
 
 if [ "x$UUID" != "x" ]; then
@@ -16,3 +18,4 @@ if [ "x$UUID" != "x" ]; then
 fi
 CLOVER_OPTS=()
 BIOS_OPTS=()
+GFXPT_BUS="pcie.0"

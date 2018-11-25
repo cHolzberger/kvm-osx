@@ -1,6 +1,6 @@
 CPU=(
 host
-kvm=on
+kvm=off
 l3-cache=on
 hv_relaxed=on
 hv_spinlocks=0x1fff
@@ -11,6 +11,7 @@ hv_time=on
 CPUFLAGS=(
 +x2apic
 +invtsc
+-hypervisor
 )
 
 
