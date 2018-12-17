@@ -1,0 +1,19 @@
+#!/bin/bash
+
+DISK="$1"
+CACHE="$2"
+
+DISK_CSET_UUID=$(bcache-super-show "$DISK" | grep cset.uuid | sed -e "s/cset.uuid//g" | awk '{$1=$1};1')
+DISK_DEV_UUID=$(bcache-super-show "$DISK" | grep dev.uuid | sed -e "s/dev.uuid//g" | awk '{$1=$1};1')
+CACHE_CSET_UUID=$(bcache-super-show "$CACHE" | grep cset.uuid | sed -e "s/cset.uuid//g" | awk '{$1=$1};1')
+
+echo "DISK_CSET_UUID: "$DISK_CSET_UUID
+echo "DISK_DEV_UUID: "$DISK_DEV_UUID
+echo "CACHE_CSET_UUID: "$CACHE_CSET_UUID
+
+DISK_BCACHE_DEV=$(readlink -f "/dev/bcache/by-uuid/$DISK_DEV_UUID")
+DISK_BCACHE_NAME=$(basename $DISK_BCACHE_DEV)
+
+echo "BCACHE_NAME: "$DISK_BCACHE_NAME
+
+echo -n "$CACHE_CSET_UUID" > /sys/block/$DISK_BCACHE_NAME/bcache/attach

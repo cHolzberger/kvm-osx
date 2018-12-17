@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "Destroying bcache device" 
+
+echo "do echo 1 > /sys/block/<device>/bcache/stop"
+echo "do wipfs -a diskfile"

@@ -10,8 +10,17 @@ SHARED_DISKS="/srv/kvm/OSX-KVM/shared-disks"
 CPU_NUMA_NODE=0
 HDD_SERIAL_BASE=S32WJ9CF15999
 USB_MODE=virt
+OPEN_FD=()
+PRE_CMD=()
 
 echo "Loading Hostconfig: $VM_PREFIX/config"
 source $VM_PREFIX/config
 
 export PATH="$SCRIPT_DIR:$PATH"
+
+## CHECKS
+if [ $(ip -h 2>&1| grep BusyBox > /dev/null; echo $?) -eq 0 ]; then
+	echo "Please install iproute2..."
+	echo "Macvtap in briding mode does not work with BusyBox"
+	exit 1
+fi
