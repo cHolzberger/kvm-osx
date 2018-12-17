@@ -16,15 +16,21 @@ echo -e -n '10' >&10
 # qemu gets io priority
 
 echo "#!/bin/bash" > $MACHINE_PATH/run
+printf "#PRE-CMD BEGINN" >> $MACHINE_PATH/run
+
+printf "%s" "${PRE_CMD[@]/#/$'\n'}" >> $MACHINE_PATH/run
+
+printf "\n#PRE-CMD END\n" >> $MACHINE_PATH/run
+
 IFS=, echo $CMD \
        ${CLOVER_OPTS[@]} \
         ${QEMU_OPTS[@]} \
 	${QEMU_EXTRA_OPTS[@]} \
 	-S \
-	-pidfile $MON_PATH/pid >> $MACHINE_PATH/run
+	-pidfile $MON_PATH/pid \
+	${OPEN_FD[@]} >> $MACHINE_PATH/run
 
 chmod u+x $VM_PREFIX/$MACHINE/run
-
 	#--daemonize \
 
 #source $SCRIPT_DIR/../kvm/cpu-pin.sh

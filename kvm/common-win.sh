@@ -6,7 +6,7 @@ QEMU_OPTS=(
  -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2
- -rtc clock=vm,base=localtime
+ -rtc base=utc
  )
 
 if [ "x$UUID" != "x" ]; then

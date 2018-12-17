@@ -25,11 +25,10 @@ function diskarg() {
 	controller=RAW_OPTS_${2:default}
 	
 	RAW_OPTS=${!controller}
-	DISK_SERIAL=$HDD_SERIAL_BASE$INDEX
         if [ -e "$DISKS_PATH/$name.raw" ]; then	
-		echo "file=$DISKS_PATH/$name.raw,format=raw,serial=$DISK_SERIAL,$RAW_OPTS"
+		echo "file=$DISKS_PATH/$name.raw,format=raw,$RAW_OPTS"
 	elif [ -e "$DISKS_PATH/$name.qcow2" ]; then
-		echo "file=$DISKS_PATH/$name.qcow2,format=qcow2,serial=$DISK_SERIAL,$QCOW2_OPTS"
+		echo "file=$DISKS_PATH/$name.qcow2,format=qcow2,$QCOW2_OPTS"
 	else
 		echo "err"
 	fi
@@ -66,6 +65,7 @@ function add_vhost_scsi_disk() {
         name=$1
 	diskarg=$(diskarg $name)
 
+	DISK_SERIAL=$HDD_SERIAL_BASE$INDEX
 	if [ $diskarg == "err" ]; then
 		echo "disk not found $name"
 		return
@@ -78,7 +78,7 @@ function add_vhost_scsi_disk() {
 		)
 	fi
                 QEMU_OPTS+=(
-                -device scsi-hd,bus=vscsi.0,scsi-id=$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
+                -device scsi-hd,bus=vscsi.0,serial=$DISK_SERIAL,scsi-id=$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$diskarg
                 )
 	echo "Adding VhostSCSI Disk: $name"
@@ -97,6 +97,7 @@ function add_virtio_scsi_disk() {
 		echo "disk not found $name"
 		return
 	fi
+	DISK_SERIAL=$HDD_SERIAL_BASE$INDEX
 	
 	if [ "x$VSCSI_INDEX" == "x0" ]; then
 		QEMU_OPTS+=(
@@ -105,7 +106,7 @@ function add_virtio_scsi_disk() {
 		)
 	fi
                 QEMU_OPTS+=(
-                -device scsi-hd,bus=vscsi.0,scsi-id=$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
+                -device scsi-hd,bus=vscsi.0,scsi-id=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$diskarg
                 )
 	echo "Adding VirtioSCSI Disk: $name"

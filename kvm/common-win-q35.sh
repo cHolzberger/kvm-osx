@@ -6,7 +6,7 @@ QEMU_OPTS=(
  -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2
- -rtc clock=vm,base=localtime
+ -rtc base=utc
  -object rng-random,id=rng0,filename=/dev/urandom 
  -device virtio-rng-pci,rng=rng0
  )
