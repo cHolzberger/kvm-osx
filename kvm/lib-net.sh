@@ -5,8 +5,8 @@ function add_macvtap_iface() {
 	NET_MACADDR="$2"
 
 	VTAP_MACHINE=$(echo $MACHINE | sed -e s/-//g)
-	VTAP_MACHINE=${VTAP_MACHINE:0:13}
-	VTAP_NAME="${VTAP_MACHINE}n$NET_INDEX"
+	VTAP_MACHINE=${VTAP_MACHINE:0:11}
+	VTAP_NAME="vt${VTAP_MACHINE}n$NET_INDEX"
 	let FD_INDEX=NET_INDEX+3
 	
 	PRE_CMD+=(
@@ -19,10 +19,14 @@ function add_macvtap_iface() {
 	)
 
 	OPEN_FD+=(
-		"$FD_INDEX<>/dev/tap\$TAPNUM_${NET_INDEX}"
+		"${FD_INDEX}0<>/dev/tap\$TAPNUM_${NET_INDEX}"
+		"${FD_INDEX}1<>/dev/tap\$TAPNUM_${NET_INDEX}"
+		"${FD_INDEX}2<>/dev/tap\$TAPNUM_${NET_INDEX}"
+		"${FD_INDEX}3<>/dev/tap\$TAPNUM_${NET_INDEX}"
 	)
+	FDS="fds=${FD_INDEX}1:${FD_INDEX}2:${FD_INDEX}3:${FD_INDEX}0"
 	QEMU_OPTS+=(
- 		-netdev tap,id=net$NET_INDEX,vhost=on,fds=$FD_INDEX
+ 		-netdev tap,id=net$NET_INDEX,vhost=on,$FDS
 	)
 
 	_add_virtio_device $NET_MACADDR
@@ -33,8 +37,13 @@ function add_macvtap_iface() {
 function add_tap_iface() {
 	NET_BR="$1"
 	NET_MACADDR="$2"
+
+	VNET_MACHINE=$(echo $MACHINE | sed -e s/-//g)
+	VNET_MACHINE=${VTAP_MACHINE:0:11}
+	VNET_NAME="vn${VTAP_MACHINE}n$NET_INDEX"
+
 	QEMU_OPTS+=(
- 		-netdev tap,id=net$NET_INDEX,vhost=on,helper=\"/usr/lib/qemu/qemu-bridge-helper --br=$NET_BR\"
+ 		-netdev tap,id=net$NET_INDEX,vhost=on,helper=\"/usr/lib/qemu/qemu-bridge-helper --use-vnet --br=$NET_BR\"
 	)
 	_add_virtio_device $NET_MACADDR
 
@@ -43,8 +52,9 @@ function add_tap_iface() {
 
 function _add_virtio_device() {
 	NET_MACADDR=$1
+	DISABLE_OFFL="csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
 	QEMU_OPTS+=(
- 		-device virtio-net-pci,mq=on,vectors=12,netdev=net$NET_INDEX,mac=$NET_MACADDR
+ 		-device virtio-net-pci,$DISABLE_OFFL,mq=on,vectors=8,netdev=net$NET_INDEX,mac=$NET_MACADDR
 	)
 }
 

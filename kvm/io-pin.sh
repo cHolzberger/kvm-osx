@@ -13,15 +13,14 @@ if [ ! -d "$MACHINE_PATH" ]; then
 	echo "Reason: $MACHINE_PATH does not exist"
 	exit 1
 fi
-
 SOCKET=$MACHINE_PATH/var/control
 
 source $MACHINE_PATH/config
 
 echo "IO Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"
-tasks=$( echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-iothreads" }' | nc -NU "$SOCKET" |  sed -e "s/[,}{]/\n/g" | grep thread-id | cut -d":" -f 2 | xargs echo )
-
+#tasks=$( echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-iothreads" }' | nc -NU "$SOCKET" |  sed -e "s/[,}{]/\n/g" | grep thread-id | cut -d":" -f 2 | xargs echo )
+tasks=""
 echo "Using CPUs: ${IO_CPUS[*]}"
 echo $tasks
 i=0

@@ -1,7 +1,6 @@
-echo "Using VIRTIO Network"
-NET_BR=${NET_BR:br0}
+echo "Using VIRTIO VHOST Network"
+source $SCRIPT_DIR/../kvm/lib-net.sh
 
-QEMU_OPTS+=(
- -device virtio-net-pci,mq=on,vectors=12,netdev=net0,mac=$NET_MACADDR
- -netdev tap,id=net0,vhost=on,helper=\"/usr/lib/qemu/qemu-bridge-helper --br=$NET_BR\"
-)
+NET_BR=${NET_BR:br0}
+add_tap_iface "$NET_BR" "$NET_MACADDR"
+
