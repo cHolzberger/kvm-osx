@@ -1,0 +1,11 @@
+# qemu config file
+
+[drive]
+  file = "/ovmf..vars"
+  if = "pflash"
+  format = "raw"
+  unit = "1"
+
+[drive]
+  file = "/ovmf2..vars"
+

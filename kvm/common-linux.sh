@@ -1,5 +1,5 @@
 #+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
-QEMU_OPTS=(	
+QEMU_OPTS=(
  -enable-kvm 
  -m $MEM 
  -machine pc,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
@@ -18,3 +18,5 @@ fi
 CLOVER_OPTS=()
 BIOS_OPTS=()
 GFXPT_BUS="pci.0"
+SCSI_BUS="pci.0"
+NET_BUS="pci.0"

@@ -1,0 +1,89 @@
+#!/bin/bash 
+
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/config-common
+
+WANT_SEAT=$(echo $1 | cut -d":" -f 2)
+WANT_MACHINE=$(echo $1 | cut -d":" -f 1)
+
+MACHINE=${WANT_MACHINE:-"default"}
+SEAT=${WANT_SEAT:-"$MACHINE"}
+
+MACHINE_PATH="$VM_PREFIX/$MACHINE"
+MACHINE_DISKS="$VM_PREFIX/$MACHINE/disks"
+
+if [ "x$MACHINE" == "x" ]; then
+        echo "Usage:"
+        echo "$0 [machine-name]"
+        exit 3
+fi
+
+if [ ! -d "$MACHINE_PATH" ]; then
+        echo "Machine $MACHINE does not exists"
+        echo "Reason: $MACHINE_PATH does not exist"
+        exit 1
+fi
+
+if [ ! -e "$MACHINE_PATH/config" ]; then
+        echo "Can't load $MACHINE"
+        echo "Reason: 'config' does not exist in $MACHINE_PATH"
+        exit 2
+fi
+
+#LOADING MACHINE CONFIG
+source $MACHINE_PATH/config
+#====================================
+
+mkdir $MACHINE_PATH/cert || true
+
+CA_KEY=$MACHINE_PATH/cert/ca-key.pem
+CA_CERT=$MACHINE_PATH/cert/ca-cert.pem
+CA_INFO=$MACHINE_PATH/cert/ca.info
+SERVER_KEY=$MACHINE_PATH/cert/server-key.pem
+SERVER_CSR=$MACHINE_PATH/cert/server-key.csr
+SERVER_CERT=$MACHINE_PATH/cert/server-cert.pem
+SERVER_INFO=$MACHINE_PATH/cert/server.info
+
+
+
+cd $MACHINE_PATH/cert
+cat > $CA_INFO <<EOF 
+cn = MOSAIK Software VNC                                       
+ca                                                             
+cert_signing_key                                               
+EOF
+
+echo "GENERATING SERVER CERT"                 
+cat > $SERVER_INFO <<EOF
+organization = MOSAIK Software VNC            
+cn = kvm-ch.ad.mosaiksoftware.de              
+tls_www_server                                
+encryption_key                                
+signing_key   
+ip_address = "192.168.254.31"                                
+EOF
+
+echo "Generating PRIVKEY"
+
+certtool --generate-privkey > $CA_KEY
+
+echo "Generating CA CERT"
+certtool --generate-self-signed \
+           --load-privkey $CA_KEY \
+           --template $CA_INFO \
+           --outfile $CA_CERT
+
+
+echo "Generating SERVER KEY"
+certtool --generate-privkey > $SERVER_KEY
+
+echo "Generating SERVER CERT"
+certtool --generate-certificate \
+           --load-ca-certificate $CA_CERT \
+           --load-ca-privkey $CA_KEY \
+           --load-privkey $SERVER_KEY \
+           --template $SERVER_INFO \
+           --outfile $SERVER_CERT
+
+
+

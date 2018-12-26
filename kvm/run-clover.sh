@@ -24,18 +24,21 @@ printf "\n#PRE-CMD END\n" >> $MACHINE_PATH/run
 
 IFS=, echo $CMD \
        ${CLOVER_OPTS[@]} \
+	${QEMU_SW[@]} \
         ${QEMU_OPTS[@]} \
 	${QEMU_EXTRA_OPTS[@]} \
 	-S \
 	-pidfile $MON_PATH/pid \
-	${OPEN_FD[@]} >> $MACHINE_PATH/run
+	${OPEN_FD[@]} \
+	-writeconfig $MACHINE_PATH/qemu.cfg >> $MACHINE_PATH/run
 
 chmod u+x $VM_PREFIX/$MACHINE/run
 	#--daemonize \
 
 #source $SCRIPT_DIR/../kvm/cpu-pin.sh
 source $SCRIPT_DIR/../kvm/cpu-pin-cpuset.sh
-source $SCRIPT_DIR/../kvm/io-pin.sh 
+#source $SCRIPT_DIR/../kvm/io-pin.sh 
+source $SCRIPT_DIR/../kvm/io-pin-cpuset.sh 
 
 # start execution
 QMP_CMD+=(

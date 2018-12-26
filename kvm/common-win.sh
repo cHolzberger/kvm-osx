@@ -17,3 +17,5 @@ fi
 CLOVER_OPTS=()
 BIOS_OPTS=()
 GFXPT_BUS="pcie.0"
+SCSI_BUS="storport"
+NET_BUS="pcie.0"

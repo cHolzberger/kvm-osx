@@ -1,4 +1,5 @@
 #!/bin/bash
+source $SCRIPT_DIR/../kvm/lib-pt.sh
 
 function get_xvga() {
 	if [ "$1" == "on" ]; then 
@@ -26,4 +27,17 @@ function get_rom () {
 		echo "Using $ROMFILE_SHORT" 1>&2
 		echo ",romfile=$ROMFILE_SHORT"
 	fi
+}
+
+function get_vnc() {
+GFX_VNCPORT="$1"
+MACHINE_PATH="$2"
+TLS=""
+echo "Certs in $MACHINE_PATH/cert" 1>&2
+if [ -e $MACHINE_PATH/cert ]; then
+	TLS=",tls-creds=tls0"
+	echo -n "-object tls-creds-x509,verify-peer=no,id=tls0,endpoint=server,dir=$MACHINE_PATH/cert "
+fi
+echo -n "-vnc $GFX_VNCPORT,password$TLS"
+
 }

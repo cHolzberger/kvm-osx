@@ -52,14 +52,28 @@ for c in ${USE_CPUS[*]}; do
 	/bin/echo -n 0 > $C/sched_load_balance
 done
 
-echo "Pinning $qemu_pid"
-/bin/echo -n "$qemu_pid" > $CPUSET/kvm/tasks
-renice -15 $qemu_pid
-for t in $tasks ; do
-	c=${USE_CPUS["$i"]}
-	C="$CPUSET/kvm/cpu$c"
-	echo "Using Real CPU $c for VCPU $i"
-	/bin/echo "$t to $C/tasks"	
-	/bin/echo -n $t > $C/tasks
-	let i=$i+1
-done
+i=${USE_CPUS[0]}
+for t in $tasks ; do                          
+        c=$QEMU_CPU                           
+        C="$CPUSET/kvm/cpu$i"                 
+        echo "Using Real CPU $i for VCPU $i"  
+        /bin/echo "$t to $C/tasks"            
+        /bin/echo -n $t > $C/tasks            
+        let i=$i+1                            
+done 
+
+
+C=$CPUSET/qemu
+echo "Pinning $qemu_pid to $C"
+test -d $C || mkdir $C
+let QEMU_CPU=${USE_CPUS[0]}-1
+
+if [ "$QEMU_CPU" == "-1" ]; then
+	QEMU_CPU="0"
+fi
+
+/bin/echo -n "$DEF_MEMSET" > $C/mems
+/bin/echo -n $QEMU_CPU > $C/cpus
+/bin/echo -n 0 > $C/sched_load_balance
+/bin/echo -n "$qemu_pid" > $C/tasks
+

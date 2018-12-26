@@ -54,6 +54,8 @@ source kvm/common-$OS.sh
 source kvm/bios-$BIOS.sh
 source kvm/cpu-$CPU_MODEL.sh
 
+source kvm/mon.sh
+
 source kvm/usb-$USB_MODE.sh
 source kvm/gfx-$GFX_MODE.sh
 source kvm/hdd-$HDD_MODE.sh
@@ -61,11 +63,17 @@ if [ "$USE_HUGEPAGES" = "1" ]; then
 	source kvm/hugepages.sh
 fi
 
-source kvm/net-$NET_MODE.sh
+
+[[ ! -z "$NET_MODE" ]] && source kvm/net-$NET_MODE.sh
+
+if [[ ! -z "$NET1_MODE" ]] || [[ ! -z "$NET2_MODE" ]]; then
+	echo "NET_MODE: $NET1_MODE $NET2_MODE" 
+	source kvm/net-uni.sh
+fi
+
 if [ "x$SOUND_MODE" != "x" ]; then
 	source kvm/sound-$SOUND_MODE.sh
 fi
-source kvm/mon.sh
 
 echo "OPTS: $(echo  $QEMU_OPTS[@] | sed -e "s/-/-\n/g")"
 source kvm/run-clover.sh

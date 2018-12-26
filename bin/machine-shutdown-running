@@ -1,0 +1,48 @@
+#!/bin/bash
+
+for MACHINE_PATH  in /srv/kvm/vms/*; do
+
+if [ -e $MACHINE_PATH/var/pid ]; then
+	p=$(cat $MACHINE_PATH/var/pid)
+	if [ -e "/proc/$p" ]; then
+		vm=$(basename $MACHINE_PATH)
+		echo "Shutting Down: $vm"
+		/srv/kvm/OSX-KVM/bin/shutdown-ga $vm &
+		sleep 2
+	fi	
+
+fi
+done
+
+	sleep 10
+
+for MACHINE_PATH  in /srv/kvm/vms/*; do
+
+
+if [ -e $MACHINE_PATH/var/pid ]; then
+        p=$(cat $MACHINE_PATH/var/pid)
+        if [ -e "/proc/$p" ]; then
+                vm=$(basename $MACHINE_PATH)
+                echo "Shutting Down: $vm"           
+                /srv/kvm/OSX-KVM/bin/shutdown-acpi $vm &
+		sleep 2
+        fi                                          
+          
+fi  
+
+done
+     sleep 20
+echo "Killing remaining vms"
+for MACHINE_PATH  in /srv/kvm/vms/*; do
+                                     
+if [ -e $MACHINE_PATH/var/pid ]; then 
+        p=$(cat $MACHINE_PATH/var/pid)
+        if [ -e "/proc/$p" ]; then          
+                vm=$(basename $MACHINE_PATH)
+                echo "Shutting Down: $vm"             
+                /srv/kvm/OSX-KVM/bin/shutdown-hard $vm
+        fi
+  
+fi              
+    
+done 

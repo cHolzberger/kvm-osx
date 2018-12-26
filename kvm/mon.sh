@@ -12,6 +12,6 @@ QEMU_OPTS+=(
 # Guest Agent
 QEMU_OPTS+=(
  -chardev socket,path=$MON_PATH/qga,server,nowait,id=qga0
- -device virtio-serial
+ -device virtio-serial,addr=0x8
  -device virtserialport,chardev=qga0,name=org.qemu.guest_agent.0
 )

@@ -1,11 +1,12 @@
+#!/bin/bash
+
+source $SCRIPT_DIR/../kvm/lib-cfh.sh
+
 CPU=(
 host
+topoext=on
 kvm=off
 l3-cache=on
-hv_relaxed=on
-hv_spinlocks=0x1fff
-hv_vapic=on
-hv_time=on
 )
 
 CPUFLAGS=(
@@ -14,6 +15,7 @@ CPUFLAGS=(
 -hypervisor
 )
 
+add_hyperv_flags
 
 OIFS="$IFS"
 IFS=","

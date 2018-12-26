@@ -1,4 +1,5 @@
 #!/bin/bash
+source $SCRIPT_DIR/../kvm/lib-pt.sh
 
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
 # must be cache=directsync for virtio-blk
@@ -16,6 +17,7 @@ if [ $DISK_INIT == true ]; then
 	#add own root complex
 	QEMU_OPTS+=(
 	#	-device ioh3420,id=pcie_root.1,bus=pcie.0
+        #        -device pcie-root-port,port=2,chassis=4,addr=1a.0,id=storport
 	)
 	DISK_INIT=false
 fi
@@ -48,7 +50,7 @@ function add_virtio_pci_disk() {
 	fi
 	QEMU_OPTS+=( 
 	-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-	-device virtio-blk-pci,num-queues=8,drive=${name}HDD,scsi=off,bootindex=$INDEX,iothread=iothread$name
+	-device virtio-blk-pci,ioeventfd=on,num-queues=8,drive=${name}HDD,scsi=off,bootindex=$INDEX,iothread=iothread$name
 	-drive id=${name}HDD,if=none,$diskarg
 	)
         let INDEX=INDEX+1
@@ -74,9 +76,10 @@ function add_vhost_scsi_disk() {
 	if [ "x$VHSCSI_INDEX" == "x0" ]; then
 		QEMU_OPTS+=(
 		-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-		-device vhost-scsi-pci,iothread=iothread$name,num_queues=8,id=vscsi
+		-device vhost-scsi-pci,ioeventfd=on,iothread=iothread$name,num_queues=8,id=vscsi
 		)
 	fi
+	
                 QEMU_OPTS+=(
                 -device scsi-hd,bus=vscsi.0,serial=$DISK_SERIAL,scsi-id=$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$diskarg
@@ -102,11 +105,11 @@ function add_virtio_scsi_disk() {
 	if [ "x$VSCSI_INDEX" == "x0" ]; then
 		QEMU_OPTS+=(
 		-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-		-device virtio-scsi-pci,iothread=iothread$name,num_queues=8,id=vscsi
+		-device virtio-scsi-pci,ioeventfd=on,bus=$SCSI_BUS,addr=$SCSI_ADDR,iothread=iothread$name,num_queues=4,id=vscsi
 		)
 	fi
                 QEMU_OPTS+=(
-                -device scsi-hd,bus=vscsi.0,scsi-id=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=$INDEX
+                -device scsi-hd,channel=0,scsi-id=0,bus=vscsi.0,lun=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=1 
 		-drive id=${name}HDD,if=none,$diskarg
                 )
 	echo "Adding VirtioSCSI Disk: $name"

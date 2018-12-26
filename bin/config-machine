@@ -41,8 +41,13 @@ if [ "x$USE_CPUS" = "x" ]; then
 	for i in $(seq $START $END); do
 		USE_CPUS+=($i)
 	done
-	echo "Using CPUs: ${USE_CPUS[@]}"
 fi
+
+if [ "x$IO_CPUS_RANGE" = "x" ]; then
+        IO_CPUS_RANGE=$USE_CPUS_RANGE
+	IO_CPUS=${USE_CPUS[@]}
+fi
+
 if [ "x$IO_CPUS" = "x" ]; then
 	echo "Generating IO_CPUS from IO_CPUS_RANGE ($IO_CPUS_RANGE)"
 	START=$(echo $IO_CPUS_RANGE | cut -d"-" -f1)
@@ -51,8 +56,10 @@ if [ "x$IO_CPUS" = "x" ]; then
 	for i in $(seq $START $END); do
 		IO_CPUS+=($i)
 	done
-	echo "Using IO CPUs: ${IO_CPUS[@]}"
 fi
+	
+echo "Using CPUs: ${USE_CPUS[@]}"
+echo "Using IO CPUs: ${IO_CPUS[@]}"
 
 #LOADING SEAT
 
