@@ -16,6 +16,7 @@ echo -e -n '10' >&10
 # qemu gets io priority
 
 echo "#!/bin/bash" > $MACHINE_PATH/run
+echo "cd $MACHINE_PATH" >> $MACHINE_PATH/run
 printf "#PRE-CMD BEGINN" >> $MACHINE_PATH/run
 
 printf "%s" "${PRE_CMD[@]/#/$'\n'}" >> $MACHINE_PATH/run

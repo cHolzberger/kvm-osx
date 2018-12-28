@@ -8,11 +8,31 @@ if [[ -z "$NET_PCI_CURRENT_SLOT" ]]; then
 	NET_PCI_CURRENT_SLOT="1"
 fi
 
+function add_vmxnet_iface () {
+	add_macvtap_iface "$1" "$2" "$3" "$4" "$5" "_add_vmxnet_device"
+}
+
+function _add_vmxnet_device() {
+	NET_MACADDR=$1
+	NET_BUS=$2
+	NET_ADDR=$3	
+
+	#DISABLE_OFFLX=",csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
+	#DISABLE_OFFL=",csum=on,gso=on,guest_tso4=on,guest_tso6=on,guest_ecn=on"
+	QEMU_OPTS+=(
+ 		-device vmxnet3,bus=$NET_BUS,addr=$NET_ADDR,netdev=net$NET_INDEX,mac=$NET_MACADDR
+	)
+	let NET_PCI_CURRENT_SLOT=$NET_PCI_CURRENT_SLOT+1
+}
+
+
+
 function add_macvtap_iface() {
 	NET_BR="$1"
 	NET_MACADDR="$3"
 	NET_BUS=$4
 	NET_ADDR=$5
+	CB=${6:-_add_virtio_device} 
 
 	[[ -z "$NET_BR" ]] && echo "MACVTAP: Netdev empty" >&2  && return
 	[[ -z "$NET_MACADDR" ]] && echo "MACVTAP: Macaddr empty" >&2  && return
@@ -41,7 +61,7 @@ function add_macvtap_iface() {
  		-netdev "tap,$FD,id=net$NET_INDEX,vhost=on,$VD" 
 	)
 
-	_add_virtio_device $NET_MACADDR $NET_BUS $NET_ADDR
+	$CB $NET_MACADDR $NET_BUS $NET_ADDR
         let NET_INDEX=NET_INDEX+1                                                         
 }
 
@@ -89,7 +109,8 @@ function add_sriov_iface() {
 	ip link set $NETDEV vf $VIRTFN trust on
 	ip link set $NETDEV up
 	
-        QEMU_OPTS+=(-device vfio-pci,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR,rombar=0)
+        QEMU_OPTS+=(-device vfio-pci,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR)
+#rombar=0
 	let NET_PCI_CURRENT_SLOT=$NET_PCI_CURRENT_SLOT+1
 }
 

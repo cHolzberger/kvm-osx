@@ -14,8 +14,8 @@ function get_rom () {
 	device=$(cat /sys/bus/pci/devices/$dev/device | sed -e s/0x//)
 	svendor=$(cat /sys/bus/pci/devices/$dev/subsystem_vendor | sed -e s/0x//)
 	sdevice=$(cat /sys/bus/pci/devices/$dev/subsystem_device | sed -e s/0x//)
-	ROMFILE=roms/${vendor}_${device}-${svendor}_${sdevice}.rom
-	ROMFILE_SHORT=roms/${vendor}_${device}.rom
+	ROMFILE=$SCRIPT_DIR/../roms/${vendor}_${device}-${svendor}_${sdevice}.rom
+	ROMFILE_SHORT=$SCRIPT_DIR/../roms/${vendor}_${device}.rom
 
 
 	echo "Looking for $ROMFILE_SHORT" 1>&2
@@ -40,4 +40,37 @@ if [ -e $MACHINE_PATH/cert ]; then
 fi
 echo -n "-vnc $GFX_VNCPORT,password$TLS"
 
+}
+
+function add_vgpu() {
+GFX_ENABLE_VGPU=$1
+GFX_VGPU=$2
+GFX_ENABLE_VNC=$3
+GFX_VNCPORT=$4
+
+if [[ $GFX_ENABLE_VGPU == "std" ]]; then
+	QEMU_OPTS+=(
+		-vga $GFX_VGPU
+	)
+elif [[ ! -z "$GFX_ENABLE_VGPU" ]];then 
+	QEMU_OPTS+=(
+	-vga none
+        -device $GFX_VGPU
+	)
+
+else
+	QEMU_OPTS+=(
+	-vga none
+	)
+fi
+
+if [[ ! -z "$GFX_ENABLE_VNC" ]]; then
+	QEMU_OPTS+=(
+	-vnc $GFX_VNCPORT,password
+	)
+
+	QMP_CMD+=(
+	'{ "execute": "set_password", "arguments": { "protocol": "vnc", "password": "secret" } }'
+	)
+fi
 }

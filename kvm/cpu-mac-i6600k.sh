@@ -2,6 +2,8 @@ CPU=(
 Penryn
 vmware-cpuid-freq=on
 l3-cache=on
+topoext=on
+vendor=GenuineIntel
 )
 
 #hide kvm from guest, enable tsc timer
@@ -9,7 +11,7 @@ l3-cache=on
 CPUFLAGS=(
 +invtsc
 +pcid,+ssse3,+sse4.2,+popcnt
-+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
++aes,+xsave,+avx,+xsaveopt,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
 )
 OIFS="$IFS"
 IFS=","

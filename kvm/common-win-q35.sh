@@ -6,6 +6,8 @@ QEMU_OPTS=(
  -nodefaults 
  -readconfig $SCRIPT_DIR/../cfg/q35base.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
  -enable-kvm 
  -m $MEM 
  -machine pc-q35-3.0,accel=kvm,kernel_irqchip=on,mem-merge=off,usb=off,vmport=off,dump-guest-core=off
@@ -26,11 +28,12 @@ BIOS_OPTS=()
 
 NET1_BUS="pcie.2"
 NET1_ADDR="0x0"
+
 NET2_BUS="pcie.3"
-NET1_ADDR="0x0"
+NET2_ADDR="0x0"
 
 SCSI_BUS="pcie.1"
 SCSI_ADDR="0x0"
 
-GFXPT_BUS="pcie.8"
+GFXPT_BUS="pcie.7"
 GFXPT_ADDR="0x0"

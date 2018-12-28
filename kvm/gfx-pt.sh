@@ -11,28 +11,13 @@ ROMFILE=$(get_rom $GFXPCI)
 XVGA=$(get_xvga $GFXVGA)
 
 QEMU_OPTS+=( 
-	-device vfio-pci,bus=$GFXPT_BUS,addr=$GFXPT_ADDR,host=$GFXPCI.0$GFX_ARGS$ROMFILE$XVGA
+	-device vfio-pci,bus=$GFXPT_BUS,addr=$GFXPT_ADDR,multifunction=on,host=$GFXPCI.0$GFX_ARGS$ROMFILE$XVGA
+	-device vfio-pci,bus=$GFXPT_BUS,addr=$GFXPT_ADDR.0x1,host=$GFXPCI.1
 ) 
-#	-device vfio-pci,host=$GFXPCI.1,addr=0x0.0x1,bus=pcie-port-1
 
 echo "Using GFX Card:"
 lspci -s "$GFXPCI"
 echo "Using Additional Args; $GFX_ARGS"
 
+add_vgpu $GFX_ENABLE_VNC $GFX_VGPU $GFX_ENABLE_VNC $GFX_VNCPORT
 
-if [[ ! -z "$GFX_ENABLE_VNC" ]];then 
-	QEMU_OPTS+=(
-        -vga $GFX_VGPU
-	-vnc $GFX_VNCPORT,password
-	)
-
-QMP_CMD+=(
-'{ "execute": "set_password", "arguments": { "protocol": "vnc", "password": "secret" } }'
-)
-
-else
-	QEMU_OPTS+=(
-	-vga none
-	)
-fi
- 
