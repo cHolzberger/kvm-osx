@@ -35,5 +35,5 @@ NET2_ADDR="0x0"
 SCSI_BUS="pcie.1"
 SCSI_ADDR="0x0"
 
-GFXPT_BUS="pcie.7"
+GFXPT_BUS="pcie.8"
 GFXPT_ADDR="0x0"

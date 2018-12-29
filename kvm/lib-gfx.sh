@@ -48,11 +48,11 @@ GFX_VGPU=$2
 GFX_ENABLE_VNC=$3
 GFX_VNCPORT=$4
 
-if [[ $GFX_ENABLE_VGPU == "std" ]]; then
+if [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 	QEMU_OPTS+=(
 		-vga $GFX_VGPU
 	)
-elif [[ ! -z "$GFX_ENABLE_VGPU" ]];then 
+elif [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ ! -z "$GFX_VGPU" ]];then 
 	QEMU_OPTS+=(
 	-vga none
         -device $GFX_VGPU

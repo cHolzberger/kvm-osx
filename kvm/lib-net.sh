@@ -109,7 +109,7 @@ function add_sriov_iface() {
 	ip link set $NETDEV vf $VIRTFN trust on
 	ip link set $NETDEV up
 	
-        QEMU_OPTS+=(-device vfio-pci,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR)
+        QEMU_OPTS+=(-device vfio-pci,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR,rombar=0)
 #rombar=0
 	let NET_PCI_CURRENT_SLOT=$NET_PCI_CURRENT_SLOT+1
 }

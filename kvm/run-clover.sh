@@ -50,6 +50,11 @@ echo "Running QMP Commands: ${QMP_CMD[@]}"
 printf "%s\n" "${QMP_CMD[@]}" | tee $VM_PREFIX/$MACHINE/qmp_commands | nc -NU "$SOCKET" 
 
 
-$SCRIPT_DIR/../bin/console $MACHINE
-#while [ -e /proc/$QEMU_PID ] > /dev/null; do sleep 1; done;
+#$SCRIPT_DIR/../bin/console $MACHINE
+while [[ -e /proc/$QEMU_PID ]] > /dev/null; do 
+	#echo $MACHINE running...
+	
+	$SCRIPT_DIR/machine-info "$MACHINE:$SEAT"
+	sleep 5;
+ done;
 
