@@ -109,7 +109,7 @@ function add_virtio_scsi_disk() {
 		)
 	fi
                 QEMU_OPTS+=(
-                -device scsi-hd,channel=0,scsi-id=0,bus=vscsi.0,lun=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=1 
+                -device scsi-hd,channel=0,scsi-id=0,bus=vscsi.0,lun=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$diskarg
                 )
 	echo "Adding VirtioSCSI Disk: $name"
