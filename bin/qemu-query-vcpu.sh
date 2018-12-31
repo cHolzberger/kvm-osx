@@ -35,4 +35,4 @@ source $MACHINE_PATH/config
 
 
 SOCKET=$MACHINE_PATH/var/control
-echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-cpus" }' | nc -NU "$SOCKET" |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo 
+qemu-send '{ "execute": "qmp_capabilities" }\n { "execute": "query-cpus" }' |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo 

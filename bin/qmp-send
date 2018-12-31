@@ -1,0 +1,5 @@
+#!/bin/bash
+SOCKET=$1
+shift
+
+printf '{ "execute": "qmp_capabilities" } %s' "$@" | nc -U -w 3 "$SOCKET" 

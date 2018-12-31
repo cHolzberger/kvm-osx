@@ -27,4 +27,4 @@ D_EVDEV="$2"
 D_ID="$D_EVDEV"
 
 #-object input-linux,id=m1,evdev=/dev/input/by-id/usb-0461_USB_Optical_Mouse-event-mouse
- echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "object-add", "arguments": { "qom-type": "'$QOM_TYPE'", "id": "'$D_ID'", "props": { "evdev": "'$D_EVDEV'", "repeat": true } } }' | nc -NU "$SOCKET" 
+ qmp-send "$SOCKET" '{ "execute": "qmp_capabilities" }\n { "execute": "object-add", "arguments": { "qom-type": "'$QOM_TYPE'", "id": "'$D_ID'", "props": { "evdev": "'$D_EVDEV'", "repeat": true } } }' 

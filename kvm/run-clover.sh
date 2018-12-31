@@ -46,15 +46,19 @@ QMP_CMD+=(
 '{ "execute": "cont" }' 
 )
 
-echo "Running QMP Commands: ${QMP_CMD[@]}"
-printf "%s\n" "${QMP_CMD[@]}" | tee $VM_PREFIX/$MACHINE/qmp_commands | nc -NU "$SOCKET" 
-
+echo "" >  $VM_PREFIX/$MACHINE/qmp_commands
+for i in "${QMP_CMD[@]}" ; do
+	echo "Running QMP Commands: $i"
+	printf "%s\n" "$i" >> $VM_PREFIX/$MACHINE/qmp_commands  
+	qmp-send "$SOCKET" "$i"
+done
 
 #$SCRIPT_DIR/../bin/console $MACHINE
 while [[ -e /proc/$QEMU_PID ]] > /dev/null; do 
 	#echo $MACHINE running...
 	
 	$SCRIPT_DIR/machine-info "$MACHINE:$SEAT"
+	$SCRIPT_DIR/qmp-send "$SOCKET" '{ "execute": "query-status" }'
 	sleep 5;
  done;
 

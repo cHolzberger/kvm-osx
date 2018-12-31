@@ -35,5 +35,5 @@ source $MACHINE_PATH/config
 
 
 SOCKET=$MACHINE_PATH/var/control
-echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-iothreads" }' | nc -NU "$SOCKET"
+qmp-send "$SOCKET" '{ "execute": "qmp_capabilities" }\n { "execute": "query-iothreads" }' 
 #|  sed -e "s/[,}{]/\n/g" | grep thread-id | cut -d":" -f 2 | xargs echo

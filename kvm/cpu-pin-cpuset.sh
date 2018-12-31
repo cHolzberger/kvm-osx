@@ -25,7 +25,7 @@ $CMD & sleep 5
 qemu_pid=$(cat $MACHINE_PATH/var/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"
-tasks=$( echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "query-cpus" }' | nc -NU "$SOCKET" |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo )
+tasks=$( $SCRIPT_DIR/qmp-send $SOCKET '{ "execute": "qmp_capabilities" }\n { "execute": "query-cpus" }' |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo )
 
 # text to array
 USE_CPUS=(${USE_CPUS[*]})
@@ -34,22 +34,28 @@ echo "Using CPUs: ${USE_CPUS[*]}"
 echo $tasks
 i=0
 
+C_MEMS="${CPUSET_PREFIX}mems"
+C_CPUS="${CPUSET_PREFIX}cpus"
+C_TASKS="tasks"
+C_SCHED="${CPUSET_PREFIX}sched_load_balance"
+
+
 echo "creating $CPUSET/kvm"
 test -d $CPUSET/kvm || mkdir $CPUSET/kvm 
-DEF_MEMSET=$(cat $CPUSET/mems)
-DEF_CPUSET=$(cat $CPUSET/cpus)
+[[ -e $CPUSET/$C_MEMS ]] && DEF_MEMSET=$(cat $CPUSET/$C_MEMS)
+DEF_CPUSET=$(cat $CPUSET/$C_CPUS)
 
-echo -n "$DEF_MEMSET" > $CPUSET/kvm/mems
-echo -n "$DEF_CPUSET" > $CPUSET/kvm/cpus
+[[ -e $CPUSET/kvm/$C_MEMS ]] && echo -n "$DEF_MEMSET" > $CPUSET/kvm/$C_MEMS
+echo -n "$DEF_CPUSET" > $CPUSET/kvm/$C_CPUS
 
 echo "creating pinned cpusets"
 for c in ${USE_CPUS[*]}; do
 	C="$CPUSET/kvm/cpu$c"
 	echo "Creating $C"
 	test -d $C || mkdir $C
-	/bin/echo -n "$DEF_MEMSET" > $C/mems
-	/bin/echo -n $c > $C/cpus
-	/bin/echo -n 0 > $C/sched_load_balance
+	[[ -e $C/$C_MEMS ]] && /bin/echo -n "$DEF_MEMSET" > $C/$C_MEMS
+	/bin/echo -n $c > $C/$C_CPUS
+	/bin/echo -n 0 > $C/$C_SCHED
 done
 
 i=${USE_CPUS[0]}
@@ -57,8 +63,8 @@ for t in $tasks ; do
         c=$QEMU_CPU                           
         C="$CPUSET/kvm/cpu$i"                 
         echo "Using Real CPU $i for VCPU $i"  
-        /bin/echo "$t to $C/tasks"            
-        /bin/echo -n $t > $C/tasks            
+        /bin/echo "$t to $C/$C_TASKS"            
+        /bin/echo -n $t > $C/$C_TASKS            
         let i=$i+1                            
 done 
 
@@ -72,8 +78,8 @@ if [ "$QEMU_CPU" == "-1" ]; then
 	QEMU_CPU="0"
 fi
 
-/bin/echo -n "$DEF_MEMSET" > $C/mems
-/bin/echo -n $QEMU_CPU > $C/cpus
-/bin/echo -n 0 > $C/sched_load_balance
-/bin/echo -n "$qemu_pid" > $C/tasks
+/bin/echo -n "$DEF_MEMSET" > $C/$C_MEMS
+/bin/echo -n $QEMU_CPU > $C/$C_CPUS
+/bin/echo -n 0 > $C/$C_SCHED
+/bin/echo -n "$qemu_pid" > $C/$C_TASKS
 

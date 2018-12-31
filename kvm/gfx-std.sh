@@ -5,7 +5,8 @@ echo "Using VGPU: std/vmware"
 if [[ "$BIOS" == "seabios" ]] || [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 	add_vgpu "std" "std" "true" "$GFX_VNCPORT"
 else
-	add_vgpu "true" "bochs-display" "true" "$GFX_VNCPORT"
+	add_vgpu "true" "vmware-svga" "true" "$GFX_VNCPORT"
+	#add_vgpu "true" "bochs-display" "true" "$GFX_VNCPORT"
 fi
 
 #echo "std"

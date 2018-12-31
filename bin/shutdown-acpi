@@ -21,4 +21,4 @@ SOCKET=$MACHINE_PATH/var/control
 
 source $MACHINE_PATH/config
 qemu_pid=$(cat $MACHINE_PATH/var/pid)
- echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "system_powerdown" }' | nc -NU "$SOCKET" 
+qmp-send "$SOCKET" '{ "execute": "qmp_capabilities" }\n { "execute": "system_powerdown" }'  

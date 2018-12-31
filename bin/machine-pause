@@ -34,4 +34,4 @@ fi
 source $MACHINE_PATH/config
 
 SOCKET=$MACHINE_PATH/var/control
-echo -e '{ "execute": "qmp_capabilities" }\n { "execute": "stop" }' | nc -NU "$SOCKET" > "$MACHINE_PATH/var/frozen"
+qmp-send "$SOCKET" '{ "execute": "qmp_capabilities" }\n { "execute": "stop" }' > "$MACHINE_PATH/var/frozen"
