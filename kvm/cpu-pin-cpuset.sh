@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source $SCRIPT_DIR/../kvm/lib-cpu.sh
 if [ "x$MACHINE" == "x" ]; then
 	echo "Usage:"
 	echo "$0 [machine-name]"
@@ -12,74 +12,77 @@ if [ ! -d "$MACHINE_PATH" ]; then
 	exit 1
 fi
 
-
+MACHINE_NAME=$MACHINE
 CMD=$MACHINE_PATH/run
 SOCKET=$MACHINE_PATH/var/control
-CPUSET=/dev/cpuset 
 
 source $SCRIPT_DIR/config-machine
 
-$CMD & sleep 5
+destroy_cpuset "$MACHINE_NAME"
+sleep 1
+
+echo "Running: $CMD"
+$CMD & 
+CMD_PID=$!
+sleep 3
 
 
 qemu_pid=$(cat $MACHINE_PATH/var/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"
-tasks=$( $SCRIPT_DIR/qmp-send $SOCKET '{ "execute": "qmp_capabilities" }\n { "execute": "query-cpus" }' |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo )
 
 # text to array
 USE_CPUS=(${USE_CPUS[*]})
-
-echo "Using CPUs: ${USE_CPUS[*]}"
-echo $tasks
-i=0
-
-C_MEMS="${CPUSET_PREFIX}mems"
-C_CPUS="${CPUSET_PREFIX}cpus"
-C_TASKS="tasks"
-C_SCHED="${CPUSET_PREFIX}sched_load_balance"
-
-
-echo "creating $CPUSET/kvm"
-test -d $CPUSET/kvm || mkdir $CPUSET/kvm 
-[[ -e $CPUSET/$C_MEMS ]] && DEF_MEMSET=$(cat $CPUSET/$C_MEMS)
-DEF_CPUSET=$(cat $CPUSET/$C_CPUS)
-
-[[ -e $CPUSET/kvm/$C_MEMS ]] && echo -n "$DEF_MEMSET" > $CPUSET/kvm/$C_MEMS
-echo -n "$DEF_CPUSET" > $CPUSET/kvm/$C_CPUS
-
-echo "creating pinned cpusets"
-for c in ${USE_CPUS[*]}; do
-	C="$CPUSET/kvm/cpu$c"
-	echo "Creating $C"
-	test -d $C || mkdir $C
-	[[ -e $C/$C_MEMS ]] && /bin/echo -n "$DEF_MEMSET" > $C/$C_MEMS
-	/bin/echo -n $c > $C/$C_CPUS
-	/bin/echo -n 0 > $C/$C_SCHED
-done
-
-i=${USE_CPUS[0]}
-for t in $tasks ; do                          
-        c=$QEMU_CPU                           
-        C="$CPUSET/kvm/cpu$i"                 
-        echo "Using Real CPU $i for VCPU $i"  
-        /bin/echo "$t to $C/$C_TASKS"            
-        /bin/echo -n $t > $C/$C_TASKS            
-        let i=$i+1                            
-done 
-
-
-C=$CPUSET/qemu
-echo "Pinning $qemu_pid to $C"
-test -d $C || mkdir $C
 let QEMU_CPU=${USE_CPUS[0]}-1
-
 if [ "$QEMU_CPU" == "-1" ]; then
 	QEMU_CPU="0"
 fi
 
-/bin/echo -n "$DEF_MEMSET" > $C/$C_MEMS
-/bin/echo -n $QEMU_CPU > $C/$C_CPUS
-/bin/echo -n 0 > $C/$C_SCHED
+X_CPU=( $QEMU_CPU )
+for c in ${USE_CPUS[@]}; do
+	X_CPU+=( $c );
+done
+
+OIFS=$IFS
+IFS=","
+echo "Using CPUs: ${USE_CPUS[*]} XCPU: ${X_CPU[*]}"
+create_cloned_cpuset ""
+create_cloned_cpuset "$MACHINE_NAME" "${X_CPU[*]}"
+create_cloned_cpuset "$MACHINE_NAME/qemu" "$QEMU_CPU"
+IFS=$OIFS
+
+for c in ${USE_CPUS[@]}; do
+	create_cloned_cpuset "$MACHINE_NAME/vcpu$c" "$c"
+done
+
+C=$CPUSET_DIR
+echo -e "Pinning $CMD_PID to $C"
+/bin/echo -n "$CMD_PID" > $C/$C_TASKS
+
+C=$CPUSET_DIR/qemu
+echo -e "Pinning $qemu_pid to $C"
 /bin/echo -n "$qemu_pid" > $C/$C_TASKS
+echo -e "\tUsing Real CPU $QEMU_CPU for QEMU ($qemu_pid)"  
+
+#-- 
+echo "CPUSET for Local CPUs kvm/$MACHINE_NAME"
+
+qmp-send $MACHINE '{ "execute": "query-cpus" }' 
+tasks=$( qmp-send $MACHINE '{ "execute": "query-cpus" }' |  sed -e "s/[,}{]/\n/g" | grep thread_id | cut -d":" -f 2 | xargs echo )
+tasks=( $tasks )
+echo ${tasks[@]}
+i=0
+CPUCOUNT=${#USE_CPUS[@]}
+for t in ${tasks[@]} ; do                          
+        CPUNUM=${USE_CPUS[$i]}
+
+	C="$CPUSET_DIR/vcpu$CPUNUM"               
+	echo -e "\tUsing Real CPU $CPUNUM for VCPU $i ($t) [ $i / $CPUCOUNT]"  
+	/bin/echo -e "\tsending pid $t to $C/$C_TASKS"       
+        /bin/echo -n $t > "$C/$C_TASKS"          
+	sleep 1
+        let i="($i + 1)"
+done 
+echo "Done"
+
 

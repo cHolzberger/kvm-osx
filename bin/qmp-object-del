@@ -27,4 +27,4 @@ D_EVDEV="$2"
 D_ID="$D_EVDEV"
 
 #-object input-linux,id=m1,evdev=/dev/input/by-id/usb-0461_USB_Optical_Mouse-event-mouse
-qmp-send "$SOCKET" '{ "execute": "qmp_capabilities" }\n { "execute": "object-del", "arguments": {"id": "'$D_ID'" } }'
+qmp-send "$MACHINE" '{ "execute": "object-del", "arguments": {"id": "'$D_ID'" } }'

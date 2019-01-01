@@ -32,7 +32,7 @@ NET1_ADDR="0x0"
 NET2_BUS="pcie.3"
 NET2_ADDR="0x0"
 
-SCSI_BUS="pcie.1"
+SCSI_BUS="storagepci"
 SCSI_ADDR="0x0"
 
 GFXPT_BUS="pcie.8"

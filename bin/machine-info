@@ -34,13 +34,33 @@ fi
 source $MACHINE_PATH/config
 source $SEAT_PREFIX/seat-$WANT_SEAT
 
+
 SOCKET=$MACHINE_PATH/var/control
 QEMU_PID=$(<$MACHINE_PATH/var/pid)
+CGROUP="/dev/cpuset/kvm/$MACHINE/"
 
 printf "Running:\t%s \t | BIOS:\t%s\n" "$WANT_MACHINE" "$BIOS"
 printf "PID:\t\t%s\n" "$QEMU_PID"
 printf "Seat:\t\t%s\t | PATH:\t%s\n" "$WANT_SEAT" "$MACHINE_PATH"
 printf "CPU Model:\t%s\t | CORES:\t%s (%s)\n" "$CPU_MODEL" "$NUM_CPUS" "${USE_CPUS[*]}"
 printf "\nGPU:\t\t%s (%s)\t | VNC: \t%s\n\n" "$GFX_MODE" "$GFX_PCI" "$GFX_VNCPORT"
+printf "Tasks:\n"
 
-pstree -c -g -t -U "$QEMU_PID"
+function tasks2list() {
+	fn=$1
+	ln=$(cat $fn)
+	ln=( $ln )
+
+	OIFS=$IFS
+	IFS=","
+	echo "${ln[*]}"
+	IFS=$OIFS	
+}
+
+printf "ALL:\t%s\n" "$(tasks2list $CGROUP/tasks)"
+printf "QEMU:\t%s\n" "$(tasks2list $CGROUP/qemu/tasks)"
+printf "IO:\t%s\n" "$( tasks2list $CGROUP/io/tasks )"
+printf "VCPU:\t%s\n" "$( tasks2list $CGROUP/vcpu*/tasks)"
+
+#$SCRIPT_DIR/qmp-send "$MACHINE" '{ "execute": "guest-info" }'
+$SCRIPT_DIR/qga-send "$MACHINE" '{ "execute": "guest-info" }'

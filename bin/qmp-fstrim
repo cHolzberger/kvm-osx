@@ -20,5 +20,4 @@ fi
 SOCKET=$MACHINE_PATH/var/control
 
 source $MACHINE_PATH/config
-qemu_pid=$(cat $MACHINE_PATH/var/pid)
- qmp-send "$SOCKET" '{ "execute": "guest-fstrim" }'
+qmp-send "$MACHINE" '{ "execute": "guest-fstrim" }'

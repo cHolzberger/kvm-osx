@@ -36,9 +36,7 @@ IFS=, echo $CMD \
 chmod u+x $VM_PREFIX/$MACHINE/run
 	#--daemonize \
 
-#source $SCRIPT_DIR/../kvm/cpu-pin.sh
 source $SCRIPT_DIR/../kvm/cpu-pin-cpuset.sh
-#source $SCRIPT_DIR/../kvm/io-pin.sh 
 source $SCRIPT_DIR/../kvm/io-pin-cpuset.sh 
 
 # start execution
@@ -50,7 +48,7 @@ echo "" >  $VM_PREFIX/$MACHINE/qmp_commands
 for i in "${QMP_CMD[@]}" ; do
 	echo "Running QMP Commands: $i"
 	printf "%s\n" "$i" >> $VM_PREFIX/$MACHINE/qmp_commands  
-	qmp-send "$SOCKET" "$i"
+	qmp-send "$MACHINE" "$i"
 done
 
 #$SCRIPT_DIR/../bin/console $MACHINE
@@ -58,7 +56,6 @@ while [[ -e /proc/$QEMU_PID ]] > /dev/null; do
 	#echo $MACHINE running...
 	
 	$SCRIPT_DIR/machine-info "$MACHINE:$SEAT"
-	$SCRIPT_DIR/qmp-send "$SOCKET" '{ "execute": "query-status" }'
 	sleep 5;
  done;
 

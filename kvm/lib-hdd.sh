@@ -5,7 +5,7 @@ DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
 # must be cache=directsync for virtio-blk
 RAW_OPTS_default_="aio=native,cache.direct=on,cache=none,discard=unmap"
 RAW_OPTS_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap"
-#RAW_OPTS_virtio_blk_pci="aio=native,cache.direct=on,cache=directsync,discard=unmap"
+RAW_OPTS_virtio_scsi_pci="aio=threads,cache.direct=on,cache=directsync,discard=unmap"
 
 QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off,cache.direct=on"
 
@@ -50,7 +50,7 @@ function add_virtio_pci_disk() {
 	fi
 	QEMU_OPTS+=( 
 	-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-	-device virtio-blk-pci,ioeventfd=on,num-queues=8,drive=${name}HDD,scsi=off,bootindex=$INDEX,iothread=iothread$name
+	-device virtio-blk-pci,ioeventfd=on,num-queues=8,drive=${name}HDD,scsi=off,bootindex=$INDEX,iothread=iothread$name,multifunction=on
 	-drive id=${name}HDD,if=none,$diskarg
 	)
         let INDEX=INDEX+1
@@ -90,26 +90,28 @@ function add_vhost_scsi_disk() {
 }
 
 # Use case: passthrough host device as scsi controller + disks to the vm
+# vhost-scsi-pci
 
 : ${VSCSI_INDEX:=0}
 function add_virtio_scsi_disk() {
         name=$1
-	diskarg=$(diskarg $name)
+	diskarg=$(diskarg $name virtio_scsi_pci)
 
 	if [ $diskarg == "err" ]; then
 		echo "disk not found $name"
 		return
 	fi
 	DISK_SERIAL=$HDD_SERIAL_BASE$INDEX
-	
+	let PCI_INDEX=$VSCSI_INDEX+1
+#		-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
 	if [ "x$VSCSI_INDEX" == "x0" ]; then
 		QEMU_OPTS+=(
-		-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-		-device virtio-scsi-pci,ioeventfd=on,bus=$SCSI_BUS,addr=$SCSI_ADDR,iothread=iothread$name,num_queues=4,id=vscsi
 		)
 	fi
                 QEMU_OPTS+=(
-                -device scsi-hd,channel=0,scsi-id=0,bus=vscsi.0,lun=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=$INDEX
+		-object iothread,id=iothread$name
+		-device virtio-scsi-pci,ioeventfd=on,bus=$SCSI_BUS,addr=$PCI_INDEX,iothread=iothread$name,num_queues=4,id=vscsi$VSCSI_INDEX
+                -device scsi-hd,channel=0,scsi-id=0,bus=vscsi$VSCSI_INDEX.0,lun=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=$INDEX
 		-drive id=${name}HDD,if=none,$diskarg
                 )
 	echo "Adding VirtioSCSI Disk: $name"
