@@ -93,10 +93,13 @@ if [ "x$SOUND_MODE" != "x" ]; then
 	source kvm/sound-$SOUND_MODE.sh
 fi
 
+
 echo "OPTS: $(echo  $QEMU_OPTS[@] | sed -e "s/-/-\n/g")"
 source kvm/run-clover.sh
 #source kvm/run-chrt.sh
 
 echo "Execution finished"
+
+cat $MACHINE_PATH/var/debug.log
+
 echo "[ MACHINE TURNED OFF ]"
-read

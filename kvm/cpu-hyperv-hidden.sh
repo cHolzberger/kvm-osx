@@ -10,12 +10,11 @@ l3-cache=on
 )
 
 CPUFLAGS=(
-+x2apic
 +invtsc
--hypervisor
 )
 
 add_hyperv_flags
+hide_hypervisor
 
 OIFS="$IFS"
 IFS=","

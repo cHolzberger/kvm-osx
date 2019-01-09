@@ -16,13 +16,14 @@ echo $i
 #	echo 4 > $i/iosched/writes_starved
 	echo -n 8192 > $i/read_ahead_kb
 	echo -n "1" > $i/rq_affinity
+
+	
 done
 ls -d /sys/class/block/sd*/queue/ | while read i; do
 echo $i
-
-	echo -n deadline > $i/scheduler 
-	echo -n 100 > $i/iosched/read_expire
-	echo -n 4 > $i/iosched/writes_starved
+	echo -n "none" > $i/scheduler 
+	#echo -n 100 > $i/iosched/read_expire
+	#echo -n 4 > $i/iosched/writes_starved
 	echo -n 1024 > $i/read_ahead_kb
 	echo -n "1" > $i/rq_affinity
 done
@@ -47,18 +48,19 @@ ls -d /dev/vg-* && for i in /dev/vg-*/*; do
 done
 
 #echo "NVME SMP Affinity"
-#folders=/proc/irq/*;
-#for folder in $folders; do
-#	files="$folder/*";
-#	for file in $files; do
-#		if [[ $file == *"nvme"* ]]; then
-#			echo $file;
+folders=/proc/irq/*;
+for folder in $folders; do
+	files="$folder/*";
+	for file in $files; do
+		if [[ $file == *"nvme"* ]]; then
+			echo $file;
 #			contents=$(cat $folder/affinity_hint);
 #			echo -n $contents > $folder/smp_affinity;
 #			cat $folder/smp_affinity;
-#		fi
-#	done
-#done
+			echo -n "0-1" > $folder/smp_affinity_list || :
+		fi
+	done
+done
 
 echo "Writeback settings"
 echo -n 20000 > /proc/sys/vm/dirty_writeback_centisecs
@@ -67,4 +69,4 @@ echo -n 20000 > /proc/sys/vm/dirty_writeback_centisecs
 #sysctl -w vm.dirty_background_ratio=25
 sysctl -w vm.dirty_bytes=16777216 #16Mb
 sysctl -w vm.dirty_background_bytes=835584 #mb
-#sysctl -w vm.swappiness=1
+sysctl -w vm.swappiness=1

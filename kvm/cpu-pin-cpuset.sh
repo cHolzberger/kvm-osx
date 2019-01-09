@@ -13,7 +13,6 @@ if [ ! -d "$MACHINE_PATH" ]; then
 fi
 
 MACHINE_NAME=$MACHINE
-CMD=$MACHINE_PATH/run
 SOCKET=$MACHINE_PATH/var/control
 
 source $SCRIPT_DIR/config-machine
@@ -21,22 +20,16 @@ source $SCRIPT_DIR/config-machine
 destroy_cpuset "$MACHINE_NAME"
 sleep 1
 
-echo "Running: $CMD"
-$CMD & 
-CMD_PID=$!
-sleep 3
-
-
 qemu_pid=$(cat $MACHINE_PATH/var/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"
 
 # text to array
 USE_CPUS=(${USE_CPUS[*]})
-let QEMU_CPU=${USE_CPUS[0]}-1
-if [ "$QEMU_CPU" == "-1" ]; then
+#let QEMU_CPU=${USE_CPUS[0]}-1
+#if [ "$QEMU_CPU" == "-1" ]; then
 	QEMU_CPU="0"
-fi
+#fi
 
 X_CPU=( $QEMU_CPU )
 for c in ${USE_CPUS[@]}; do
@@ -60,10 +53,11 @@ echo -e "Pinning $CMD_PID to $C"
 /bin/echo -n "$CMD_PID" > $C/$C_TASKS
 
 C=$CPUSET_DIR/qemu
-echo -e "Pinning $qemu_pid to $C"
-/bin/echo -n "$qemu_pid" > $C/$C_TASKS
+echo -e "Pinning QEMU PID $qemu_pid to $C"
 echo -e "\tUsing Real CPU $QEMU_CPU for QEMU ($qemu_pid)"  
-
+/bin/echo -n "$qemu_pid" > $C/$C_TASKS
+echo -e "\tSetting SCHED_FIFO and PRIO 90 for QEMU ($qemu_pid)"  
+chrt -f -p 90 $qemu_pid
 #-- 
 echo "CPUSET for Local CPUs kvm/$MACHINE_NAME"
 

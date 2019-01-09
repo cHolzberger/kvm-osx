@@ -31,28 +31,41 @@ IFS=, echo $CMD \
 	-S \
 	-pidfile $MON_PATH/pid \
 	${OPEN_FD[@]} \
-	-writeconfig $MACHINE_PATH/qemu.cfg >> $MACHINE_PATH/run
+	-writeconfig $MACHINE_PATH/qemu.cfg \
+	-D $MACHINE_PATH/var/debug.log \
+	>> $MACHINE_PATH/run
 
 chmod u+x $VM_PREFIX/$MACHINE/run
-	#--daemonize \
+CMD=$MACHINE_PATH/run
+echo "Running: $CMD"
+$CMD & 
+CMD_PID=$!
+sleep 3
+echo "" >  $VM_PREFIX/$MACHINE/qmp_commands
+for i in "${QMP_CMD[@]}" ; do
+	echo "Running QMP Commands: $i"
+	printf "%s\n" "$i" >> $VM_PREFIX/$MACHINE/qmp_commands  
+	echo qmp-send "$MACHINE" "$i" 
+	qmp-send "$MACHINE" "$i" 
+done
+
 
 source $SCRIPT_DIR/../kvm/cpu-pin-cpuset.sh
 source $SCRIPT_DIR/../kvm/io-pin-cpuset.sh 
 
 # start execution
-QMP_CMD+=(
+QMP_CMD_POST+=(
 '{ "execute": "cont" }' 
 )
 
-echo "" >  $VM_PREFIX/$MACHINE/qmp_commands
-for i in "${QMP_CMD[@]}" ; do
-	echo "Running QMP Commands: $i"
+for i in "${QMP_CMD_POST[@]}" ; do
+	echo "Running QMP POST Commands: $i"
 	printf "%s\n" "$i" >> $VM_PREFIX/$MACHINE/qmp_commands  
 	qmp-send "$MACHINE" "$i"
 done
 
 #$SCRIPT_DIR/../bin/console $MACHINE
-while [[ -e /proc/$QEMU_PID ]] > /dev/null; do 
+while [[ -e /proc/$QEMU_PID ]]; do 
 	#echo $MACHINE running...
 	
 	$SCRIPT_DIR/machine-info "$MACHINE:$SEAT"

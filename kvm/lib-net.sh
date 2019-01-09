@@ -103,11 +103,11 @@ function add_sriov_iface() {
         ./vfio-bind $PCIPORT
 
 	echo "Using Network SRV-IO from $NETDEV vf $VIRTFN" >&2
-	ip link set $NETDEV down
+	#ip link set $NETDEV down
 	ip link set $NETDEV vf $VIRTFN mac $MACADDR
 	ip link set $NETDEV vf $VIRTFN spoofchk off
 	ip link set $NETDEV vf $VIRTFN trust on
-	ip link set $NETDEV up
+	#ip link set $NETDEV up
 	
         QEMU_OPTS+=(-device vfio-pci,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR,rombar=0)
 #rombar=0

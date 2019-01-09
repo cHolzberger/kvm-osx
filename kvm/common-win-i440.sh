@@ -8,13 +8,13 @@ QEMU_OPTS=(
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
  -enable-kvm 
  -m $MEM 
- -machine pc-i440fx-2.8,accel=kvm,kernel_irqchip=on,mem-merge=off,max-ram-below-4g=1G
- -name "$MACHINE"
- -realtime mlock=on
+ -machine pc-i440fx-2.8,accel=kvm,kernel_irqchip=on,mem-merge=off -name "$MACHINE"
+ -realtime mlock=off
  -smbios type=2
  -rtc base=utc
  )
-
+#,max-ram-below-4g=1G
+#
 if [ "x$UUID" != "x" ]; then
 	QEMU_OPTS+=(
 		-uuid $UUID
@@ -29,8 +29,9 @@ NET1_ADDR="0x10"
 NET2_BUS="pci.0"
 NET2_ADDR="0x11"
 
-SCSI_BUS="storagepci"
-SCSI_ADDR="0x0"
+SCSI_BUS="pci.0"
+SCSI_ADDR="0x1a"
+SCSI_CONTROLLER="single"
 
 GFXPT_BUS="pcie.8"
 GFXPT_ADDR="0x0"

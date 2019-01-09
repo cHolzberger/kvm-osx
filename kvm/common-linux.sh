@@ -12,7 +12,7 @@ QEMU_OPTS=(
  -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2
- -rtc clock=vm,base=utc
+ -rtc base=utc
  )
 
 if [ "x$UUID" != "x" ]; then
@@ -29,8 +29,9 @@ NET1_ADDR="0x10"
 NET2_BUS="pci.0"
 NET2_ADDR="0x11"
 
-SCSI_BUS="storagepci"
-SCSI_ADDR="0x0"
+SCSI_BUS="pci.0"
+SCSI_ADDR="0x1a"
+SCSI_CONTROLLER="single"
 
 GFXPT_BUS="pcie.8"
 GFXPT_ADDR="0x0"

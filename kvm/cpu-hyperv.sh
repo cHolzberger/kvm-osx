@@ -1,15 +1,14 @@
 #!/bin/bash
 source $SCRIPT_DIR/../kvm/lib-cfh.sh
 
+#topoext=on
 CPU=(
 host
-topoext=on
 kvm=on
 l3-cache=on
 )
 
 CPUFLAGS=(
-+x2apic
 +invtsc
 )
 

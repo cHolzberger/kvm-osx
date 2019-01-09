@@ -1,5 +1,13 @@
 #!/bin/bash
 source $SCRIPT_DIR/../kvm/lib-pt.sh
+function hdr() {
+echo "==== $@ ====="
+}
+
+function ftr() {
+echo "|............|"
+}
+
 
 function get_xvga() {
 	if [ "$1" == "on" ]; then 

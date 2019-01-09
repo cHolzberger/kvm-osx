@@ -17,8 +17,4 @@ if [ ! -d "$MACHINE_PATH" ]; then
 	exit 1
 fi
 
-SOCKET=$MACHINE_PATH/var/qga
-
-source $MACHINE_PATH/config
-qemu_pid=$(cat $MACHINE_PATH/var/pid)
-qemu-send '{ "execute": "guest-shutdown" }' 
+qga-send $MACHINE '{ "execute": "guest-shutdown" }' 

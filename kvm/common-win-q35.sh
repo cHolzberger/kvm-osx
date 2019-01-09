@@ -11,8 +11,8 @@ QEMU_OPTS=(
  -enable-kvm 
  -m $MEM 
  -machine pc-q35-3.0,accel=kvm,kernel_irqchip=on,mem-merge=off,usb=off,vmport=off,dump-guest-core=off
- -name "$MACHINE"
- -realtime mlock=on
+ -name "$MACHINE",process="qemu:q35:$MACHINE"
+ -realtime mlock=off
  -smbios type=2
  -rtc base=utc
  -net none
@@ -32,8 +32,9 @@ NET1_ADDR="0x0"
 NET2_BUS="pcie.3"
 NET2_ADDR="0x0"
 
-SCSI_BUS="storagepci"
+SCSI_BUS="pcie.1"
 SCSI_ADDR="0x0"
+SCSI_CONTROLLER="single"
 
 GFXPT_BUS="pcie.8"
 GFXPT_ADDR="0x0"
