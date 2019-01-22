@@ -2,13 +2,14 @@
 QEMU_OPTS=(	
  -no-user-config
  -nodefaults
+ -nographic
  -readconfig $SCRIPT_DIR/../cfg/i440base.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
  -enable-kvm 
  -m $MEM 
- -machine pc-i440fx-2.8,accel=kvm,kernel_irqchip=on,mem-merge=off -name "$MACHINE"
+ -machine pc-i440fx-3.1,accel=kvm,kernel_irqchip=on,mem-merge=off -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2
  -rtc base=utc

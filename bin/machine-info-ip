@@ -48,27 +48,9 @@ printf "Running:\t%s \t | BIOS:\t%s\n" "$WANT_MACHINE" "$BIOS"
 printf "PID:\t\t%s\t | CPUSET DIR:\t%s\n" "$QEMU_PID" "$CPUSET_DIR"
 printf "Seat:\t\t%s\t | PATH:\t%s\n" "$WANT_SEAT" "$MACHINE_PATH"
 printf "CPU Model:\t%s\t | CORES:\t%s (%s)\n" "$CPU_MODEL" "$NUM_CPUS" "${USE_CPUS[*]}"
-printf "\nGPU:\t\t%s (%s)\t | VNC: \t%s\n\n" "$GFX_MODE" "$GFXPCI" "$GFX_VNCPORT"
-printf "Tasks:\n"
+printf "\nGPU:\t\t%s (%s)\t | VNC: \t%s\n\n" "$GFX_MODE" "$GFX_PCI" "$GFX_VNCPORT"
+printf "IPs:\n"
 
-function tasks2list() {
-	fn=$1
-	ln=$(cat $fn)
-	ln=( $ln )
-
-	OIFS=$IFS
-	IFS=","
-	echo "${ln[*]}"
-	IFS=$OIFS	
-}
-
-printf "ALL:\t%s\n" "$(tasks2list $CPUSET_DIR/tasks)"
-printf "QEMU:\t%s\n" "$(tasks2list $CPUSET_DIR/qemu/tasks)"
-printf "IO:\t%s\n" "$( tasks2list $CPUSET_DIR/io/tasks )"
-
-for i in ${USE_CPUS[@]}; do
-	printf "VCPU$i:\t%s\n" "$( tasks2list $CPUSET_DIR/vcpu$i/tasks)"
-done
 function query() {
 	#$SCRIPT_DIR/qmp-send "$MACHINE" '{ "execute": "guest-info" }'
 	qga-send "$MACHINE" '{ "execute": "guest-info" }' \
@@ -78,4 +60,4 @@ function query() {
 	return 0
 }
 
-#query || :
+query || :

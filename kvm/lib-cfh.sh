@@ -11,6 +11,10 @@ hv_time=on
 hv_stimer=on
 hv_synic=on
 hv_vpindex=on
++kvm_pv_unhalt
++kvm_pv_eoi
++lahf_lm
+enforce
 vmx=on
 )
 
@@ -22,7 +26,7 @@ vmx=on
 
 if [[ "$has_apicv" != "Y" ]]; then
 	CPUFLAGS+=(
-	+x2apic
+		+x2apic
 	)
 else
 	CPUFLAGS+=(
@@ -35,6 +39,8 @@ fi
 function hide_hypervisor() {
 CPUFLAGS+=(
 	kvm=off
+	+x2apic
+	hv_vendor_id=Nvidia43FIX
 	-hypervisor
 )
 }

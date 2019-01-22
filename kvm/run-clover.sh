@@ -23,6 +23,7 @@ printf "%s" "${PRE_CMD[@]/#/$'\n'}" >> $MACHINE_PATH/run
 
 printf "\n#PRE-CMD END\n" >> $MACHINE_PATH/run
 
+
 IFS=, echo $CMD \
        ${CLOVER_OPTS[@]} \
 	${QEMU_SW[@]} \
@@ -37,6 +38,7 @@ IFS=, echo $CMD \
 
 chmod u+x $VM_PREFIX/$MACHINE/run
 CMD=$MACHINE_PATH/run
+echo "Qemu is: " $(which qemu-system-x86_64)
 echo "Running: $CMD"
 $CMD & 
 CMD_PID=$!
@@ -65,10 +67,12 @@ for i in "${QMP_CMD_POST[@]}" ; do
 done
 
 #$SCRIPT_DIR/../bin/console $MACHINE
-while [[ -e /proc/$QEMU_PID ]]; do 
+$SCRIPT_DIR/machine-info "$MACHINE:$SEAT"
+RUNNING=$?
+while [[ "$RUNNING" == "0" ]]; do 
 	#echo $MACHINE running...
-	
-	$SCRIPT_DIR/machine-info "$MACHINE:$SEAT"
 	sleep 5;
+	$SCRIPT_DIR/machine-info "$MACHINE:$SEAT"
+	RUNNING=$?
  done;
 

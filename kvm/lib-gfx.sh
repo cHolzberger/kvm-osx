@@ -1,5 +1,7 @@
 #!/bin/bash
+
 source $SCRIPT_DIR/../kvm/lib-pt.sh
+
 function hdr() {
 echo "==== $@ ====="
 }
@@ -16,22 +18,24 @@ function get_xvga() {
 }
 
 function get_rom () {
-	GFXPCI=$1
-	dev=0000:${GFXPCI}.0
-	vendor=$(cat /sys/bus/pci/devices/$dev/vendor | sed -e s/0x//)
-	device=$(cat /sys/bus/pci/devices/$dev/device | sed -e s/0x//)
-	svendor=$(cat /sys/bus/pci/devices/$dev/subsystem_vendor | sed -e s/0x//)
-	sdevice=$(cat /sys/bus/pci/devices/$dev/subsystem_device | sed -e s/0x//)
-	ROMFILE=$SCRIPT_DIR/../roms/${vendor}_${device}-${svendor}_${sdevice}.rom
-	ROMFILE_SHORT=$SCRIPT_DIR/../roms/${vendor}_${device}.rom
+	GFXPCI="$1"
+	dev="0000:${GFXPCI}.0"
+	vendor=$( cat /sys/bus/pci/devices/$dev/vendor | sed -e s/0x// )
+	device=$( cat /sys/bus/pci/devices/$dev/device | sed -e s/0x// )
+	svendor=$( cat /sys/bus/pci/devices/$dev/subsystem_vendor | sed -e s/0x// )
+	sdevice=$( cat /sys/bus/pci/devices/$dev/subsystem_device | sed -e s/0x// )
+	
+	ROMFILE="$SCRIPT_DIR/../roms/${vendor}_${device}-${svendor}_${sdevice}.rom"
+	ROMFILE_SHORT="$SCRIPT_DIR/../roms/${vendor}_${device}.rom"
 
 
-	echo "Looking for $ROMFILE_SHORT" 1>&2
-	echo "Looking for $ROMFILE" 1>&2
-	if [ -e $ROMFILE ]; then
+	echo "Looking for ${ROMFILE_SHORT}" 1>&2
+	echo "Looking for ${ROMFILE}" 1>&2
+
+	if [[ -e "$ROMFILE" ]]; then
 		echo "Using  $ROMFILE" 1>&2
 		echo ",romfile=$ROMFILE"
-	elif [ -e $ROMFILE_SHORT ]; then
+	elif [[ -e $ROMFILE_SHORT ]]; then
 		echo "Using $ROMFILE_SHORT" 1>&2
 		echo ",romfile=$ROMFILE_SHORT"
 	fi
@@ -55,6 +59,16 @@ GFX_ENABLE_VGPU=$1
 GFX_VGPU=$2
 GFX_ENABLE_VNC=$3
 GFX_VNCPORT=$4
+
+if [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ -z "$GFX_VGPU" ]]; then
+	echo "add_vgpu: GFX_ENABLE_VGPU specified but GFX_VGPU missing"
+	exit -1
+fi
+
+if [[ ! -z "$GFX_ENABLE_VNC" ]] && [[ -z "$GFX_VNCPORT" ]]; then
+	echo "add_vgpu: GFX_ENABLE_VNC specified but GFX_VNCPORT missing"
+	exit -1
+fi
 
 if [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 	QEMU_OPTS+=(

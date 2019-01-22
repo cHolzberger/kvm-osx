@@ -77,6 +77,8 @@ source kvm/cpu-$CPU_MODEL.sh
 source kvm/usb-$USB_MODE.sh
 source kvm/gfx-$GFX_MODE.sh
 source kvm/hdd-$HDD_MODE.sh
+source kvm/teradici.sh 
+
 if [ "$USE_HUGEPAGES" = "1" ]; then
 	source kvm/hugepages.sh
 fi
@@ -99,7 +101,6 @@ source kvm/run-clover.sh
 #source kvm/run-chrt.sh
 
 echo "Execution finished"
-
 cat $MACHINE_PATH/var/debug.log
 
 echo "[ MACHINE TURNED OFF ]"

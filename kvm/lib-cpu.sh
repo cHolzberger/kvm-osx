@@ -1,7 +1,16 @@
 #!?bin/bash
 
-CPUSET=/dev/cpuset 
-CPUSET_DIR=/dev/cpuset/kvm/$MACHINE
+if [[ -d "/sys/fs/cgroup/cpuset" ]]; then
+	CPUSET="/sys/fs/cgroup/cpuset"
+elif [[ -d "/dev/cpuset" ]]; then
+	CPUSET="/dev/cpuset"
+else
+	mkdir /dev/cpuset
+	mount -t cpuset none /dev/cpuset
+	CPUSET=/dev/cpuset 
+fi
+
+CPUSET_DIR="$CPUSET/kvm/$MACHINE"
 
 C_MEMS="${CPUSET_PREFIX}mems"
 C_CPUS="${CPUSET_PREFIX}cpus"

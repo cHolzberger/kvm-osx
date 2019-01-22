@@ -16,7 +16,8 @@ PRE_CMD=()
 #echo "Loading Hostconfig: $VM_PREFIX/config"
 source $VM_PREFIX/config
 
-export PATH="$SCRIPT_DIR:$PATH"
+
+export PATH="/opt/qemu-ms/bin/:$PATH:$SCRIPT_DIR"
 
 ## CHECKS
 if [ $(ip -h 2>&1| grep BusyBox > /dev/null; echo $?) -eq 0 ]; then

@@ -15,6 +15,7 @@ CPUCOUNT=$(ls /sys/bus/cpu/devices/ | wc -l)
 	echo "enable ksm for host"
 echo -n 0 >  /sys/kernel/mm/ksm/run || true
 echo -n 0 > /sys/kernel/mm/ksm/merge_across_nodes || true
+sysctl -w kernel.sched_rt_runtime_us=-1 || true
 
 if [ -e /sys/devices/system/cpu/intel_pstate/min_perf_pct ]; then
 	echo "Setting minimum performance"

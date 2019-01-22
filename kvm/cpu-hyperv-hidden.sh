@@ -4,8 +4,6 @@ source $SCRIPT_DIR/../kvm/lib-cfh.sh
 
 CPU=(
 host
-topoext=on
-kvm=off
 l3-cache=on
 )
 
@@ -13,7 +11,7 @@ CPUFLAGS=(
 +invtsc
 )
 
-add_hyperv_flags
+#add_hyperv_flags
 hide_hypervisor
 
 OIFS="$IFS"
