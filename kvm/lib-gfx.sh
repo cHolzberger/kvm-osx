@@ -83,6 +83,7 @@ elif [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ ! -z "$GFX_VGPU" ]];then
 else
 	QEMU_OPTS+=(
 	-vga none
+	-display none
 	)
 fi
 

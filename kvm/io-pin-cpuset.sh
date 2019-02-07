@@ -17,7 +17,7 @@ MACHINE_NAME=$MACHINE
 SOCKET=$MACHINE_PATH/var/control
 source $MACHINE_PATH/config
 
-IO_CPUS=( 0 ) #(${IO_CPUS[*]})
+IO_CPUS=( 0 1 ) #(${IO_CPUS[*]})
 
 OIFS=$IFS
 IFS=,

@@ -31,7 +31,7 @@ USE_CPUS=(${USE_CPUS[*]})
 	QEMU_CPU="0"
 #fi
 
-X_CPU=( $QEMU_CPU )
+X_CPU=( $QEMU_CPU 0 1 )
 for c in ${USE_CPUS[@]}; do
 	X_CPU+=( $c );
 done
