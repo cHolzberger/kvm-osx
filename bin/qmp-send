@@ -31,4 +31,6 @@ fi
 
 shift
 
+sleep 2
 printf '{ "execute": "qmp_capabilities" } %s' "$@" | nc -U -w 3 "$SOCKET_QMP" 
+echo $?

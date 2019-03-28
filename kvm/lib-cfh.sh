@@ -4,7 +4,6 @@ function add_hyperv_flags() {
 has_apicv=$(cat /sys/module/kvm_intel/parameters/enable_apicv)
 
 CPUFLAGS+=(
-hv_vendor_id=lakeuv283713
 hv_relaxed=on
 hv_spinlocks=0x8191
 hv_time=on
@@ -37,10 +36,11 @@ fi
 
 
 function hide_hypervisor() {
+#	hv_vendor_id=Nvidia43FIX
 CPUFLAGS+=(
 	kvm=off
 	+x2apic
-	hv_vendor_id=Nvidia43FIX
+	hv_vendor_id=lakeuv283713
 	-hypervisor
 )
 }
