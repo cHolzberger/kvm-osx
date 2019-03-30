@@ -1,0 +1,19 @@
+#!/bin/bash
+
+for MACHINE_PATH  in /srv/kvm/vms/*/config; do
+	(
+	set -C
+	source $MACHINE_PATH
+	vm=$(basename $(dirname $MACHINE_PATH))
+	if [[ ! -z "$NET_MODE" ]]; then
+		echo "!!! Warning! LEGACY"
+		echo "[$vm]\t $NET_MODE :: $NET_DEV :: $NET_MACADDR"
+	fi
+	[[ ! -z "$NET1_MODE" ]] && echo -e "[$vm] \t$NET1_MODE \t:: $NET1_DEV \t:: $NET1_VF \t :: $NET1_MACADDR"
+	[[ ! -z "$NET2_MODE" ]] && echo -e "[$vm] \t$NET2_MODE \t:: $NET2_DEV \t:: $NET2_VF \t:: $NET2_MACADDR"
+	[[ ! -z "$NET3_MODE" ]] && echo -e "[$vm] \t$NET3_MODE \t:: $NET3_DEV \t:: $NET3_VF \t:: $NET3_MACADDR"
+	[[ ! -z "$NET4_MODE" ]] && echo -e "[$vm] \t$NET4_MODE \t:: $NET4_DEV \t:: $NET4_VF \t:: $NET4_MACADDR"
+	)
+done
+
+

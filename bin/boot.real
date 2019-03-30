@@ -91,6 +91,12 @@ if [[ ! -z "$NET1_MODE" ]] || [[ ! -z "$NET2_MODE" ]]; then
 	source kvm/net-uni.sh
 fi
 
+if [[ ! -z "$PT1_MODE" ]] || [[ ! -z "$PT2_MODE" ]]; then
+	echo "PT_MODE: $PT1_MODE $PT2_MODE" 
+	source kvm/pci-pt.sh
+fi
+
+
 if [ "x$SOUND_MODE" != "x" ]; then
 	source kvm/sound-$SOUND_MODE.sh
 fi

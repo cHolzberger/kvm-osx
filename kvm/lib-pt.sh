@@ -13,8 +13,9 @@ function add_io3420_port() {
 	NAME=$1
 
 	QEMU_SW+=(
-	-device ioh3420,id=$NAME.1,chassis=0,slot=0,bus=pcie.0
+	-device ioh3420,id=$NAME.1,chassis=1$CHASSIS_COUNT,addr=0x1$CHASSIS_COUNT.0,bus=pcie.0
 	)
+	let CHASSIS_COUNT=$CHASSIS_COUNT+1
 }
 
 if [[ -z "$CHASSIS_COUNT" ]]; then
@@ -24,7 +25,7 @@ function add_root_port() {
 	NAME=$1
 
 	QEMU_SW+=(
-    -device pcie-root-port,port=0x1$CHASSIS_COUNT,chassis=1$CHASSIS_COUNT,id=$NAME.1,bus=pcie.0,addr=0x2.0x$CHASSIS_COUNT
+    	-device pcie-root-port,port=0x1$CHASSIS_COUNT,chassis=1$CHASSIS_COUNT,id=$NAME.1,bus=pcie.0,addr=0x2.0x$CHASSIS_COUNT
 	)
 
 	let CHASSIS_COUNT=$CHASSIS_COUNT+1
@@ -37,3 +38,35 @@ function add_root_port() {
 #    -device pcie-root-port,port=0x17,chassis=19,id=$NAME.9,bus=pcie.0,addr=$BASE.0x7 
 }
 #    -device pcie-pci-bridge,id=$NAME.2,bus=$NAME.1,addr=0x0 
+
+if [[ -z "$PCI_CURRENT_SLOT" ]]; then
+	PCI_CURRENT_SLOT=1
+fi
+
+function add_pciept_dev() {
+        HOST_PCIPORT=$1
+        VM_BUS=$4
+        VM_ADDR=$5
+
+        [[ -z "$HOST_PCIPORT" ]] && echo "PCIPORT: empty" >&2  && return
+        if [[ -z "$VM_BUS" ]];then
+		VM_BUS="pt_${PCI_CURRENT_SLOT}"
+	fi
+
+        if [[ -z "$VM_ADDR" ]]; then
+		VM_ADDR=0x0
+	fi
+	
+	find /sys/bus/pci/devices/$HOST_PCIPORT/ -wholename \*/block/\*/device | while read dev; do
+		echo "\tUnplugging $dev"
+		echo -n 1 > $dev/delete
+	done
+        sleep 2
+	./vfio-bind $HOST_PCIPORT
+	add_io3420_port $VM_BUS
+        QEMU_OPTS+=(-device vfio-pci,host=$HOST_PCIPORT,bus=$VM_BUS.1,addr=0x0,rombar=1)
+#rombar=0
+        let PCI_CURRENT_SLOT=$PCI_CURRENT_SLOT+1
+	let CHASSIS_COUNT=$CHASSIS_COUNT+1
+}
+
