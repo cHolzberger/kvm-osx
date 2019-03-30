@@ -31,9 +31,9 @@ IFS=, echo $CMD \
 	${QEMU_EXTRA_OPTS[@]} \
 	-S \
 	-pidfile $MON_PATH/pid \
-	${OPEN_FD[@]} \
 	-writeconfig $MACHINE_PATH/qemu.cfg \
 	-D $MACHINE_PATH/var/debug.log \
+	${OPEN_FD[@]} \
 	>> $MACHINE_PATH/run
 
 chmod u+x $VM_PREFIX/$MACHINE/run

@@ -1,14 +1,17 @@
 CPU=(
 host
 kvm=on
-vmware-cpuid-freq=on
 l3-cache=on
 )
 
 CPUFLAGS=(
 +apic
--xsave
--tsc-deadline
++aes
++sse2
++sse4_1
++sse4_2
+#-xsave
+#-tsc-deadline
 )
 
 OIFS="$IFS"

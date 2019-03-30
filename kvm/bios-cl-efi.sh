@@ -1,7 +1,7 @@
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
 
 QEMU_OPTS+=( 
-        -bios efi/ovmf.$EFI_ROM.fd
+        -bios efi/ovmf.$EFI_ROM.efi
 )
 if [ ! -e "efi/ovmf.$EFI_ROM.efi" ]; then
 	echo "EFI ROM $EFI_ROM does not exist"

@@ -1,19 +1,22 @@
 #!/bin/bash
 source $SCRIPT_DIR/../kvm/lib-cfh.sh
-add_hyperv_flags
-#topoext=on
+
 CPU=(
-host
+qemu64
 kvm=on
 l3-cache=on
 )
 
 CPUFLAGS=(
--xsave
 +invtsc
+#+x2apic
++aes
++sse2
++sse4_1
++sse4_2
 )
 
-
+add_hyperv_flags
 OIFS="$IFS"
 IFS=","
 #

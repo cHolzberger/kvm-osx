@@ -1,0 +1,9 @@
+for i in $(find /sys -name sriov_numvfs); do
+pci_dir=$(dirname $i)
+pci_port=$(basename $pci_dir)
+
+pci_vfs_total=$(cat $pci_dir/sriov_totalvfs)
+pci_vfs_num=$(cat $pci_dir/sriov_numvfs)
+lspci -s $pci_port
+echo "VF: ( $pci_vfs_num/$pci_vfs_total )"
+done
