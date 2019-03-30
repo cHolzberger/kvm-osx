@@ -56,8 +56,11 @@ C=$CPUSET_DIR/qemu
 echo -e "Pinning QEMU PID $qemu_pid to $C"
 echo -e "\tUsing Real CPU $QEMU_CPU for QEMU ($qemu_pid)"  
 /bin/echo -n "$qemu_pid" > $C/$C_TASKS
-echo -e "\tSetting SCHED_FIFO and PRIO 90 for QEMU ($qemu_pid)"  
-chrt -f -p 90 $qemu_pid
+
+if [[ "$USE_CHRT" == "y" ]]; then
+	echo -e "\tSetting SCHED_FIFO and PRIO 90 for QEMU ($qemu_pid)"  
+	chrt -f -p 90 $qemu_pid
+fi
 #-- 
 echo "CPUSET for Local CPUs kvm/$MACHINE_NAME"
 

@@ -105,11 +105,18 @@ function add_sriov_iface() {
 	echo "Using Network SRV-IO from $NETDEV vf $VIRTFN" >&2
 	#ip link set $NETDEV down
 	ip link set $NETDEV vf $VIRTFN mac $MACADDR
+	sleep 1
+	echo "$NETDEV::$VIRTFN -> $MACADDR"
 	ip link set $NETDEV vf $VIRTFN spoofchk off
+	sleep 1
+	echo "$NETDEV::$VIRTFN -> spoofchk off"
+
 	ip link set $NETDEV vf $VIRTFN trust on
+	sleep 1
+	echo "$NETDEV::$VIRTFN -> trust on"
 	#ip link set $NETDEV up
 	
-        QEMU_OPTS+=(-device vfio-pci,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR,rombar=0)
+        QEMU_OPTS+=(-device vfio-pci,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR)
 #rombar=0
 	let NET_PCI_CURRENT_SLOT=$NET_PCI_CURRENT_SLOT+1
 }

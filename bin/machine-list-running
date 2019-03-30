@@ -1,14 +1,27 @@
 #!/bin/bash
 
-for MACHINE_PATH  in /srv/kvm/vms/*; do
+VERBOSE=0
+if [[ "$1" == "-v" ]]; then
+	VERBOSE=1
+fi
 
+_sum=0
+
+for MACHINE_PATH  in /srv/kvm/vms/*; do
 if [ -e $MACHINE_PATH/var/pid ]; then
 	p=$(cat $MACHINE_PATH/var/pid)
 	if [ -e "/proc/$p" ]; then
 		vm=$(basename $MACHINE_PATH)
-		echo $vm
+		source $MACHINE_PATH/config 
+		[[ $VERBOSE == "0" ]] && echo $vm
+		[[ $VERBOSE == "1" ]] && echo -en "$vm \t $MEM\n"
+		
+		let _sum=_sum+"$( echo $MEM | sed -e s/G// )"
 	fi	
 fi
+
 done
+
+[[ $VERBOSE == "1" ]] && echo -e "Total: \t ${_sum}G"
 
 

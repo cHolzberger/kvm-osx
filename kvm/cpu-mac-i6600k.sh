@@ -10,8 +10,14 @@ vendor=GenuineIntel
 
 CPUFLAGS=(
 +invtsc
-+pcid,+ssse3,+sse4.2,+popcnt
-+aes,+xsave,+avx,+xsaveopt,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
++pcid
++ssse3,+sse4.2
++popcnt
++aes
++avx,+avx2
++xsave,+xsaveopt,
++vmx
++bmi2,+smep,+bmi1,+fma,+movbe
 )
 OIFS="$IFS"
 IFS=","

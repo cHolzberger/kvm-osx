@@ -5,6 +5,7 @@ DEV=$1
 DEV_PATH=/sys/devices/virtual/block/$DEV 
 CACHE_PATH=$DEV_PATH/bcache/cache
 BCACHE_PATH=$DEV_PATH/bcache
+QUEUE_PATH=$DEV_PATH/queue
 
 function cache_set () {
 	SETTING=$1
@@ -19,12 +20,22 @@ function bcache_set() {
 
 	/bin/echo -n $VALUE > $BCACHE_PATH/$SETTING
 }
+function queue_set() {
+	SETTING=$1 
+	VALUE=$2
+
+	/bin/echo -n $VALUE > $QUEUE_PATH/$SETTING
+}
+
 
 
 bcache_set writeback_percent 75
 bcache_set cache_mode writeback
-bcache_set sequential_cutoff 0
+bcache_set sequential_cutoff 1G
+
+queue_set read_ahead_kb 8192
 
 cache_set congested_read_threshold_us 0
 cache_set congested_write_threshold_us 0
 
+cat $BCACHE_PATH/cache_mode

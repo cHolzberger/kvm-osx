@@ -74,14 +74,14 @@ source kvm/common-$OS.sh
 source kvm/bios-$BIOS.sh
 source kvm/cpu-$CPU_MODEL.sh
 
+if [ "$USE_HUGEPAGES" = "1" ]; then
+	source kvm/hugepages.sh
+fi
+
 source kvm/usb-$USB_MODE.sh
 source kvm/gfx-$GFX_MODE.sh
 source kvm/hdd-$HDD_MODE.sh
 source kvm/teradici.sh 
-
-if [ "$USE_HUGEPAGES" = "1" ]; then
-	source kvm/hugepages.sh
-fi
 
 
 [[ ! -z "$NET_MODE" ]] && source kvm/net-$NET_MODE.sh
@@ -102,5 +102,11 @@ source kvm/run-clover.sh
 
 echo "Execution finished"
 cat $MACHINE_PATH/var/debug.log
+
+echo "Freeing Hugepages"
+if [ "$USE_HUGEPAGES" = "1" ]; then
+	source kvm/hugepages_free.sh
+fi
+
 
 echo "[ MACHINE TURNED OFF ]"
