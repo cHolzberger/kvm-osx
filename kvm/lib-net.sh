@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash:
 source $SCRIPT_DIR/../kvm/lib-pt.sh
 
 : ${NET_INDEX:=0}
@@ -55,12 +55,16 @@ function add_macvtap_iface() {
 	let FD_INDEX=NET_INDEX+3
 	
 	PRE_CMD+=(
-		"test -x /sys/class/net/$VTAP_NAME && echo MACVTAP Device Exists: $VTAP_NAME, ... recreating it && ip link del ${VTAP_NAME}"
+		"test -x /sys/class/net/$VTAP_NAME && echo MACVTAP Device Exists: $VTAP_NAME, ... recreating it && ip link del dev ${VTAP_NAME}"
 		"sleep 1"
 		"ip link add link ${NET_BR} name $VTAP_NAME address ${NET_MACADDR} type macvtap mode bridge"
 		"sleep 1"
 		"ip link set dev $VTAP_NAME up"
 		"TAPNUM_${NET_INDEX}=\$(< /sys/class/net/$VTAP_NAME/ifindex)"
+	)
+
+	POST_CMD+=(
+		"ip link del dev $VTAP_NAME"
 	)
 
 	OPEN_FD+=(
@@ -82,16 +86,44 @@ function add_tap_iface() {
 	NET_MACADDR="$3"
 	NET_BUS=$4
 	NET_ADDR=$5	
-
+	NET_VLAN=$6
 	[[ -z "$NET_BR" ]] && echo "TAP: Netdev empty" >&2  && return
 	[[ -z "$NET_MACADDR" ]] && echo "TAP: Macaddr empty" >&2  && return
 
-	VNET_MACHINE=$(echo $MACHINE | sed -e s/-//g)
-	VNET_MACHINE=${VTAP_MACHINE:0:11}
-	VNET_NAME="vn${VTAP_MACHINE}n$NET_INDEX"
+	VTAP_MACHINE=$(echo $MACHINE | sed -e s/-//g)
+	VTAP_MACHINE=${VTAP_MACHINE:0:11}
+	VTAP_NAME="t_${VTAP_MACHINE}n$NET_INDEX"
+	
+	PRE_CMD+=(
+		"[[ ! -x /sys/class/net/$NET_BR ]] && echo BRIDGE Device does not exist: $NET_BR, ... creating it && ip link add $NET_BR type bridge"
+		"[[ -x /sys/class/net/$VTAP_NAME ]] && echo MACVTAP Device Exists: $VTAP_NAME, ... recreating it && ip tuntap del dev ${VTAP_NAME} mode tap"
+                "sleep 1"
+                "ip tuntap add dev $VTAP_NAME mode tap"
+		"ip link set $VTAP_NAME master $NET_BR"
+                "sleep 1"
+                "TAPNUM_${NET_INDEX}=\$(< /sys/class/net/$VTAP_NAME/ifindex)"
+	)
+
+	POST_CMD+=(
+		"ip tuntap del $VTAP_NAME mode tap"
+	)
+
+
+	if [[ "$NET_VLAN" = "isolated" ]]; then
+		PRE_CMD+=(
+		"ip link set $VTAP_NAME type bridge_slave isolated on"
+		)
+	else 
+		PRE_CMD+=(
+		"ip link set $VTAP_NAME type bridge_slave isolated off"
+		)
+	fi
+	PRE_CMD+=(
+                "ip link set dev $VTAP_NAME up"
+	)
 
 	QEMU_OPTS+=(
- 		-netdev tap,id=net$NET_INDEX,vhost=on,helper=\"$QEMU_BRIDGE_HELPER --use-vnet --br=$NET_BR\"
+ 		"-netdev tap,id=net$NET_INDEX,downscript=no,script=no,ifname=$VTAP_NAME"
 	)
 	_add_virtio_device $NET_MACADDR $NET_BUS $NET_ADD
 
@@ -136,6 +168,7 @@ function add_sriov_iface() {
 	MACADDR=$3
 	NET_BUS=$4
 	NET_ADDR=$5
+	NET_VLAN=$6
 
 	[[ -z "$NETDEV" ]] && echo "SRIOV: Netdev empty" >&2  && return
 	[[ -z "$VIRTFN" ]] && echo "VIRTFN: Firtfn empty" >&2 && return
@@ -153,11 +186,29 @@ function add_sriov_iface() {
 		"ip link set $NETDEV vf $VIRTFN spoofchk off"
 		"sleep 1"
 		"echo '$NETDEV::$VIRTFN -> spoofchk off'"
-
 		"ip link set $NETDEV vf $VIRTFN trust on"
 		"sleep 1"
 		"echo '$NETDEV::$VIRTFN -> trust on'"
 	)
+
+
+	if [[ ! -z "$NET_VLAN" ]]; then
+		PRE_CMD+=(
+			"echo '$NETDEV::$VIRTFN -> Vlan $NET_VLAN'"
+			"ip link set $NETDEV vf $VIRTFN vlan $NET_VLAN"
+		)
+	else
+		PRE_CMD+=(
+			"echo '$NETDEV::$VIRTFN -> diable Vlan'"
+			"ip link set $NETDEV vf $VIRTFN vlan 0"
+		)
+	fi
+
+	POST_CMD+=(
+		"ip link set $NETDEV vf $VIRTFN mac 00:00:00:00:00:00"
+	)
+
+
 	#ip link set $NETDEV up
 	
 	_add_pcie_iface $PCIPORT $NET_BUS $NET_ADDR

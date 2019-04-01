@@ -12,6 +12,7 @@ HDD_SERIAL_BASE=S32WJ9CF15999
 USB_MODE=virt
 OPEN_FD=()
 PRE_CMD=()
+POST_CMD=()
 
 #echo "Loading Hostconfig: $VM_PREFIX/config"
 source $VM_PREFIX/config

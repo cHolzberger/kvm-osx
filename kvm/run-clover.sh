@@ -15,16 +15,17 @@ echo -e -n '10' >&10
 
 # qemu gets io priority
 
-echo "#!/bin/bash" > $MACHINE_PATH/run
-echo "cd $MACHINE_PATH" >> $MACHINE_PATH/run
-printf "#PRE-CMD BEGINN" >> $MACHINE_PATH/run
+cat > $MACHINE_PATH/run <<-END
+#!/bin/bash
+cd "$MACHINE_PATH" 
 
-printf "%s" "${PRE_CMD[@]/#/$'\n'}" >> $MACHINE_PATH/run
+function on_begin() {
+	$(printf "%s" "${PRE_CMD[@]/#/$'\n'}")
+}
 
-printf "\n#PRE-CMD END\n" >> $MACHINE_PATH/run
-
-
-IFS=, echo $CMD \
+function on_run() {
+$CMD \
+	-serial unix:$MACHINE_PATH/var/console,server,nowait \
        ${CLOVER_OPTS[@]} \
 	${QEMU_SW[@]} \
         ${QEMU_OPTS[@]} \
@@ -33,8 +34,40 @@ IFS=, echo $CMD \
 	-pidfile $MON_PATH/pid \
 	-writeconfig $MACHINE_PATH/qemu.cfg \
 	-D $MACHINE_PATH/var/debug.log \
-	${OPEN_FD[@]} \
-	>> $MACHINE_PATH/run
+	${OPEN_FD[@]} 
+}
+
+function on_exit() {
+ err="$?"
+
+ echo "Done ... cleaing up"
+ trap '' EXIT 
+
+
+  $(printf "%s" "${POST_CMD[@]/#/$'\n'}")
+
+   echo "Exit Code: $err" 
+ if [[ -e $MACHINE_PATH/var/pid ]]; then
+        p="\$(cat $MACHINE_PATH/var/pid)"
+        
+	rm $MACHINE_PATH/var/pid
+        
+	if [ -e "/proc/$p" ]; then
+                kill $p
+        fi
+
+ fi
+ exit $err
+}
+
+trap on_exit EXIT 
+
+on_begin
+on_run
+
+END
+
+
 
 chmod u+x $VM_PREFIX/$MACHINE/run
 CMD=$MACHINE_PATH/run
