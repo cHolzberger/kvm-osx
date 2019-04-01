@@ -42,26 +42,6 @@ fi
 
 echo -e "\tRunning from: $SCRIPT_DIR"
 
-function on_exit() {
- err="$?"
-
- echo "Done ... cleaing up"
- trap '' EXIT 
-
- echo "Exit Code: $err" 
- if [[ -e $MACHINE_PATH/var/pid ]]; then
-	p=$(cat $MACHINE_PATH/var/pid)
-	if [ -e "/proc/$p" ]; then
-		kill $p
-	fi
-
-	rm $MACHINE_PATH/var/pid
- fi
-	exit $err
-}
-
-trap on_exit EXIT 
-
 QMP_CMD=(
 '{ "execute": "qmp_capabilities" }'
 )

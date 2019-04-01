@@ -1,7 +1,6 @@
 #+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
-
-
 QEMU_MACHINE="q35"
+VIRTIO_MODE="modern"
 
 QEMU_OPTS=(
  -no-user-config
@@ -62,10 +61,16 @@ elif [[ "$QEMU_MACHINE" == "q35" ]]; then
 
 fi
 
+	SCSI_BUS="pcie.1"
+	SCSI_ADDR="0x0"
+	SCSI_CONTROLLER="single"
+
+
+
 QEMU_OPTS+=(
  -m $MEM 
  -name "$MACHINE"
  -realtime mlock=off
- -smbios type=2
+# -smbios type=2
  -rtc base=utc
 )

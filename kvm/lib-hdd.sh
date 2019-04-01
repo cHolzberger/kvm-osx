@@ -75,9 +75,17 @@ function add_virtio_pci_disk() {
 		echo "disk not found $name"
 		return
 	fi
+	
+	if [[ "$VIRTIO_MODE" = "modern" ]]; then
+		VTM=",disable-legacy=on,disable-modern=off"
+	else 
+		VTM=",disable-legacy=off,disable-modern=off"
+	fi
+
+
 	QEMU_OPTS+=( 
 	-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-	-device virtio-blk-pci,ioeventfd=on,num-queues=8,drive=${name}HDD,scsi=off,bootindex=$INDEX,iothread=iothread$name,multifunction=on
+	-device virtio-blk-pci,ioeventfd=on,num-queues=8,drive=${name}HDD,scsi=off,bootindex=$INDEX,iothread=iothread$name,multifunction=on$VTM
 	-drive id=${name}HDD,if=none,$diskarg
 	)
         let INDEX=INDEX+1
@@ -101,19 +109,25 @@ function add_virtio_scsi_disk() {
 		return
 	fi
 	let PCI_INDEX=$VSCSI_INDEX+1
-	echo "Creating vrtio-scsi-pci - $SCSI_CONTROLLER (vscsi$VSCSI_INDEX) BUS: $SCSI_BUS ADDR: $SCSI_ADDR"
-	
+	echo "[VIRTIO[$VIRTIO_MODE]]Creating vrtio-scsi-pci - $SCSI_CONTROLLER (vscsi$VSCSI_INDEX) BUS: $SCSI_BUS ADDR: $SCSI_ADDR"
+		if [[ "$VIRTIO_MODE" = "modern" ]]; then
+		VTM=",disable-legacy=on,disable-modern=off"
+	else 
+		VTM=",disable-legacy=off,disable-modern=off"
+	fi
+
+
 	if [[ "x$VSCSI_INDEX" == "x0" ]] && [[ "$SCSI_CONTROLLER" != "multi" ]]; then
 		CONTROLLER="vscsi$VSCSI_INDEX.$VSCSI_INDEX"
 		QEMU_OPTS+=(
 			-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-			-device virtio-scsi-pci,bus=$SCSI_BUS,addr=$SCSI_ADDR,iothread=iothread$name,id=vscsi$VSCSI_INDEX,$conarg
+			-device virtio-scsi-pci,bus=$SCSI_BUS,addr=$SCSI_ADDR,iothread=iothread$name,id=vscsi$VSCSI_INDEX$VTM,$conarg
 		)
 	elif [[ "$SCSI_CONTROLLER" == "multi" ]]; then
 		CONTROLLER="vscsi$VSCSI_INDEX.0"
 		QEMU_OPTS+=(
 			-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-			-device virtio-scsi-pci,bus=$SCSI_BUS,addr=$PCI_INDEX,iothread=iothread$name,id=vscsi$VSCSI_INDEX,$conarg
+			-device virtio-scsi-pci,bus=$SCSI_BUS,addr=$PCI_INDEX,iothread=iothread$name,id=vscsi$VSCSI_INDEX$VTM,$conarg
 		)
 	fi
 	

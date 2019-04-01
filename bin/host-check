@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo -en "constant_tsc check: \t..."
+if [[ $(cat /proc/cpuinfo | grep constant_tsc) ]]; then 
+	echo "ok"
+	echo "Your system should be ok using cstates"
+else 
+	echo "failed"
+	echo -e "check https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_host_configuration_and_guest_installation_guide/chap-virtualization_host_configuration_and_guest_installation_guide-kvm_guest_timing_management\nlimit your cstates"
+fi
+
+
