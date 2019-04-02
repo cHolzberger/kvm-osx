@@ -7,3 +7,5 @@ pci_vfs_num=$(cat $pci_dir/sriov_numvfs)
 lspci -s $pci_port
 echo "VF: ( $pci_vfs_num/$pci_vfs_total )"
 done
+
+find /sys -name mdev_supported_types

@@ -25,6 +25,7 @@ export LIBISCSI_TARGET_CHAP_PASSWORD
 if [ $DISK_INIT == true ]; then
 	#add own root complex
 	QEMU_OPTS+=(
+		-device ich9-ahci,id=ahci0,addr=4,bus=pcie.0
 	#	-device ioh3420,id=pcie_root.1,bus=pcie.0
         #        -device pcie-root-port,port=2,chassis=4,addr=1a.0,id=storport
 	)
@@ -206,14 +207,14 @@ function add_ahci_disk() {
 	name=$1
 	dformat=raw
 	diskarg=$(diskarg $name)
-
+	INDEX=0
 	if [ $diskarg == "err" ]; then
 		echo "disk not found $name"
 		return
 	fi
 	QEMU_OPTS+=( 
-		-device ich9-ahci,id=ahci$INDEX,addr=4,bus=pcie.0
-		-device ide-hd,bus=ahci$INDEX.$AHCI_INDEX,drive=${name}HDD,bootindex=$INDEX
+#		-device ich9-ahci,id=ahci$INDEX,addr=4,bus=pcie.0
+		-device ide-hd,bus=ahci$INDEX.$AHCI_INDEX,drive=${name}HDD,bootindex=$AHCI_INDEX
 		-drive id=${name}HDD,if=none,$(diskarg $name)
 	)
         let INDEX=INDEX+1
