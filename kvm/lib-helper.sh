@@ -1,6 +1,8 @@
 function join_arr() {
+	IFS=",$IFS";
 	arr=($@)
-	bar=$(printf ",%s" "${arr[@]}")
+	bar=$(printf "%s" "${arr[*]}")
 	bar=${bar:1}
-	echo $bar
+	echo $bara
+	IFS=${IFS:1}
 }

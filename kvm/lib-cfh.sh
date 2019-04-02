@@ -1,5 +1,13 @@
 #!/bin/bash
 
+function has_flag() {
+	FLAG=$1
+	lscpu | grep "Flags:" | grep " $FLAG " > /dev/null
+	if [[ "$?" = "0" ]]; then
+		echo "+$FLAG"
+	fi
+}
+
 function add_hyperv_flags() {
 has_apicv=$(cat /sys/module/kvm_intel/parameters/enable_apicv)
 
@@ -14,9 +22,8 @@ hv_vpindex=on
 +kvm_pv_eoi
 +lahf_lm
 +hv-tlbflush
-
+$(has_flag vmx)
 #enforce
-vmx=on
 )
 
 #hv_reset
@@ -27,8 +34,9 @@ vmx=on
 
 if [[ "$has_apicv" != "Y" ]]; then
 	CPUFLAGS+=(
-		+x2apic
+		$(has_flag x2apic)
 	)
+
 else
 	CPUFLAGS+=(
 		hv_vapic=on

@@ -205,7 +205,8 @@ function add_sriov_iface() {
 	fi
 
 	POST_CMD+=(
-		"ip link set $NETDEV vf $VIRTFN mac 00:00:00:00:00:00"
+		"ip link set dev $NETDEV vlan 0"
+		"ip link set dev $NETDEV vf $VIRTFN mac 00:00:00:00:00:00"
 	)
 
 

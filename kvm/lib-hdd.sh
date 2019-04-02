@@ -1,5 +1,6 @@
 #!/bin/bash
 source $SCRIPT_DIR/../kvm/lib-pt.sh
+source $SCRIPT_DIR/../kvm/lib-helper.sh
 
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
 # must be cache=directsync for virtio-blk
@@ -12,10 +13,10 @@ CONTROLLER_OPTS_virtio_scsi_pci="num_queues=4"
 
 QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off,cache.direct=on"
 
-		export LIBISCSI_CHAP_USERNAME 
-		export LIBISCSI_CHAP_PASSWORD 
-		export LIBISCSI_TARGET_CHAP_USERNAME 
-		export LIBISCSI_TARGET_CHAP_PASSWORD
+export LIBISCSI_CHAP_USERNAME 
+export LIBISCSI_CHAP_PASSWORD 
+export LIBISCSI_TARGET_CHAP_USERNAME 
+export LIBISCSI_TARGET_CHAP_PASSWORD
 	
 : ${INDEX:=0}
 
@@ -29,6 +30,15 @@ if [ $DISK_INIT == true ]; then
 	)
 	DISK_INIT=false
 fi
+
+function virtioarg() {
+	if [[ "$VIRTIO_MODE" = "modern" ]]; then
+		VTM="disable-legacy=on,disable-modern=off"
+	else 
+		VTM="disable-legacy=off,disable-modern=off"
+	fi
+	echo $VTM
+}
 
 function diskarg() {
 	name=$1
@@ -56,10 +66,11 @@ function devicearg() {
 	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
 
 
-	if [ ! -z "$ISCSI_TARGET" ]; then
-		echo "scsi-block"
-	else 
+	if [ -z "$ISCSI_TARGET" ]; then
 		echo "scsi-hd,serial=$DISK_SERIAL"
+	else 
+		#echo "scsi-block"
+		echo "scsi-generic"
 	fi
 }
 
@@ -70,18 +81,13 @@ function add_virtio_pci_disk() {
 	name=$1
 
 	diskarg=$(diskarg $name virtio_blk_pci)
+	virtarg=$(virtioarg $name virtio_blk_pci)
 
 	if [ $diskarg == "err" ]; then
 		echo "disk not found $name"
 		return
 	fi
 	
-	if [[ "$VIRTIO_MODE" = "modern" ]]; then
-		VTM=",disable-legacy=on,disable-modern=off"
-	else 
-		VTM=",disable-legacy=off,disable-modern=off"
-	fi
-
 
 	QEMU_OPTS+=( 
 	-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
@@ -103,41 +109,92 @@ function add_virtio_scsi_disk() {
 	diskarg=$(diskarg $name virtio_scsi_pci)
 	devicearg=$(devicearg $name $DISK_SERIAL)
 	conarg=$CONTROLLER_ARG_virtio_scsi_pci
+	virtarg=$(virtioarg $name virtio_scsi_pci)
 	
 	if [ $diskarg == "err" ]; then
 		echo "disk not found $name"
 		return
 	fi
 	let PCI_INDEX=$VSCSI_INDEX+1
-	echo "[VIRTIO[$VIRTIO_MODE]]Creating vrtio-scsi-pci - $SCSI_CONTROLLER (vscsi$VSCSI_INDEX) BUS: $SCSI_BUS ADDR: $SCSI_ADDR"
-		if [[ "$VIRTIO_MODE" = "modern" ]]; then
-		VTM=",disable-legacy=on,disable-modern=off"
-	else 
-		VTM=",disable-legacy=off,disable-modern=off"
-	fi
 
 
 	if [[ "x$VSCSI_INDEX" == "x0" ]] && [[ "$SCSI_CONTROLLER" != "multi" ]]; then
 		CONTROLLER="vscsi$VSCSI_INDEX.$VSCSI_INDEX"
-		QEMU_OPTS+=(
-			-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-			-device virtio-scsi-pci,bus=$SCSI_BUS,addr=$SCSI_ADDR,iothread=iothread$name,id=vscsi$VSCSI_INDEX$VTM,$conarg
+		echo "[VIRTIO[$VIRTIO_MODE]]Creating vrtio-scsi-pci - $SCSI_CONTROLLER (vscsi$VSCSI_INDEX) BUS: $SCSI_BUS ADDR: $SCSI_ADDR"
+
+		O=(
+			iothread
+			id=iothread$name
+			poll-max-ns=20
+			poll-grow=4
+			poll-shrink=0
 		)
+
+		D=(
+			virtio-scsi-pci
+			bus=$SCSI_BUS
+			addr=$SCSI_ADDR
+			iothread=iothread$name
+			id=vscsi$VSCSI_INDEX
+			$conarg
+			$virtarg
+		)
+		QEMU_OPTS+=(
+			-object $( IFS=",$IFS"; printf "%s" "${O[*]}" )
+			-device $( IFS=",$IFS"; printf "%s" "${D[*]}" )
+		)	
+
 	elif [[ "$SCSI_CONTROLLER" == "multi" ]]; then
 		CONTROLLER="vscsi$VSCSI_INDEX.0"
+		echo "[VIRTIO[$VIRTIO_MODE]]Creating vrtio-scsi-pci - $SCSI_CONTROLLER (vscsi$VSCSI_INDEX) BUS: $SCSI_BUS ADDR: $SCSI_ADDR"
+		O=(
+			iothread
+			id=iothread$name
+			poll-max-ns=20
+			poll-grow=4
+			poll-shrink=0
+		)
+		D=(
+			virtio-scsi-pci
+			bus=$SCSI_BUS
+			addr=$PCI_INDEX
+			iothread=iothread$name
+			id=vscsi$VSCSI_INDEX
+			$conarg
+			$virtarg
+		)
 		QEMU_OPTS+=(
-			-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-			-device virtio-scsi-pci,bus=$SCSI_BUS,addr=$PCI_INDEX,iothread=iothread$name,id=vscsi$VSCSI_INDEX$VTM,$conarg
+			-object $( IFS=",$IFS"; printf "%s" "${O[*]}" )
+			-device $( IFS=",$IFS"; printf "%s" "${D[*]}" )
 		)
 	fi
-	
+
 	#		-device scsi-hd,bus=$CONTROLLER,lun=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=$INDEX,needs_vpd_emulation=1024
 	#	-device scsi-block,bus=$CONTROLLER,lun=$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
 	#	-drive id=${name}HDD,if=none,$diskarg
+	_DEVICE=(
+       		"$devicearg"
+		"bus=$CONTROLLER"
+		"lun=$VSCSI_INDEX"
+		"drive=${name}HDD"
+		"bootindex=$INDEX"
+	)
+
+	_DRIVE=(
+		"id=${name}HDD"
+		"if=none"
+		"$diskarg"
+	)
+	DEVICE=$( IFS=",$IFS"; printf '%s' "${_DEVICE[*]}" )
+	DRIVE=$( IFS=",$IFS"; printf '%s' "${_DRIVE[*]}" )
+
+	echo -e "DRIVE:\t $DRIVE"
+	echo -e "DEVICE:\t $DEVICE"
+
 	QEMU_OPTS+=(
-		-device $devicearg,bus=$CONTROLLER,lun=$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
-		-drive id=${name}HDD,if=none,$diskarg
-                )
+		-drive $DRIVE
+		-device $DEVICE
+        )
 	echo "Adding VirtioSCSI Disk: $name"
         let INDEX=INDEX+1
         let VSCSI_INDEX=VSCSI_INDEX+1

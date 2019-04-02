@@ -39,31 +39,31 @@ if [[ "$QEMU_MACHINE" == "i440" ]]; then
 )
 
 elif [[ "$QEMU_MACHINE" == "q35" ]]; then
-	NET1_BUS="pcie.2"
+	NET1_BUS="pcie.0"
 	NET1_ADDR="0x0"
 
-	NET2_BUS="pcie.3"
+	NET2_BUS="pcie.1"
 	NET2_ADDR="0x0"
 
-	SCSI_BUS="pcie.1"
-	SCSI_ADDR="0x0"
+	SCSI_BUS="virtio.2"
+	SCSI_ADDR="0"
 	SCSI_CONTROLLER="single"
 
 	GFXPT_BUS="pcie.8"
 	GFXPT_ADDR="0x0"
 	QEMU_OPTS+=(
  -readconfig $SCRIPT_DIR/../cfg/q35base.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
  -machine q35,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
 )
 
 fi
 
-	SCSI_BUS="pcie.1"
-	SCSI_ADDR="0x0"
-	SCSI_CONTROLLER="single"
+#	SCSI_BUS="pcie.1"
+#	SCSI_ADDR="0x0"
+#	SCSI_CONTROLLER="single"
 
 
 
@@ -73,4 +73,5 @@ QEMU_OPTS+=(
  -realtime mlock=off
 # -smbios type=2
  -rtc base=utc
+#  -overcommit mem-lock=on,cpu-pm=on
 )
