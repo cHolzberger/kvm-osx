@@ -180,15 +180,17 @@ function add_sriov_iface() {
 	PRE_CMD+=(
 	 	"echo 'Using Network SRV-IO from $NETDEV vf $VIRTFN'"
 		#ip link set $NETDEV down
+		"echo '$NETDEV::$VIRTFN -> $MACADDR'"
 		"ip link set $NETDEV vf $VIRTFN mac $MACADDR"
 		"sleep 1"
-		"echo '$NETDEV::$VIRTFN -> $MACADDR'"
+		
+		"echo '$NETDEV::$VIRTFN -> spoofchk off'"
 		"ip link set $NETDEV vf $VIRTFN spoofchk off"
 		"sleep 1"
-		"echo '$NETDEV::$VIRTFN -> spoofchk off'"
+		
+		"echo '$NETDEV::$VIRTFN -> trust on'"
 		"ip link set $NETDEV vf $VIRTFN trust on"
 		"sleep 1"
-		"echo '$NETDEV::$VIRTFN -> trust on'"
 	)
 
 
@@ -218,7 +220,7 @@ function add_sriov_iface() {
 function _add_virtio_device() {
 	NET_MACADDR=$1
 	NET_BUS="virtio.$NET_VIRTIO_CURRENT_SLOT"
-	NET_ADDR="1"	
+	NET_ADDR="${3:-'0'}"	
 	DEVICE=${4:-virtio-net-pci}
 
 	#DISABLE_OFFLX=",csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"

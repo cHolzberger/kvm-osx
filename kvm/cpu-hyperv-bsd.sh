@@ -6,14 +6,10 @@ qemu64
 kvm=on
 l3-cache=on
 )
-
+add_hyperv_flags
 CPUFLAGS=(
 +invtsc
 #+x2apic
-+aes
-+sse2
-+sse4_1
-+sse4_2
 )
 
 add_hyperv_flags

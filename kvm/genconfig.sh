@@ -78,7 +78,7 @@ $CMD \
 	-global isa-debugcon.iobase=0x402 \
 	-debugcon file:$MACHINE_PATH/var/d.log \
 	-boot menu=on \
-	${OPEN_FD[@]} 
+	${OPEN_FD[@]} &
 }
 
 function on_exit() {
@@ -111,7 +111,7 @@ trap on_exit EXIT
 
 on_begin
 on_run
-
+CMD_PID=\$!
 END
 
 chmod u+x $VM_PREFIX/$MACHINE/run
