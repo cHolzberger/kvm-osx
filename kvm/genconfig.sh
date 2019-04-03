@@ -18,6 +18,7 @@ source kvm/usb-$USB_MODE.sh
 source kvm/gfx-$GFX_MODE.sh
 source kvm/hdd-$HDD_MODE.sh
 source kvm/teradici.sh 
+source kvm/hugepages.sh 
 
 
 [[ ! -z "$NET_MODE" ]] && source kvm/net-$NET_MODE.sh
