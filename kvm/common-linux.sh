@@ -39,10 +39,10 @@ if [[ "$QEMU_MACHINE" == "i440" ]]; then
 )
 
 elif [[ "$QEMU_MACHINE" == "q35" ]]; then
-	NET1_BUS="pcie.0"
+	NET1_BUS="virtio.1"
 	NET1_ADDR="0x0"
 
-	NET2_BUS="pcie.1"
+	NET2_BUS="virtio.3"
 	NET2_ADDR="0x0"
 
 	SCSI_BUS="virtio.2"

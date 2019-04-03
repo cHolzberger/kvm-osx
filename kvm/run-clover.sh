@@ -11,8 +11,7 @@ echo -e -n '10' >&10
 
 echo "Qemu is: " $(which qemu-system-x86_64)
 echo "Running: $CMD"
-$CMD & 
-CMD_PID=$!
+source $CMD  
 sleep 3
 echo "" >  $VM_PREFIX/$MACHINE/qmp_commands
 
