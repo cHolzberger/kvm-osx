@@ -23,3 +23,5 @@ do
   fi
 done
 
+echo efi-framebuffer.0 > /sys/bus/platform/drivers/efi-framebuffer/unbind
+echo efi-framebuffer.1 > /sys/bus/platform/drivers/efi-framebuffer/unbind 
