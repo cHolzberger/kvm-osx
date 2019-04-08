@@ -39,13 +39,13 @@ if [[ "$QEMU_MACHINE" == "i440" ]]; then
 )
 
 elif [[ "$QEMU_MACHINE" == "q35" ]]; then
-	NET1_BUS="virtio.1"
+	NET1_BUS="virtio.2"
 	NET1_ADDR="0x0"
 
 	NET2_BUS="virtio.3"
 	NET2_ADDR="0x0"
 
-	SCSI_BUS="virtio.2"
+	SCSI_BUS="pcie.4"
 	SCSI_ADDR="0"
 	SCSI_CONTROLLER="single"
 
@@ -65,7 +65,7 @@ fi
 #	SCSI_ADDR="0x0"
 #	SCSI_CONTROLLER="single"
 
-
+MACHINE_OS=linux
 
 QEMU_OPTS+=(
  -m $MEM 

@@ -23,3 +23,4 @@ BIOS_OPTS=()
 GFXPT_BUS="pci.0"
 SCSI_BUS="pci.0"
 NET_BUS="pci.0"
+MACHINE_OS=mac

@@ -38,3 +38,5 @@ SCSI_CONTROLLER="single"
 
 GFXPT_BUS="pcie.8"
 GFXPT_ADDR="0x0"
+
+MACHINE_OS=win

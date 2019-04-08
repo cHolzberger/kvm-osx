@@ -36,3 +36,5 @@ SCSI_ADDR="0x0"
 
 GFXPT_BUS="pcie.7"
 GFXPT_ADDR="0x0"
+
+MACHINE_OS=mac

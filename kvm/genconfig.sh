@@ -56,6 +56,7 @@ IFS="$OIFS"
 cat > $MACHINE_PATH/run <<-END
 #!/bin/bash
 source /srv/kvm/vms/config
+source /srv/kvm/vms/config.host
 cd "$MACHINE_PATH" 
 MACHINE='$MACHINE'
 

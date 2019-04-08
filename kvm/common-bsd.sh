@@ -37,7 +37,7 @@ BIOS_OPTS=()
  -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
- -machine q35,accel=kvm,kernel_irqchip=off,mem-merge=off,vmport=off
+ -machine q35,accel=kvm,mem-merge=off,vmport=off
 )
 
 
