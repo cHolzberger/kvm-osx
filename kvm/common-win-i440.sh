@@ -24,15 +24,17 @@ fi
 CLOVER_OPTS=()
 BIOS_OPTS=()
 
-NET1_BUS="pci.0"
-NET1_ADDR="0x10"
+NET1_BUS="virtio.1"
+NET1_ADDR="0x0"
 
-NET2_BUS="pci.0"
-NET2_ADDR="0x11"
+NET2_BUS="virtio.2"
+NET2_ADDR="0x0"
 
-SCSI_BUS="pci.0"
-SCSI_ADDR="0x1a"
+SCSI_BUS="virtio.3"
+SCSI_ADDR="0x0"
 SCSI_CONTROLLER="single"
 
 GFXPT_BUS="pcie.8"
 GFXPT_ADDR="0x0"
+
+MACHINE_OS=win

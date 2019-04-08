@@ -1,0 +1,40 @@
+#!/bin/bash
+
+modprobe vfio-pci
+
+for dev in "$@"; do
+	current_override=$(cat /sys/bus/pci/devices/$dev/driver_override)
+	vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
+        device=$(cat /sys/bus/pci/devices/$dev/device)
+
+	echo "$current_override"
+	
+	echo "Binding $dev"
+	dir="/sys/bus/pci/devices/$dev"
+
+	echo "Overriding Driver"
+	echo -e -n "" > /sys/bus/pci/devices/$dev/driver_override
+        sleep 2
+	echo -n $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
+	
+	if [ ! -d "$dir" ];then
+		echo "Nonexisting device $dev"
+	fi
+
+                if [ -e "$dir/driver/unbind" ]; then
+                echo -e -n "$dev" > "$dir/driver/unbind"
+        fi
+
+#	echo -e -n "$dev" > /sys/bus/pci/drivers/vfio-pci/bind
+	
+	echo -n $vendor $device > /sys/bus/pci/drivers/vfio-pci/remove_id
+	
+	if [ "x" == "y" ]; then
+		echo -n 1 > /sys/bus/pci/devices/$dev/remove
+		echo -n 1 > /sys/bus/pci/rescan
+	fi
+
+done
+#echo 1b73 1100 > /sys/bus/pci/drivers/vfio-pci/new_id
+#echo 1002 679a >  /sys/bus/pci/drivers/vfio-pci/new_id
+#echo 1002 aaa0 > /sys/bus/pci/drivers/vfio-pci/new_id

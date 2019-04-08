@@ -4,9 +4,15 @@ source $SCRIPT_DIR/../kvm/lib-helper.sh
 
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
 # must be cache=directsync for virtio-blk
-RAW_OPTS_default_="aio=native,cache.direct=on,cache=none,discard=unmap"
-RAW_OPTS_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap"
-RAW_OPTS_virtio_scsi_pci="aio=native,cache.direct=on,cache=writethrough"
+# when using direct host attached storage
+RAW_OPTS_local_default_="aio=native,cache.direct=on,cache=none,discard=unmap"
+RAW_OPTS_local_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap"
+RAW_OPTS_local_virtio_scsi_pci="aio=native,cache.direct=on,cache=writethrough"
+
+RAW_OPTS_iscsi_default_="aio=threads,cache.direct=on,cache=writeback,discard=unmap"
+RAW_OPTS_iscsi_virtio_blk_pci="aio=threads,cache.direct=on,cache=writeback,discard=unmap"
+RAW_OPTS_iscsi_virtio_scsi_pci="aio=threads,cache.direct=on,cache=writeback"
+
 
 CONTROLLER_OPTS_default=""
 CONTROLLER_OPTS_virtio_scsi_pci="num_queues=4"
@@ -28,6 +34,7 @@ if [ $DISK_INIT == true ]; then
 		-device ich9-ahci,id=ahci0,addr=4,bus=pcie.0
 	#	-device ioh3420,id=pcie_root.1,bus=pcie.0
         #        -device pcie-root-port,port=2,chassis=4,addr=1a.0,id=storport
+		"-iscsi initiator-name='iqn.2019-04.de.mosaiksoftware:$HOSTNAME:$MACHINE'"
 	)
 	DISK_INIT=false
 fi
@@ -43,11 +50,17 @@ function virtioarg() {
 
 function diskarg() {
 	name=$1
-	controller=RAW_OPTS_${2:default}
 	
-	RAW_OPTS=${!controller}
 	ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
 	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
+	kind="local"
+	if [[ ! -z "$ISCSI_TARGET" ]]; then
+		kind="iscsi"
+	fi
+	
+	controller=RAW_OPTS_${kind}_${2:default}
+	RAW_OPTS=${!controller}
+	
 
 	if [ ! -z "$ISCSI_TARGET" ]; then
 		echo "file=$ISCSI_TARGET,format=raw,$RAW_OPTS"
@@ -66,12 +79,14 @@ function devicearg() {
 	ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
 	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
 
-
-	if [ -z "$ISCSI_TARGET" ]; then
-		echo "scsi-hd,serial=$DISK_SERIAL"
+	
+	if [[ ! -z "$ISCSI_TARGET" && "$MACHINE_OS" = "win" ]]; then
+		echo "scsi-block" #,serial=$DISK_SERIAL"
+	elif [[ ! -z "$ISCSI_TARGET" && "$MACHINE_OS" = "linux" ]]; then
+		echo "scsi-generic" #,serial=$DISK_SERIAL"
 	else 
-		#echo "scsi-block"
-		echo "scsi-generic"
+		echo "scsi-block"
+		#echo ""
 	fi
 }
 
