@@ -67,11 +67,11 @@ function devicearg() {
 	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
 
 
-	if [ -z "$ISCSI_TARGET" ]; then
-		echo "scsi-hd,serial=$DISK_SERIAL"
+	if [ ! -z "$ISCSI_TARGET" ]; then
+		echo "scsi-hd" #,serial=$DISK_SERIAL"
 	else 
 		#echo "scsi-block"
-		echo "scsi-generic"
+		echo "scsi-hd"
 	fi
 }
 
