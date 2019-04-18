@@ -79,7 +79,6 @@ function devicearg() {
 	ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
 	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
 
-	
 	if [[ ! -z "$ISCSI_TARGET" && "$MACHINE_OS" = "win" ]]; then
 		echo "scsi-block" #,serial=$DISK_SERIAL"
 	elif [[ ! -z "$ISCSI_TARGET" && "$MACHINE_OS" = "linux" ]]; then
