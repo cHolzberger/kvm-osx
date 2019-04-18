@@ -5,6 +5,7 @@ QEMU_OPTS=(
  -no-user-config 
  -nodefaults 
  -readconfig $SCRIPT_DIR/../cfg/q35base.cfg
+ -readconfig $SCRIPT_DIR/../cfg/default-q35-base.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35input.cfg

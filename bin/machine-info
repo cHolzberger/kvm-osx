@@ -44,6 +44,10 @@ source $SCRIPT_DIR/../kvm/lib-cpu.sh
 SOCKET=$MACHINE_PATH/var/control
 QEMU_PID=$(<$MACHINE_PATH/var/pid)
 
+printf "*******************************\n"
+printf "******** $WANT_MACHINE ( $(date) )\n"
+printf "*******************************\n"
+
 printf "Running:\t%s \t | BIOS:\t%s\n" "$WANT_MACHINE" "$BIOS"
 printf "PID:\t\t%s\t | CPUSET DIR:\t%s\n" "$QEMU_PID" "$CPUSET_DIR"
 printf "Seat:\t\t%s\t | PATH:\t%s\n" "$WANT_SEAT" "$MACHINE_PATH"

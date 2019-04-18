@@ -14,43 +14,76 @@ function has_flag() {
 }
 
 function add_hyperv_flags() {
-has_apicv=$(cat /sys/module/kvm_intel/parameters/enable_apicv)
 
-CPUFLAGS+=(
-hv_relaxed=on
-hv_spinlocks=0x8191
-hv_time=on
-hv_stimer=on
-#hv_synic=on
-hv_vpindex=on
-#+kvm_pv_unhalt
-+kvm_pv_eoi
-+lahf_lm
-+hv-tlbflush
-$(has_flag vmx)
-#enforce
-$(has_flag pcid)
-$(has_flag spec-ctrl)
-#$(has_flag ssbd)
-$(has_flag pdpe1gb)
-)
-
-#hv_reset
-#hv_runtime
-#hv_crash
-#migratable=no
-
-
-if [[ "$has_apicv" != "Y" ]]; then
 	CPUFLAGS+=(
-		$(has_flag x2apic "hv_vapic=on")
+		hv_relaxed=on
+		hv_spinlocks=0x8191
+		hv_time=on
+		hv_stimer=on
+		#hv_synic=on
+		hv_vpindex=on
+		#+kvm_pv_unhalt
+		#hv_reset
+		#hv_runtime
+		#hv_crash
+		#migratable=no
 	)
 
-else
+	add_apic_flags
+	add_x86_flags
+}
+
+function add_kvm_flags() {
 	CPUFLAGS+=(
-	"apicv"
+		+kvm-asyncpf
+       		+kvm-hint-dedicated
+  		+kvm-mmu 
+		+kvm-nopiodelay 
+		+kvm-pv-eoi 
+		+kvm-pv-ipi 
+		+kvm-pv-tlb-flush
+  		+kvm-pv-unhalt 
+		+kvm-steal-time 
+		+kvmclock 
+		+kvmclock-stable-bit
 	)
-fi
+	add_apic_flags
+	add_x86_flags
+
+}
+
+function add_x86_flags() {
+	CPUFLAGS+=(
+		$(has_flag ssse3)
+		$(has_flag sse4.1)
+		$(has_flag sse4.2)
+		$(has_flag avx)
+		$(has_flag avx2)
+		$(has_flag aes)
+		$(has_flag vmx)
+		$(has_flag pcid)
+		$(has_flag pdpe1gb)
+		+lahf_lm
+		+hv-tlbflush
+		#enforce
+		spec-ctrl
+		#$(has_flag ssbd)
+	)
+}
+
+function add_apic_flags() {
+
+	has_apicv=$(cat /sys/module/kvm_intel/parameters/enable_apicv)
+	if [[ "$has_apicv" != "Y" ]]; then
+		CPUFLAGS+=(
+			$(has_flag x2apic "hv_vapic=on")
+		)
+
+	else
+		CPUFLAGS+=(
+			"apicv"
+		)
+	fi
 }
 
 

@@ -7,11 +7,13 @@ QEMU_OPTS=(
  -enable-kvm 
  -no-user-config
  -nodefaults
+ -device ipmi-bmc-sim,id=bmc
 )
 
 if [ "x$UUID" != "x" ]; then
 	QEMU_OPTS+=(
 		-uuid $UUID
+
 	)
 fi
 CLOVER_OPTS=()
@@ -34,6 +36,7 @@ BIOS_OPTS=()
 	GFXPT_ADDR="0x0"
 	QEMU_OPTS+=(
  -readconfig $SCRIPT_DIR/../cfg/q35base.cfg
+ -readconfig $SCRIPT_DIR/../cfg/bsd-q35-base.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35input.cfg

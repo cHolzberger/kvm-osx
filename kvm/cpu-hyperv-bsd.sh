@@ -2,16 +2,16 @@
 source $SCRIPT_DIR/../kvm/lib-cfh.sh
 
 CPU=(
-qemu64
+Haswell
 kvm=on
 l3-cache=on
 )
-add_hyperv_flags
+
+add_kvm_flags
 CPUFLAGS=(
 +invtsc
 )
 
-add_hyperv_flags
 OIFS="$IFS"
 IFS=","
 #

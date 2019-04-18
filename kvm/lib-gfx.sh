@@ -73,11 +73,13 @@ fi
 if [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 	QEMU_OPTS+=(
 		-vga $GFX_VGPU
+	#	-display egl-headless
 	)
 elif [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ ! -z "$GFX_VGPU" ]];then 
 	QEMU_OPTS+=(
 	-vga none
         -device $GFX_VGPU
+	#-display egl-headless
 	)
 
 else
@@ -89,7 +91,7 @@ fi
 
 if [[ ! -z "$GFX_ENABLE_VNC" ]]; then
 	QEMU_OPTS+=(
-	-vnc $GFX_VNCPORT,password
+	-vnc $GFX_VNCPORT,password,lossy
 	)
 
 	QMP_CMD+=(

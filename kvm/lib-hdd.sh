@@ -85,7 +85,7 @@ function devicearg() {
 	elif [[ ! -z "$ISCSI_TARGET" && "$MACHINE_OS" = "linux" ]]; then
 		echo "scsi-generic" #,serial=$DISK_SERIAL"
 	else 
-		echo "scsi-block"
+		echo "scsi-hd"
 		#echo ""
 	fi
 }

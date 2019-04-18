@@ -43,8 +43,9 @@ function add_macvtap_iface() {
 	NET_MACADDR="$3"
 	NET_BUS=$4
 	NET_ADDR=$5
-	CB=${6:-_add_virtio_device} 
+	NET_VLAN=$6
 	QEMU_DEVICE=${7:-virtio-net-pci}
+	CB=${8:-_add_virtio_device} 
 
 	[[ -z "$NET_BR" ]] && echo "MACVTAP: Netdev empty" >&2  && return
 	[[ -z "$NET_MACADDR" ]] && echo "MACVTAP: Macaddr empty" >&2  && return
@@ -113,13 +114,13 @@ function add_tap_iface() {
                 "sleep 1"
 		"echo '$NETDEV::$VTAP_NAME * creating $VTAP_NAME'"
                 "ip tuntap add dev $VTAP_NAME mode tap"
-                "ip tuntap link dev $VTAP_NAME mode tap"
+#                "ip tuntap link dev $VTAP_NAME mode tap"
 
 		"echo '$NETDEV::$VTAP_NAME -> add to $NET_BR'"
 		"ip link set $VTAP_NAME master $NET_BR"
 
-		"echo '$NETDEV::$VTAP_NAME -> hairpin on'"
-		"ip link set $VTAP_NAME type bridge_slave hairpin on"
+#		"echo '$NETDEV::$VTAP_NAME -> hairpin on'"
+#		"ip link set $VTAP_NAME type bridge_slave hairpin on"
                 
 		"sleep 1"
                 "TAPNUM_${NET_INDEX}=\$(< /sys/class/net/$VTAP_NAME/ifindex)"
