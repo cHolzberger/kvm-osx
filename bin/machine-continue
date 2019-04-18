@@ -35,5 +35,6 @@ source $MACHINE_PATH/config
 
 
 SOCKET=$MACHINE_PATH/var/control
-$SCRIPT_DIR/qmp-send "$MACHINE" '{ "execute": "qmp_capabilities" }\n { "execute": "cont" }' 
-rm $MACHINE_PATH/var/frozen
+$SCRIPT_DIR/qmp-send "$MACHINE" '{ "execute": "cont" }'  '{"execute": "info"}'
+
+[[ -x $MACHINE_PATH/var/frozen ]] && rm $MACHINE_PATH/var/frozen

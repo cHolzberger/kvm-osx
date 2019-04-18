@@ -48,7 +48,7 @@ if [[ "$has_apicv" != "Y" ]]; then
 
 else
 	CPUFLAGS+=(
-	"apicv"
+		$(has_flag x2apic "+apicv")
 	)
 fi
 }
