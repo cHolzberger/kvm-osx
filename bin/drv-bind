@@ -1,0 +1,50 @@
+#!/bin/bash
+
+DRIVER="$1"
+shift
+for dev in "$@"; do
+	current_override=$(cat /sys/bus/pci/devices/$dev/driver_override)
+	vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
+        device=$(cat /sys/bus/pci/devices/$dev/device)
+
+	echo "$current_override"
+	
+	if [ "$current_override" = "$DRIVER" ]; then
+		echo $dev allready claimed
+		continue
+	fi
+
+	echo "Binding $dev to $DRIVER"
+	devdir="/sys/bus/pci/devices/$dev"
+	drvdir=/sys/bus/pci/drivers/$DRIVER
+	if [ ! -d "$devdir" ];then
+		echo "Nonexisting device $devdir"
+		exit 2
+	fi
+
+	if [ ! -d "$drvdir" ];then
+	       echo "Nonexisting driver $DRIVER"
+	       exit 1
+       fi	       
+
+
+	echo "Overriding Driver"
+	echo -e -n "$DRIVER" > $devdir/driver_override
+        sleep 2
+	#:echo -n $vendor $device > $drvdir/new_id
+	
+
+        if [ -e "$devdir/driver/unbind" ]; then
+                echo -e -n "$dev" > "$devdir/driver/unbind"
+        fi
+
+	echo -e -n "$dev" > $drvdir/bind
+	
+	#echo -n $vendor $device > $drvdir/remove_id
+	
+#		echo -n 1 > /sys/bus/pci/devices/$dev/remove
+
+done
+#echo 1b73 1100 > /sys/bus/pci/drivers/vfio-pci/new_id
+#echo 1002 679a >  /sys/bus/pci/drivers/vfio-pci/new_id
+#echo 1002 aaa0 > /sys/bus/pci/drivers/vfio-pci/new_id

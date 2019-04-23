@@ -30,22 +30,28 @@ function _add_vmxnet_device() {
 }
 
 
-function add_macvtapn_iface() {
+function add_macvtap_passthru_iface() {
 	NET_BR="$1"
+	NET_VF="$2"
 	NET_MACADDR="$3"
 	NET_BUS=$4
 	NET_ADDR=$5
+	NET_VLAN=$6
 
-	add_macvtap_iface "$NET_BR" "" "$NET_MACADDR" "$NET_BUS" "$NET_ADDR" "_add_virtio_device" "virtio-net"
+	add_macvtap_iface "$NET_BR" "$NET_VF" "$NET_MACADDR" "$NET_BUS" "$NET_ADDR" "$NET_VLAN" "virtio-net" "_add_virtio_device" "passthru"
 }
+
+
 function add_macvtap_iface() {
 	NET_BR="$1"
+	NET_VF="$2"
 	NET_MACADDR="$3"
 	NET_BUS=$4
 	NET_ADDR=$5
 	NET_VLAN=$6
 	QEMU_DEVICE=${7:-virtio-net-pci}
 	CB=${8:-_add_virtio_device} 
+	NET_ARGS=${9:-bridge}
 
 	[[ -z "$NET_BR" ]] && echo "MACVTAP: Netdev empty" >&2  && return
 	[[ -z "$NET_MACADDR" ]] && echo "MACVTAP: Macaddr empty" >&2  && return
@@ -55,10 +61,38 @@ function add_macvtap_iface() {
 	VTAP_NAME="m_${VTAP_MACHINE}n$NET_INDEX"
 	let FD_INDEX=NET_INDEX+3
 	
+	if [[ "$NET_ARGS" == "passthru" ]]; then
+		sysfs=/sys/class/net/$NET_BR/device/virtfn$NET_VF
+		PCIPORT=$(basename $(readlink $sysfs))
+		ptname=${NET_BR}v${NET_VF}
+		PRE_CMD+=(		
+		"echo '$NET_BR::$NET_VF -> macvtap passthru'"
+		"drv-bind igbvf $PCIPORT"
+		"echo '$NET_BR::$NET_VF -> bringing interface down'"
+		"ip link set $ptname down"
+		"echo '$NET_BR::$NET_VF -> setting mtu'"
+		"ip link set $NET_BR mtu 1500"
+		"ip link set $ptname down"
+		"ip link set $ptname mtu 1500"
+		"echo '$NET_BR::$NET_VF -> setting macaddr $NET_MACADDR'"
+		"ip link set $NET_BR vf $NET_VF mac '$NET_MACADDR'"
+		"echo '$NET_BR::$NET_VF -> setting VLAN $NET_VLAN'"
+		"ip link set $NET_BR vf $NET_VF vlan $NET_VLAN"
+		"echo '$NET_BR::$NET_VF -> disableing spoofchk'"
+		"ip link set $NET_BR vf $NET_VF spoofchk off"
+		"echo '$NET_BR::$NET_VF -> setting trust'"
+		"ip link set $NET_BR vf $NET_VF trust on"
+		"echo '$NET_BR::$NET_VF -> bringing interface up'"
+		"ip link set $ptname up"
+		)
+		NET_BR=$ptname
+	fi
+
 	PRE_CMD+=(
 		"test -x /sys/class/net/$VTAP_NAME && echo MACVTAP Device Exists: $VTAP_NAME, ... recreating it && ip link del dev ${VTAP_NAME}"
 		"sleep 1"
-		"ip link add link ${NET_BR} name $VTAP_NAME address ${NET_MACADDR} type macvtap mode bridge"
+		"echo '$NET_BR::$VTAP_NAME -> setting mode $NET_ARGS'"
+		"ip link add link ${NET_BR} name $VTAP_NAME address $NET_MACADDR type macvtap mode ${NET_ARGS}"
 		"sleep 1"
 		"ip link set dev $VTAP_NAME up"
 		"TAPNUM_${NET_INDEX}=\$(< /sys/class/net/$VTAP_NAME/ifindex)"
