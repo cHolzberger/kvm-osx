@@ -17,6 +17,8 @@ CLOVER_OPTS=()
 BIOS_OPTS=()
 
 if [[ "$QEMU_MACHINE" == "i440" ]]; then
+	VPCI_BUS=( pci.0:0x10 pci.0:0x11 pci.0:0x12 pci.0:0x13 pci0.0x14 pci0.0x15 pci0.0x16 )
+
 	NET1_BUS="pci.0"
 	NET1_ADDR="0x10"
 
@@ -40,28 +42,22 @@ if [[ "$QEMU_MACHINE" == "i440" ]]; then
 )
 
 elif [[ "$QEMU_MACHINE" == "q35" ]]; then
-	NET1_BUS="virtio.2"
-	NET1_ADDR="0x0"
+	VPCI_BUS=( 0x1c.0:on 0x1c.1:off 0x1c.2:off 0x1c.3:off 0x1c.4:off 0x1c.5:off 0x1c.6:off 0x1c.7:off 0x1c.8:off
+	       0x1f.0:on 0x1f.1:off 0x1f.2:off 0x1f.3:off 0x1f.4:off 0x1f.5:off 0x1f.6:off 0x1f.7:off 0x1f.8:off )
 
-	NET2_BUS="virtio.3"
-	NET2_ADDR="0x0"
-
-	SCSI_BUS="virtio.1"
-	SCSI_ADDR="0x0"
-	SCSI_CONTROLLER="single"
-
-	GFXPT_BUS="pcie.8"
+	GFXPT_BUS="gpu.1"
 	GFXPT_ADDR="0x0"
-	QEMU_OPTS+=(
- -readconfig $SCRIPT_DIR/../cfg/q35base.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
- -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
- -readconfig $SCRIPT_DIR/../cfg/linux-q35-base.cfg
- -machine q35,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
+	QEMU_CFG+=(
+ -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
+# -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
+ -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
 )
-
+	QEMU_OPTS+=(
+ 	-machine q35,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
+ 	-readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
+)
 fi
 
 #	SCSI_BUS="pcie.1"

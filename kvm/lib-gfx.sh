@@ -79,6 +79,7 @@ elif [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ ! -z "$GFX_VGPU" ]];then
 	QEMU_OPTS+=(
 	-vga none
         -device $GFX_VGPU
+	#,bus=gpu.1,addr=0x0
 	#-display egl-headless
 	)
 

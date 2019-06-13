@@ -1,0 +1,7 @@
+[device "VPCI_NAME."]
+  driver = "9"
+  bus = "pcie.0"
+  addr = "0x9"
+  port = ""
+  chassis = ""
+  multifunction = "off"

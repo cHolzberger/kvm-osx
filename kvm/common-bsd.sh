@@ -16,30 +16,21 @@ if [ "x$UUID" != "x" ]; then
 
 	)
 fi
+	VPCI_BUS=( 0x6:off 0x7:off 0x8:off 0x9:off 0x0a:off 0x0b:off 0x0c:off 0x0d:off 0x0e:off
+	       0x0f:off 0x10:off 0x11:off 0x12:off 0x13:off 0x14:off 0x15:off 0x16:off 0x17:off )
+
+
+
 CLOVER_OPTS=()
 BIOS_OPTS=()
-
-	NET1_BUS="pcie.2"
-	NET1_ADDR="0x0"
-	NET2_BUS="pcie.3"
-	NET2_ADDR="0x0"
-	NET3_BUS="pcie.4"
-	NET3_ADDR="0x0"
-	NET4_BUS="pcie.5"
-	NET4_ADDR="0x0"
-
-	SCSI_BUS="pcie.1"
-	SCSI_ADDR="0x0"
-	SCSI_CONTROLLER="single"
-
 	GFXPT_BUS="pcie.8"
 	GFXPT_ADDR="0x0"
 	QEMU_OPTS+=(
- -readconfig $SCRIPT_DIR/../cfg/q35base.cfg
- -readconfig $SCRIPT_DIR/../cfg/bsd-q35-base.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
+# -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
+ -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
  -machine q35,accel=kvm,mem-merge=off,vmport=off
 )
 

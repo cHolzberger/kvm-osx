@@ -8,9 +8,10 @@ QMP_CMD_POST+=(
 '{ "execute": "cont" }' 
 )
 
-
+QEMU_CFG=()
 
 source kvm/lib-helper.sh
+source kvm/common.sh
 source kvm/common-$OS.sh
 source kvm/bios-$BIOS.sh
 source kvm/cpu-$CPU_MODEL.sh
@@ -19,7 +20,7 @@ source kvm/gfx-$GFX_MODE.sh
 source kvm/hdd-$HDD_MODE.sh
 source kvm/teradici.sh 
 source kvm/hugepages.sh 
-
+source kvm/vm-genid.sh
 
 [[ ! -z "$NET_MODE" ]] && source kvm/net-$NET_MODE.sh
 
@@ -70,6 +71,7 @@ $CMD \
 	-serial unix:$MACHINE_PATH/var/console,server,nowait \
        ${CLOVER_OPTS[@]} \
 	${QEMU_SW[@]} \
+        ${QEMU_CFG[@]} \
         ${QEMU_OPTS[@]} \
 	${QEMU_EXTRA_OPTS[@]} \
 	-S \

@@ -1,3 +1,6 @@
+#!/bin/bash 
+
+
 function join_arr() {
 	IFS=",$IFS";
 	arr=($@)
@@ -6,3 +9,4 @@ function join_arr() {
 	echo $bara
 	IFS=${IFS:1}
 }
+

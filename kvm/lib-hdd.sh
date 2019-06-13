@@ -1,5 +1,6 @@
 #!/bin/bash
 source $SCRIPT_DIR/../kvm/lib-pt.sh
+source $SCRIPT_DIR/../kvm/lib-pci.sh
 source $SCRIPT_DIR/../kvm/lib-helper.sh
 
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
@@ -17,7 +18,9 @@ RAW_OPTS_iscsi_virtio_scsi_pci="aio=threads,cache.direct=on,cache=writeback"
 CONTROLLER_OPTS_default=""
 CONTROLLER_OPTS_virtio_scsi_pci="num_queues=4"
 
-QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=off,detect-zeroes=off,cache.direct=on"
+QCOW2_OPTS="cache=off,aio=threads"
+#QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=on,detect-zeroes=off,cache.direct=on"
+QED_OPTS="cache=writethrough,aio=native,discard=on,detect-zeroes=off,cache.direct=on"
 
 export LIBISCSI_CHAP_USERNAME 
 export LIBISCSI_CHAP_PASSWORD 
@@ -31,7 +34,6 @@ export LIBISCSI_TARGET_CHAP_PASSWORD
 if [ $DISK_INIT == true ]; then
 	#add own root complex
 	QEMU_OPTS+=(
-		-device ich9-ahci,id=ahci0,addr=19,bus=pcie.0
 	#	-device ioh3420,id=pcie_root.1,bus=pcie.0
         #        -device pcie-root-port,port=2,chassis=4,addr=1a.0,id=storport
 		"-iscsi initiator-name='iqn.2019-04.de.mosaiksoftware:$HOSTNAME:$MACHINE'"
@@ -40,8 +42,10 @@ if [ $DISK_INIT == true ]; then
 fi
 
 function virtioarg() {
+	VTM=""
 	if [[ "$VIRTIO_MODE" = "modern" ]]; then
-		VTM="disable-legacy=on,disable-modern=off"
+		VTM=""
+		VTM="disable-legacy=on,disable-modern=off,modern-pio-notify=on"
 	else 
 		VTM="disable-legacy=off,disable-modern=off"
 	fi
@@ -68,6 +72,9 @@ function diskarg() {
 		echo "file=$DISKS_PATH/$name.raw,format=raw,$RAW_OPTS"
 	elif [ -e "$DISKS_PATH/$name.qcow2" ]; then
 		echo "file=$DISKS_PATH/$name.qcow2,format=qcow2,$QCOW2_OPTS"
+	elif [ -e "$DISKS_PATH/$name.qed" ]; then
+		echo "file=$DISKS_PATH/$name.qed,format=qed,$QED_OPTS"
+	
 	else
 		echo "err"
 	fi
@@ -135,14 +142,16 @@ function add_virtio_scsi_disk() {
 
 	if [[ "x$VSCSI_INDEX" == "x0" ]] && [[ "$SCSI_CONTROLLER" != "multi" ]]; then
 		CONTROLLER="vscsi$VSCSI_INDEX.$VSCSI_INDEX"
+		add_vpci SCSI_BUS $STORE_ROOT_PORT
+		SCSI_ADDR="0x0"
 		echo "[VIRTIO[$VIRTIO_MODE]]Creating vrtio-scsi-pci - $SCSI_CONTROLLER (vscsi$VSCSI_INDEX) BUS: $SCSI_BUS ADDR: $SCSI_ADDR"
 
 		O=(
 			iothread
 			id=iothread$name
-			poll-max-ns=20
-			poll-grow=4
-			poll-shrink=0
+			#poll-max-ns=20
+			#poll-grow=4
+			#poll-shrink=0
 		)
 
 		D=(
@@ -150,6 +159,7 @@ function add_virtio_scsi_disk() {
 			bus=$SCSI_BUS
 			addr=$SCSI_ADDR
 			iothread=iothread$name
+			num_queues=4
 			id=vscsi$VSCSI_INDEX
 			$conarg
 			$virtarg
@@ -161,6 +171,9 @@ function add_virtio_scsi_disk() {
 
 	elif [[ "$SCSI_CONTROLLER" == "multi" ]]; then
 		CONTROLLER="vscsi$VSCSI_INDEX.0"
+ 		add_vpci SCSI_BUS $STORE_ROOT_PORT
+		SCSI_ADDR="0x0"
+	
 		echo "[VIRTIO[$VIRTIO_MODE]]Creating vrtio-scsi-pci - $SCSI_CONTROLLER (vscsi$VSCSI_INDEX) BUS: $SCSI_BUS ADDR: $SCSI_ADDR"
 		O=(
 			iothread
@@ -226,6 +239,13 @@ function add_ahci_disk() {
 		echo "disk not found $name"
 		return
 	fi
+	
+	if [[ $AHCI_INDEX == "0" ]]; then
+		QEMU_OPTS+=(
+			-device ich9-ahci,id=ahci0,addr=4,bus=pcie.0
+		)
+	fi
+
 	QEMU_OPTS+=( 
 #		-device ich9-ahci,id=ahci$INDEX,addr=4,bus=pcie.0
 		-device ide-hd,bus=ahci$INDEX.$AHCI_INDEX,drive=${name}HDD,bootindex=$AHCI_INDEX

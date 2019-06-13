@@ -290,9 +290,10 @@ function _add_virtio_device() {
 	#DISABLE_OFFLX=",csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
 	#DISABLE_OFFL=",csum=on,gso=on,guest_tso4=on,guest_tso6=on,guest_ecn=on"
 	DISABLE_OFFL=",mrg_rxbuf=off"
-
+	VTM=""
 	if [[ "$VIRTIO_MODE" = "modern" ]]; then
-		VTM=",disable-legacy=on,disable-modern=off"
+		VTM=""
+		VTM=",disable-legacy=on,disable-modern=off,modern-pio-notify=on"
 	else 
 		VTM=",disable-legacy=off,disable-modern=off"
 	fi
