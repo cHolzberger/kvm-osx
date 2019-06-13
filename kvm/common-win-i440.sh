@@ -7,6 +7,7 @@ QEMU_OPTS=(
  -readconfig $SCRIPT_DIR/../cfg/i440rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
+ -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
  -enable-kvm 
  -m $MEM 
  -machine pc-i440fx-3.1,accel=kvm,kernel_irqchip=on,mem-merge=off -name "$MACHINE"

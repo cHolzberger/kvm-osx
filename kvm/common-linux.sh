@@ -37,6 +37,7 @@ if [[ "$QEMU_MACHINE" == "i440" ]]; then
  -readconfig $SCRIPT_DIR/../cfg/i440rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
+ -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
  -machine pc,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
 )
 
@@ -55,6 +56,7 @@ elif [[ "$QEMU_MACHINE" == "q35" ]]; then
 )
 	QEMU_OPTS+=(
  	-machine q35,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
+ 	-readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
 )
 fi
 
