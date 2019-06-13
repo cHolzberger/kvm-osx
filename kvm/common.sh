@@ -13,6 +13,7 @@ else
 	)
 fi
 
-STORE_ROOT_PORT=${STORE_ROOT_PORT:-"pcie-root-port"}
 PT_ROOT_PORT=${PT_ROOT_PORT:-"pcie-root-port"}
+USB_ROOT_PORT=${USB_ROOT_PORT:-"pcie-root-port"}
 NET_ROOT_PORT=${NET_ROOT_PORT-"pcie-root-port"}
+STORE_ROOT_PORT=${STORE_ROOT_PORT:-"pcie-root-port"}
