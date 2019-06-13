@@ -18,7 +18,7 @@ RAW_OPTS_iscsi_virtio_scsi_pci="aio=threads,cache.direct=on,cache=writeback"
 CONTROLLER_OPTS_default=""
 CONTROLLER_OPTS_virtio_scsi_pci="num_queues=4"
 
-QCOW2_OPTS="cache=off,aio=threads"
+QCOW2_OPTS="cache=off,aio=threads,l2-cache-size=60M"
 #QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=on,detect-zeroes=off,cache.direct=on"
 QED_OPTS="cache=writethrough,aio=native,discard=on,detect-zeroes=off,cache.direct=on"
 
