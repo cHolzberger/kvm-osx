@@ -76,10 +76,13 @@ if [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 	#	-display egl-headless
 	)
 elif [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ ! -z "$GFX_VGPU" ]];then 
+	QEMU_CFG+=(
+	  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+	)
+
 	QEMU_OPTS+=(
 	-vga none
-        -device $GFX_VGPU
-	#,bus=gpu.1,addr=0x0
+        -device $GFX_VGPU,bus=gpu.1,addr=0x0
 	#-display egl-headless
 	)
 
