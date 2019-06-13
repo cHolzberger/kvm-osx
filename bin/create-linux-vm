@@ -1,0 +1,37 @@
+#!/bin/bash
+
+NAME=$1
+
+UUID=$(uuidgen)
+MAC=$(generate-mac-addr) 
+
+cat <<END>/tmp/config-$NAME
+OS=linux
+BIOS=efi
+EFI_ROM="clearlinux"
+EFI_VARS="clearlinux"
+OVM_VERS="clearlinux"
+
+UUID="$UUID"
+
+HDD_MODE=virtio-scsi
+#HDD_system_ISCSI_TARGET="iscsi://$ISCSI_NAS/iqn.2015-12.de.mosaiksoftware:vm-build-clr/1"
+
+NET1_MODE=macvlan
+NET1_DEV=eno1
+NET1_VF=0
+NET1_MACADDR="$MAC"
+
+CPU_MODEL=hyperv
+
+NUM_CPUS=4
+USE_CPUS=( 18 22 26 30 )
+CPU_SMP=$NUM_CPUS,sockets=1,cores=4,threads=1
+
+MEM=2G
+
+QEMU_EXTRA_OPTS=(
+)
+END
+
+

@@ -1,0 +1,7 @@
+[device "PT_BUS."]
+  driver = "11"
+  bus = "pcie.0"
+  addr = "0x0b"
+  port = ""
+  chassis = ""
+  multifunction = "off"

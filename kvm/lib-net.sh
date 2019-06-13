@@ -280,16 +280,17 @@ function add_sriov_iface() {
 
 function _add_virtio_device() {
 	NET_MACADDR=$1
-	NET_BUS="virtio.$NET_VIRTIO_CURRENT_SLOT"
+	NET_BUS="$2"
 	NET_ADDR="${3:-'0'}"	
 	DEVICE=${4:-virtio-net-pci}
 
 	#DISABLE_OFFLX=",csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
 	#DISABLE_OFFL=",csum=on,gso=on,guest_tso4=on,guest_tso6=on,guest_ecn=on"
 	DISABLE_OFFL=",mrg_rxbuf=off"
-
+	VTM=""
 	if [[ "$VIRTIO_MODE" = "modern" ]]; then
-		VTM=",disable-legacy=on,disable-modern=off"
+		VTM=""
+		VTM=",disable-legacy=on,disable-modern=off,modern-pio-notify=on"
 	else 
 		VTM=",disable-legacy=off,disable-modern=off"
 	fi

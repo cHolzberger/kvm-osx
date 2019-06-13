@@ -2,8 +2,8 @@
 
 if [[ ! -z "$PSET" ]]; then
 QEMU_SW+=(
- -device pcie-root-port,port=0x8,chassis=1,id=xpci.1,bus=pcie.0,multifunction=on,addr=0x2 
- -device pcie-pci-bridge,id=xpci.2,bus=xpci.1,addr=0x0 
+# -device pcie-root-port,port=0x8,chassis=1,id=xpci.1,bus=pcie.0,multifunction=on,addr=0x2 
+# -device pcie-pci-bridge,id=xpci.2,bus=xpci.1,addr=0x0 
 )
 
 PSET=1
@@ -45,15 +45,11 @@ fi
 
 function add_pciept_dev() {
         HOST_PCIPORT=$1
-        VM_BUS=$4
-        VM_ADDR=$5
+        VM_BUS=$2
+        VM_ADDR=$3
 
         [[ -z "$HOST_PCIPORT" ]] && echo "PCIPORT: empty" >&2  && return
-        if [[ -z "$VM_BUS" ]];then
-		VM_BUS="pt_${PCI_CURRENT_SLOT}"
-	fi
-
-        if [[ -z "$VM_ADDR" ]]; then
+                if [[ -z "$VM_ADDR" ]]; then
 		VM_ADDR=0x0
 	fi
 	
@@ -63,10 +59,16 @@ function add_pciept_dev() {
 	done
         sleep 2
 	./vfio-bind $HOST_PCIPORT
-	add_io3420_port $VM_BUS
-        QEMU_OPTS+=(-device vfio-pci,host=$HOST_PCIPORT,bus=$VM_BUS.1,addr=0x0,rombar=1)
+	if [[ -z "$VM_BUS" ]];then
+		VM_BUS="pt_${PCI_CURRENT_SLOT}"
+		add_io3420_port $VM_BUS
+		VM_BUS="$VM_BUS.1"
+ 	       let PCI_CURRENT_SLOT=$PCI_CURRENT_SLOT+1
+		let CHASSIS_COUNT=$CHASSIS_COUNT+1
+
+	fi
+
+        QEMU_OPTS+=(-device vfio-pci,host=$HOST_PCIPORT,bus=$VM_BUS,addr=0x0,rombar=1,romfile="")
 #rombar=0
-        let PCI_CURRENT_SLOT=$PCI_CURRENT_SLOT+1
-	let CHASSIS_COUNT=$CHASSIS_COUNT+1
 }
 
