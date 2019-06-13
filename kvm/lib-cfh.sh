@@ -26,10 +26,10 @@ function add_hyperv_flags() {
 		#hv_reset
 		#hv_runtime
 		#hv_crash
-		#migratable=no
+		migratable=no
+		$(has_flag x2apic "hv_vapic=on")
 	)
 
-	add_apic_flags
 	add_x86_flags
 }
 

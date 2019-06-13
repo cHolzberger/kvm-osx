@@ -31,7 +31,7 @@ export LIBISCSI_TARGET_CHAP_PASSWORD
 if [ $DISK_INIT == true ]; then
 	#add own root complex
 	QEMU_OPTS+=(
-		-device ich9-ahci,id=ahci0,addr=4,bus=pcie.0
+		-device ich9-ahci,id=ahci0,addr=19,bus=pcie.0
 	#	-device ioh3420,id=pcie_root.1,bus=pcie.0
         #        -device pcie-root-port,port=2,chassis=4,addr=1a.0,id=storport
 		"-iscsi initiator-name='iqn.2019-04.de.mosaiksoftware:$HOSTNAME:$MACHINE'"

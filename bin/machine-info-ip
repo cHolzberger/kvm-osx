@@ -54,9 +54,9 @@ printf "IPs:\n"
 function query() {
 	#$SCRIPT_DIR/qmp-send "$MACHINE" '{ "execute": "guest-info" }'
 	qga-send "$MACHINE" '{ "execute": "guest-info" }' \
-	| jq -r '.return.supported_commands[].name '
+	| tee /dev/stderr | jq -r '.return.supported_commands[].name '
 	qga-send "$MACHINE" '{"execute":"guest-network-get-interfaces"}' \
-	| jq -r '.return[] | .name, .["ip-addresses"][]["ip-address"]'
+	| tee /dev/stderr | jq -r '.return[] | .name, .["ip-addresses"][]["ip-address"]'
 	return 0
 }
 

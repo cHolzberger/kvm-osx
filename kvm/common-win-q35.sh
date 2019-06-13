@@ -8,6 +8,7 @@ QEMU_OPTS=(
  -readconfig $SCRIPT_DIR/../cfg/default-q35-base.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
+  -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
  -enable-kvm 
  -m $MEM 

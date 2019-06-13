@@ -35,6 +35,7 @@ if [[ "$QEMU_MACHINE" == "i440" ]]; then
  -readconfig $SCRIPT_DIR/../cfg/i440rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
+ -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
  -machine pc,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
 )
 
@@ -45,18 +46,19 @@ elif [[ "$QEMU_MACHINE" == "q35" ]]; then
 	NET2_BUS="virtio.3"
 	NET2_ADDR="0x0"
 
-	SCSI_BUS="pcie.4"
-	SCSI_ADDR="0"
+	SCSI_BUS="virtio.1"
+	SCSI_ADDR="0x0"
 	SCSI_CONTROLLER="single"
 
 	GFXPT_BUS="pcie.8"
 	GFXPT_ADDR="0x0"
 	QEMU_OPTS+=(
  -readconfig $SCRIPT_DIR/../cfg/q35base.cfg
- -readconfig $SCRIPT_DIR/../cfg/default-q35-base.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
+ -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
+ -readconfig $SCRIPT_DIR/../cfg/linux-q35-base.cfg
  -machine q35,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
 )
 

@@ -13,7 +13,7 @@ if [[ -z "$NET_VIRTIO_CURRENT_SLOT" ]]; then
 fi
 
 function add_vmxnet_iface () {
-	add_macvtap_iface "$1" "$2" "$3" "$4" "$5" "_add_vmxnet_device"
+	add_macvtap_iface "$1" "$2" "$3" "$4" "$5" "$6" "vmxnet" "_add_vmxnet_device" 
 }
 
 function _add_vmxnet_device() {
@@ -55,7 +55,7 @@ function add_macvtap_iface() {
 
 	[[ -z "$NET_BR" ]] && echo "MACVTAP: Netdev empty" >&2  && return
 	[[ -z "$NET_MACADDR" ]] && echo "MACVTAP: Macaddr empty" >&2  && return
-
+	echo "'$NET_BR::$NET_VF Args -> NET_BR=$NET_BR NET_VF=$NET_VF NET_MACADDR=$NET_MACADDR NET_BUS=$NET_BUS NET_ADDR=$NET_ADDR NET_VLAN=$NET_VLAN QEMU_DEVICE=$QEMU_DEVICE CB=$CB NET_ARGS=$NET_ARGS"
 	VTAP_MACHINE=$(echo $MACHINE | sed -e s/-//g)
 	VTAP_MACHINE=${VTAP_MACHINE:0:11}
 	VTAP_NAME="m_${VTAP_MACHINE}n$NET_INDEX"
@@ -125,6 +125,7 @@ function add_tap_iface() {
 	NET_MEMBER=$7
 	[[ -z "$NET_BR" ]] && echo "TAP: Netdev empty" >&2  && return
 	[[ -z "$NET_MACADDR" ]] && echo "TAP: Macaddr empty" >&2  && return
+	echo "'$NET_BR::$NET_VF Args -> NET_BR=$NET_BR NET_VF=$NET_VF NET_MACADDR=$NET_MACADDR NET_BUS=$NET_BUS NET_ADDR=$NET_ADDR NET_VLAN=$NET_VLAN QEMU_DEVICE=$QEMU_DEVICE CB=$CB NET_ARGS=$NET_ARGS"
 
 	VTAP_MACHINE=$(echo $MACHINE | sed -e s/-//g)
 	VTAP_MACHINE=${VTAP_MACHINE:0:11}
@@ -201,6 +202,7 @@ function _add_pcie_iface() {
 	[[ -z "$NET_BUS" ]] && echo "PCIPORT: Missing NET BUS" >&2  && return
 	[[ -z "$NET_ADDR" ]] && echo "PCIPORT: Missing NET ADDR" >&2  && return
        
+	echo "'$NET_BR::$NET_VF Args -> NET_BR=$NET_BR NET_VF=$NET_VF NET_MACADDR=$NET_MACADDR NET_BUS=$NET_BUS NET_ADDR=$NET_ADDR NET_VLAN=$NET_VLAN QEMU_DEVICE=$QEMU_DEVICE CB=$CB NET_ARGS=$NET_ARGS"
 	PRE_CMD+=(
 	"echo 'PCIPORT: biding to $PCIPORT'"
 	"$RUNTIME_PATH/vfio-bind $PCIPORT"
@@ -280,10 +282,11 @@ function add_sriov_iface() {
 
 function _add_virtio_device() {
 	NET_MACADDR=$1
-	NET_BUS="virtio.$NET_VIRTIO_CURRENT_SLOT"
+	NET_BUS="${2:-virtio.$NET_VIRTIO_CURRENT_SLOT}"
 	NET_ADDR="${3:-'0'}"	
 	DEVICE=${4:-virtio-net-pci}
 
+	echo "'$NET_BR::$NET_VF _add_virtio_device -> NET_MACADDR=$NET_MACADDR NET_BUS=$NET_BUS NET_ADDR=$NET_ADDR DEVICE=$DEVICE"
 	#DISABLE_OFFLX=",csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
 	#DISABLE_OFFL=",csum=on,gso=on,guest_tso4=on,guest_tso6=on,guest_ecn=on"
 	DISABLE_OFFL=",mrg_rxbuf=off"
