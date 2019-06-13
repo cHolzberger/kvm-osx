@@ -241,14 +241,14 @@ function add_ahci_disk() {
 	fi
 	
 	if [[ $AHCI_INDEX == "0" ]]; then
-		QEMU_OPTS+=(
-			-device ich9-ahci,id=ahci0,addr=4,bus=pcie.0
-		)
+#		QEMU_OPTS+=(
+#			-device ich9-ahci,id=ahci0,addr=4,bus=pcie.0
+#		)
 	fi
 
 	QEMU_OPTS+=( 
 #		-device ich9-ahci,id=ahci$INDEX,addr=4,bus=pcie.0
-		-device ide-hd,bus=ahci$INDEX.$AHCI_INDEX,drive=${name}HDD,bootindex=$AHCI_INDEX
+		-device ide-hd,bus=ide.$INDEX,drive=${name}HDD,bootindex=$AHCI_INDEX
 		-drive id=${name}HDD,if=none,$(diskarg $name)
 	)
         let INDEX=INDEX+1
