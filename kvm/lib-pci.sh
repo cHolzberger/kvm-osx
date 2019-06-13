@@ -2,7 +2,7 @@
 
 echo -e "\n==> Loading $0\n"
 if [[ -z "$SSET" ]]; then
-	SLOT_COUNT=6
+	SLOT_COUNT=8
 	SSET="1"
 fi
 
