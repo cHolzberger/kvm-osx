@@ -26,7 +26,7 @@ else
 ./vfio-bind $dev
 
 QEMU_OPTS+=( 
-	-device vfio-pci,bus=$GFXPT_BUS,addr=$GFXPT_ADDR,multifunction=on,host=$GFXPCI.0$GFX_ARGS$ROMFILE$XVGA
+	-device vfio-pci,bus=$GFXPT_BUS,x-msix-relocation=auto,addr=$GFXPT_ADDR,multifunction=on,host=$GFXPCI.0$GFX_ARGS$ROMFILE$XVGA
 )
 fi
 

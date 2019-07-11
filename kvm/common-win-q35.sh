@@ -4,12 +4,6 @@
 QEMU_OPTS=(	
  -no-user-config 
  -nodefaults 
- -readconfig $SCRIPT_DIR/../cfg/q35base.cfg
- -readconfig $SCRIPT_DIR/../cfg/default-q35-base.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35rng.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35mon.cfg
-  -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35input.cfg
  -enable-kvm 
  -m $MEM 
  -machine pc-q35-3.0,accel=kvm,kernel_irqchip=on,mem-merge=off,usb=off,vmport=off,dump-guest-core=off
@@ -27,18 +21,17 @@ if [ "x$UUID" != "x" ]; then
 fi
 CLOVER_OPTS=()
 BIOS_OPTS=()
+VPCI_BUS=( 0x1c.0:on 0x1c.1:off 0x1c.2:off 0x1c.3:off 0x1c.4:off 0x1c.5:off 0x1c.6:off 0x1c.7:off 0x1c.8:off
+      0x1d.0:on 0x1d.1:off 0x1d.2:off 0x1d.3:off 0x1d.4:off 0x1d.5:off 0x1d.6:off 0x1d.7:off 0x1d.8:off )
 
-NET1_BUS="pcie.2"
-NET1_ADDR="0x0"
-
-NET2_BUS="pcie.3"
-NET2_ADDR="0x0"
-
-SCSI_BUS="pcie.1"
-SCSI_ADDR="0x0"
-SCSI_CONTROLLER="single"
-
-GFXPT_BUS="pcie.8"
+GFXPT_BUS="gpu.1"
 GFXPT_ADDR="0x0"
+QEMU_CFG+=(
+ -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
+# -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+ -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
+ -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
+)
 
 MACHINE_OS=win

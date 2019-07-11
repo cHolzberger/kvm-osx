@@ -15,12 +15,12 @@ function add_vpci() {
 		exit -1
 	fi
 	VB=${VPCI_BUS[0]}
-	FN="$MACHINE_PATH/pcie.${SC}.cfg"
+	FN="$MACHINE_PATH/pcie.${SLOT_COUNT}.cfg"
 	VPCI_BUS=( ${VPCI_BUS[@]:1} )
 	
 	vpci_template "$result_var" "$VB" "$SLOT_COUNT" "$PORT" "$FN"
 	QEMU_CFG+=( 
-	-readconfig $FN 
+		-readconfig $FN 
 	)
 
 

@@ -14,7 +14,10 @@ else
 fi
 
 #could be pcie-root-port
-STORE_ROOT_PORT=${STORE_ROOT_PORT:-"ioh3420"}
-PT_ROOT_PORT=${PT_ROOT_PORT:-"ioh3420"}
+USB_ROOT_PORT=${USB_ROOT_PORT:-"pcie-root-port"}
 NET_ROOT_PORT=${NET_ROOT_PORT-"pcie-root-port"}
+PT_ROOT_PORT=${PT_ROOT_PORT:-"ioh3420"}
 STORE_ROOT_PORT=${STORE_ROOT_PORT:-"ioh3420"}
+
+#GFXMODE 
+GFX_MODE=${GFX_MODE:-uni}

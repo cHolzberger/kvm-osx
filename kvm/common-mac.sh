@@ -5,7 +5,7 @@ QEMU_OPTS=(
  -nodefaults
  -enable-kvm 
  -m $MEM 
- -machine pc-q35-3.0,accel=kvm,usb=off
+ -machine pc-q35-3.0,accel=kvm,usb=off,kernel-irqchip=on
  -name "$MACHINE"
  -realtime mlock=off
  -smbios type=2
@@ -15,8 +15,8 @@ QEMU_OPTS=(
  -usb
 )
 
-VPCI_BUS=( 0x6:off 0x7:off 0x8:off 0x9:off 0x0a:off 0x0b:off 0x0c:off 0x0d:off 0x0e:off
-       0x0f:off 0x10:off 0x11:off 0x12:off 0x13:off 0x14:off 0x15:off 0x16:off 0x17:off )
+VPCI_BUS=(  0x1c.0:on 0x1c.1:off 0x1c.2:on 0x1c.3:off 0x1c.4:off 0x1c.5:off 0x1c.6:off
+       0x1c.7:off 0x1c.8:off 0x11:off 0x12:off 0x13:off 0x14:off 0x15:off 0x16:off 0x17:off )
 
 QEMU_CFG+=(
  -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg

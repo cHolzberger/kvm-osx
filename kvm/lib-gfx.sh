@@ -55,6 +55,7 @@ echo -n "-vnc $GFX_VNCPORT,password$TLS"
 }
 
 function add_vgpu() {
+
 GFX_ENABLE_VGPU=$1
 GFX_VGPU=$2
 GFX_ENABLE_VNC=$3
