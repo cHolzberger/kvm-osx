@@ -74,7 +74,8 @@ function diskarg() {
 		echo "file=$DISKS_PATH/$name.qcow2,format=qcow2,$QCOW2_OPTS"
 	elif [ -e "$DISKS_PATH/$name.qed" ]; then
 		echo "file=$DISKS_PATH/$name.qed,format=qed,$QED_OPTS"
-	
+	elif [ -d "$DISKS_PATH/$name.vfat" ]; then
+		echo "file=fat:rw:$DISKS_PATH/$name.vfat,format=raw"
 	else
 		echo "err"
 	fi
