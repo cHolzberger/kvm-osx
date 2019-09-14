@@ -18,7 +18,14 @@ function add_vpci() {
 	FN="$MACHINE_PATH/pcie.${SLOT_COUNT}.cfg"
 	VPCI_BUS=( ${VPCI_BUS[@]:1} )
 	
-	vpci_template "$result_var" "$VB" "$SLOT_COUNT" "$PORT" "$FN"
+	if [[ $QEMU_MACHINE == "pc-i440fx" ]]; then
+		ROOT_BUS="pci.0"
+	else
+		ROOT_BUS="pcie.0"
+	fi
+	
+
+	vpci_template "$result_var" "$VB" "$SLOT_COUNT" "$PORT" "$FN" "$ROOT_BUS"
 	QEMU_CFG+=( 
 		-readconfig $FN 
 	)
@@ -34,6 +41,7 @@ VB="$2"
 SC="$3"
 PORT="$4"
 FN="$5"
+ROOT_BUS="${6:-pcie.0}"
 
 	SLOT_ADDR=$(echo $VB | cut -d":" -f1)
 	SLOT_MULTIFUNCTION=$(echo $VB | cut -d":" -f2)
@@ -44,7 +52,7 @@ FN="$5"
 cat <<END>$FN
 [device "$BS.${SC}"]
   driver = "$PORT"
-  bus = "pcie.0"
+  bus = "$ROOT_BUS"
   addr = "${SLOT_ADDR}"
   port = "${SC}"
   chassis = "${SC}"
