@@ -304,4 +304,5 @@ function _add_virtio_device() {
 	let NET_VIRTIO_CURRENT_SLOT=$NET_VIRTIO_CURRENT_SLOT+1
 }
 
-
+source $SCRIPT_DIR/../kvm/lib-net-ovs.sh
+source $SCRIPT_DIR/../kvm/lib-net-vpp.sh
