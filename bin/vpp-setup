@@ -1,0 +1,8 @@
+ifconfig san down
+ifconfig lan down
+
+dpdk-devbind --bind=vfio-pci 02:00.0
+dpdk-devbind --bind=vfio-pci 02:00.1
+
+( sleep 30; /srv/kvm/OSX-KVM/bin/vpp-setup-interfaces ) &
+vpp -c /opt/vpp/etc/startup.conf 

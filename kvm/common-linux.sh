@@ -38,7 +38,7 @@ if [[ "$QEMU_MACHINE" == "i440" ]]; then
  -readconfig $SCRIPT_DIR/../cfg/i440mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
  -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
- -machine pc,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
+ -machine pc,accel=kvm,kernel_irqchip=split,vmport=off
 )
 
 elif [[ "$QEMU_MACHINE" == "q35" ]]; then
@@ -55,7 +55,7 @@ elif [[ "$QEMU_MACHINE" == "q35" ]]; then
  -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
 )
 	QEMU_OPTS+=(
- 	-machine q35,accel=kvm,kernel_irqchip=on,mem-merge=off,vmport=off
+ 	-machine q35,accel=kvm,kernel_irqchip=split,vmport=off
  	-readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
 )
 fi
@@ -69,8 +69,7 @@ MACHINE_OS=linux
 QEMU_OPTS+=(
  -m $MEM 
  -name "$MACHINE"
- -realtime mlock=off
 # -smbios type=2
  -rtc base=utc
-#  -overcommit mem-lock=on,cpu-pm=on
+  -overcommit mem-lock=off,cpu-pm=off
 )

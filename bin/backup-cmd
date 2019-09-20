@@ -1,0 +1,7 @@
+#!/bin/bash
+USER=kvm
+PASS=kvm1234
+
+RESTIC_REPOSITORY="rest:http://$USER:$PASS@192.168.254.219:8000/kvm" \
+RESTIC_PASSWORD="secure!kvm" \
+restic $@

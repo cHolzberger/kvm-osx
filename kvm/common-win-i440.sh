@@ -14,7 +14,7 @@ QEMU_OPTS=(
  -enable-kvm 
  -m $MEM 
  -machine pc-i440fx-3.1,accel=kvm,kernel_irqchip=on,mem-merge=off -name "$MACHINE"
- -realtime mlock=off
+ -overcommit mem-lock=off,cpu-pm=off
  -smbios type=2
  -rtc base=utc
  )

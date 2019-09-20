@@ -10,17 +10,20 @@ QMP_CMD_POST+=(
 
 QEMU_CFG=()
 
+source kvm/hugepages.sh 
 source kvm/lib-helper.sh
 source kvm/common.sh
+source kvm/mem-numa.sh 
 source kvm/common-$OS.sh
+source kvm/common-iommu.sh
 source kvm/bios-$BIOS.sh
 source kvm/cpu-$CPU_MODEL.sh
 source kvm/usb-$USB_MODE.sh
 source kvm/gfx-$GFX_MODE.sh
 source kvm/hdd-$HDD_MODE.sh
 source kvm/teradici.sh 
-source kvm/hugepages.sh 
 source kvm/vm-genid.sh
+
 
 [[ ! -z "$NET_MODE" ]] && source kvm/net-$NET_MODE.sh
 
@@ -39,8 +42,9 @@ if [ "x$SOUND_MODE" != "x" ]; then
 	source kvm/sound-$SOUND_MODE.sh
 fi
 
-
-
+if [[ ! -z $FS9P ]]; then
+	source kvm/fs-shared.sh
+fi
 
 CMD="qemu-system-x86_64"
 MON_PATH="$VM_PREFIX/$MACHINE/var"
@@ -70,10 +74,16 @@ function on_run() {
 $CMD \
 	-serial unix:$MACHINE_PATH/var/console,server,nowait \
        ${CLOVER_OPTS[@]} \
+	${MEMORY_FLAGS[@]} \
+	\
 	${QEMU_SW[@]} \
+	\
         ${QEMU_CFG[@]} \
+	\
         ${QEMU_OPTS[@]} \
+	\
 	${QEMU_EXTRA_OPTS[@]} \
+	\
 	-S \
 	-pidfile $MON_PATH/pid \
 	-writeconfig $MACHINE_PATH/qemu.cfg \
@@ -116,6 +126,12 @@ trap on_exit EXIT
 on_begin
 on_run
 CMD_PID=\$!
+
+if [[ ! -z \$VIRT_INPUT ]]; then
+	echo "0" > $MACHINE_PATH/var/evdev_state
+	echo "#usb" > $MACHINE_PATH/var/usb_state
+	input-attach $MACHINE
+fi 
 END
 
 chmod u+x $VM_PREFIX/$MACHINE/run

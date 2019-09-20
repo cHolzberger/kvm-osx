@@ -33,9 +33,14 @@ shift
 
 while [[ $# -gt 0 ]]; do
 	echo $1
-	sleep 2
-	printf '%s\n' "$1" | socat - unix-connect:"$SOCKET_MON" 
+	ret=$(printf '%s\n' "$1" | socat - unix-connect:"$SOCKET_MON" | grep -v "QEMU 4.1.0 monitor - type 'help' for more information")
+
+	if echo $ret | grep "Error:\|Could not open"; then
+		echo "QEMU ERROR: $ret"
+		exit 1
+	else
+		printf '%s\n' "$ret"
+	fi
 	shift
 done 
-echo "Ret: "
-echo $?
+exit 0

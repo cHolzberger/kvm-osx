@@ -59,7 +59,6 @@ function add_macvtap_iface() {
 	VTAP_MACHINE=$(echo $MACHINE | sed -e s/-//g)
 	VTAP_MACHINE=${VTAP_MACHINE:0:11}
 	VTAP_NAME="m_${VTAP_MACHINE}n$NET_INDEX"
-	let FD_INDEX=NET_INDEX+3
 	
 	if [[ "$NET_ARGS" == "passthru" ]]; then
 		sysfs=/sys/class/net/$NET_BR/device/virtfn$NET_VF
@@ -102,6 +101,7 @@ function add_macvtap_iface() {
 		"ip link del dev $VTAP_NAME"
 	)
 
+	let FD_INDEX=NET_INDEX+3
 	OPEN_FD+=(
 		"${FD_INDEX}0<>/dev/tap\$TAPNUM_${NET_INDEX}"
 		"${FD_INDEX}1<>/dev/vhost-net"
@@ -208,7 +208,7 @@ function _add_pcie_iface() {
 	"$RUNTIME_PATH/vfio-bind $PCIPORT"
 	)
 	echo "Using Network from $PCIPORT" >&2
-        QEMU_OPTS+=(-device vfio-pci,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR,rombar=0)
+        QEMU_OPTS+=(-device vfio-pci,tx_queue_size=1024,rx_queue_size=1024,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR,csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off,mrg_rxbuf=off,rombar=0)
 #rombar=0
 	let NET_PCI_CURRENT_SLOT=$NET_PCI_CURRENT_SLOT+1
 
@@ -281,25 +281,27 @@ function add_sriov_iface() {
 }
 
 function _add_virtio_device() {
+	DISABLE_OFFL=",mrg_rxbuf=off,csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
+	
 	NET_MACADDR=$1
 	NET_BUS="${2:-virtio.$NET_VIRTIO_CURRENT_SLOT}"
 	NET_ADDR="${3:-'0'}"	
 	DEVICE=${4:-virtio-net-pci}
-
+	OPTS=${5:-$DISABLE_OFFL}
 	echo "'$NET_BR::$NET_VF _add_virtio_device -> NET_MACADDR=$NET_MACADDR NET_BUS=$NET_BUS NET_ADDR=$NET_ADDR DEVICE=$DEVICE"
-	#DISABLE_OFFLX=",csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
-	#DISABLE_OFFL=",csum=on,gso=on,guest_tso4=on,guest_tso6=on,guest_ecn=on"
-	DISABLE_OFFL=",mrg_rxbuf=off"
+	#DISABLE_OFFL=",mrg_rxbuf=off"
+	ENABLE_MQ=",mq=on,vectors=8"
+	QUEUE_SIZE=",tx_queue_size=1024,rx_queue_size=1024"
 	VTM=""
 	if [[ "$VIRTIO_MODE" = "modern" ]]; then
-		VTM=""
-		VTM=",disable-legacy=on,disable-modern=off,modern-pio-notify=on"
+		VTM=",disable-legacy=on,disable-modern=off,modern-pio-notify=on,ats=on"$DISABLE_OFFL""$ENABLE_MQ""$QUEUE_SIZE
+		#VTM=""
 	else 
-		VTM=",disable-legacy=off,disable-modern=off"
+		VTM=",disable-legacy=off,disable-modern=on"$QUEUE_SIZE""$DISABLE_OFFL
 	fi
-
+#,mq=on,vectors=6
 	QEMU_OPTS+=(
- 		-device $DEVICE$DISABLE_OFFL,bus=$NET_BUS,addr=$NET_ADDR,mq=on,vectors=6,netdev=net$NET_INDEX,mac=$NET_MACADDR$VTM
+ 		-device $DEVICE""$VTM,bus=$NET_BUS,addr=$NET_ADDR,netdev=net$NET_INDEX,mac=$NET_MACADDR
 	)
 	let NET_VIRTIO_CURRENT_SLOT=$NET_VIRTIO_CURRENT_SLOT+1
 }

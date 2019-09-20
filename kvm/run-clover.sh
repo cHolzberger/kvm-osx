@@ -31,9 +31,7 @@ for i in "${QMP_CMD_POST[@]}" ; do
 	qmp-send "$MACHINE" "$i"
 done
 
-if [ -e $VM_PREFIX/$MACHINE/usb-attach ]; then
-       $VM_PREFIX/$MACHINE/usb-attach 
-fi       
+      
 
 #$SCRIPT_DIR/../bin/console $MACHINE
 $SCRIPT_DIR/machine-info "$MACHINE:$SEAT"

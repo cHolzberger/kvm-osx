@@ -1,0 +1,3 @@
+#!/bin/bash
+
+backup-cmd snapshots 2>/dev/null || backup-cmd init

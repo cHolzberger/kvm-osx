@@ -5,9 +5,9 @@ QEMU_OPTS=(
  -nodefaults
  -enable-kvm 
  -m $MEM 
- -machine pc-q35-3.0,accel=kvm,usb=off,kernel-irqchip=on
+ -machine pc-q35-4.1,accel=kvm,usb=off,kernel-irqchip=on
  -name "$MACHINE"
- -realtime mlock=off
+ -overcommit mem-lock=off,cpu-pm=off
  -smbios type=2
  -device "isa-applesmc,osk=\"ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc\""
  -rtc clock=vm,base=utc
@@ -22,6 +22,7 @@ QEMU_CFG+=(
  -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
 # -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
+ -readconfig $SCRIPT_DIR/../cfg/macinput.cfg 
 # -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
 )
 

@@ -1,0 +1,50 @@
+MTU=1500
+
+function create_t () {
+	BR_NR=$1
+	IP=$2
+	
+	ip link add vppbr$BR_NR type veth peer name vbr$BR_NR
+	ip link set vbr$BR_NR up
+	ip link set vbr$BR_NR mtu $MTU
+	ip link set vppbr$BR_NR mtu $MTU
+	ip addr add $IP dev vbr$BR_NR
+	ethtool -K vbr$BR_NR rx off tx off
+	ip link set vppbr$BR_NR up
+	vppctl create host-interface name vppbr$BR_NR
+	vppctl set interface state host-vppbr$BR_NR up
+	vppctl set interface l2 bridge host-vppbr$BR_NR $BR_NR
+}
+
+function set_v () {
+	BR_NR=$1
+	UPLINK=$2
+
+	vppctl set interface state $UPLINK down
+	vppctl set interface l2 bridge $UPLINK $BR_NR
+	vppctl set interface mtu $UPLING $MTU
+	vppctl set interface state $UPLINK up
+
+
+}
+
+function info_t () {
+	BR_NR=$1
+	vppctl show bridge-domain $BR_NR detail
+	vppctl show l2fib verbose
+}
+UPLINK="TenGigabitEthernet2/0/0"
+BR_NR=1
+
+create_t $BR_NR 192.168.254.31/24
+set_v $BR_NR $UPLINK
+info_t $BR_NR
+
+UPLINK="TenGigabitEthernet2/0/1"
+BR_NR=2
+
+set_v $BR_NR $UPLINK
+
+create_t $BR_NR 10.110.0.2/24
+info_t $BR_NR
+

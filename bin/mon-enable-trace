@@ -20,4 +20,4 @@ fi
 SOCKET=$MACHINE_PATH/var/control
 
 source $MACHINE_PATH/config
-mon-send "$MACHINE" 'info usbhost'
+mon-send "$MACHINE" 'trace-file set '$MACHINE_PATH'/var/trace.log'

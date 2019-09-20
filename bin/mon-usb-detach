@@ -18,6 +18,8 @@ if [ ! -d "$MACHINE_PATH" ]; then
 fi
 
 STATE=$MACHINE_PATH/var/usb_state
+
+touch $STATE
 VENDOR_ID=$( echo $2 | cut -d":" -f 1 )
 PRODUCT_ID=$( echo $2 | cut -d":" -f 2 )
 HOST_BUS=$( echo $3 | cut -d":" -f 1 )
@@ -26,8 +28,7 @@ source $MACHINE_PATH/config
 [[ ! -z $HOST_ADDR ]] && HOST_ADDR=,hostaddr=$HOST_ADDR
 [[ ! -z $HOST_BUS ]] && HOST_BUS=,hostbus=$HOST_BUS
 
-if ! contains "$VENDOR_ID$PRODUCT_ID" $STATE; then
-	mon-send "$MACHINE" 'device_add usb-host,guest-reset=off'$HOST_BUS$HOST_ADDR',id=usb_'$VENDOR_ID$PRODUCT_ID',vendorid=0x'$VENDOR_ID',productid=0x'$PRODUCT_ID && echo "$VENDOR_ID:$PRODUCT_ID" >> $STATE
-exit 0
-fi 
-exit 1
+echo $VENDOR_ID $PRODUCT_ID
+if contains "$VENDOR_ID:$PRODUCT_ID" $STATE ; then
+mon-send "$MACHINE" 'device_del usb_'$VENDOR_ID$PRODUCT_ID && cat >> $STATE <<< $( grep -x -v "$VENDOR_ID:$PRODUCT_ID" $STATE ) 
+fi

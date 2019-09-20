@@ -1,0 +1,29 @@
+#!/bin/bash 
+
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/../kvm/lib-helper.sh
+source $SCRIPT_DIR/config-common
+source $SCRIPT_DIR/config-machine
+
+WANT_SEAT=$(echo $1 | cut -d":" -f 2)
+WANT_MACHINE=$(echo $1 | cut -d":" -f 1)
+
+MACHINE=${WANT_MACHINE:-"default"}
+SEAT=${WANT_SEAT:-"$MACHINE"}
+
+if [ ! -d "$MACHINE_PATH" ]; then
+	echo "Machine $MACHINE does not exists"
+	echo "Reason: $MACHINE_PATH does not exist"
+	exit 1
+fi
+
+
+
+echo "==> Detaching Devices..."
+for i in $( mon-send machine-js "qom-list /objects"  | grep "(child<input-linux>)" | grep evdev | cut -d " " -f 1 ); do
+mon-evdev-detach $MACHINE "$i"
+done
+
+for i in $(cat $MACHINE_PATH/var/usb_state | grep -v "#usb"); do
+mon-usb-detach $MACHINE "$i"
+done

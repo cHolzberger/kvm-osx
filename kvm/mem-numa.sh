@@ -1,5 +1,11 @@
-if [ "$NUMA_NODES" -lt 1 ]; then
+if [[ ! -z "1" ]]; then
 	NUMA_NODES=1
+	MEMORY_FLAGS+=(
+		-m ${MEM}
+		-object memory-backend-file,mem-path=$MEM_PATH,size=${MEM},id=mem,share=on,prealloc=yes
+		-numa node,memdev=mem
+ 		-mem-prealloc
+	)
 else
 	MEM_DIVIDED=$(( $MEMORY / $NUMA_NODES ))
 	CPUS_PER_NODE=$(( $NUM_CPUS / $NUMA_NODES ))

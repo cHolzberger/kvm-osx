@@ -6,7 +6,7 @@ QEMU_OPTS=(
  -m $MEM 
  -machine pc,accel=kvm,usb=off
  -name "$MACHINE"
- -realtime mlock=off
+ -overcommit mem-lock=off,cpu-pm=off
  -smbios type=2
  -device "isa-applesmc,osk=\"ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc\""
  -nographic

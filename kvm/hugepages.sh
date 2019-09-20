@@ -19,6 +19,6 @@ if [[ "$MOUNTED" == "0" ]]; then
 fi
 
 QEMU_OPTS+=( 
- -mem-path $MEM_PATH
- -mem-prealloc
+# -mem-path $MEM_PATH
+# -mem-prealloc
 )

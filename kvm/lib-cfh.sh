@@ -19,8 +19,12 @@ function add_hyperv_flags() {
 		hv_relaxed=on
 		hv_spinlocks=0x8191
 		hv_time=on
-		hv_stimer=on
-		#hv_synic=on
+		hv_evmcs
+		hv_tlbflush
+		hv_ipi
+		hv_vapic
+	#	hv_stimer=on
+	#	hv_synic=on
 		hv_vpindex=on
 		#+kvm_pv_unhalt
 		#hv_reset
