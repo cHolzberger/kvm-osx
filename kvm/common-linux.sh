@@ -2,7 +2,7 @@
 QEMU_MACHINE="q35"
 VIRTIO_MODE="modern"
 
-QEMU_OPTS=(
+QEMU_OPTS+=(
  -no-user-config
  -nodefaults
  -enable-kvm 
@@ -56,7 +56,7 @@ elif [[ "$QEMU_MACHINE" == "q35" ]]; then
 )
 	QEMU_OPTS+=(
  	-machine q35,accel=kvm,kernel_irqchip=split,vmport=off
- 	-readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
+# 	-readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
 )
 fi
 
@@ -71,5 +71,5 @@ QEMU_OPTS+=(
  -name "$MACHINE"
 # -smbios type=2
  -rtc base=utc
-  -overcommit mem-lock=off,cpu-pm=off
+  -overcommit mem-lock=on,cpu-pm=off
 )

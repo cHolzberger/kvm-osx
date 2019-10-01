@@ -1,0 +1,47 @@
+#!/bin/bash
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/config-common
+
+echo '<user-mapping><authorize username="kvm" password="pass">'
+set -o allexport
+for MACHINE_PATH  in /srv/kvm/vms/*; do
+if [ -e $MACHINE_PATH/var/pid ]; then
+	p=$(cat $MACHINE_PATH/var/pid)
+	if [ -e "/proc/$p" ]; then
+		vm=$(basename $MACHINE_PATH)
+		MACHINE_NAME=$(basename $MACHINE_PATH)
+		
+		source $MACHINE_PATH/config 
+		source $SEAT_PREFIX/seat-$MACHINE_NAME
+		P=$( echo $GFX_VNCPORT | sed -e s/://g )
+		PORT=$(( P + 5900 ))
+
+		cat <<-EOF
+		<connection name="$MACHINE_NAME (QEMU)">
+		<protocol>vnc</protocol>
+		<param name="hostname">192.168.254.31</param>
+		<param name="port">$PORT</param>
+		<param name="password">secret</param>
+		</connection>
+		EOF
+
+		if [[ ! -z $REMOTE_DESKTOP_NATIVE ]]; then
+			MACHINE_IP=$( qga-get-first-ip $MACHINE_NAME)
+			cat <<-EOF
+			<connection name="$MACHINE_NAME">
+			<protocol>$REMOTE_DESKTOP_NATIVE_PROTOCOL</protocol>
+			<param name="hostname">$MACHINE_IP</param>
+			<param name="port">$REMOTE_DESKTOP_NATIVE_PORT</param>
+			<param name="username">\${GUAC_PROMPT}</param>
+			<param name="password">\${GUAC_PROMPT}</param>
+			</connection>
+			EOF
+		fi
+
+
+
+	fi	
+fi
+
+done
+echo '</authorize></user-mapping>' 

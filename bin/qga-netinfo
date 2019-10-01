@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/config-common
+source $SCRIPT_DIR/config-machine
+source $SCRIPT_DIR/config-machine-cmd
+shift
+
+qga-send $MACHINE '{"execute": "guest-network-get-interfaces"}' | jq -C 

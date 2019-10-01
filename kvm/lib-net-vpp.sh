@@ -78,7 +78,7 @@ function add_vpptap_iface() {
 	PRE_CMD+=(
 		"[[ -e $IFNAME ]] && VPPPORT=\$( cat $IFNAME ) && vppctl delete tap \$VPPPORT && rm $IFNAME && echo Destroyed \$VPPPORT"
 		"echo '$NETDEV::$VTAP_NAME * creating $VTAP_NAME'"
-		"VPPPORT=\$( vppctl create tap host-if-name $VTAP_NAME | tee $IFNAME )"
+		"VPPPORT=\$( vppctl create tap host-if-name $VTAP_NAME hw-addr 52:54:00:AB:2E:ED host-mac-addr 52:54:00:AB:2E:ED | tee $IFNAME )"
 		"vppctl set interface state \$VPPPORT up"
 		"vppctl set interface mtu 1500 \$VPPPORT "
 		"vppctl set interface l2 bridge \$VPPPORT $NET_BR"

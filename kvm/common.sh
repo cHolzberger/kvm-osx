@@ -13,6 +13,14 @@ else
 	)
 fi
 
+QEMU_OPTS+=(
+	-chardev socket,id=monitor,path=$MACHINE_PATH/var/monitor,server,nowait 
+	-chardev socket,id=qmp,path=$MACHINE_PATH/var/qmp,nowait,server	
+	-chardev socket,id=tty0,path=$MACHINE_POATH/var/tty0,nowait,server
+	-monitor chardev:monitor	
+	-qmp chardev:qmp
+	-serial chardev:tty0
+)
 #could be pcie-root-port
 USB_ROOT_PORT=${USB_ROOT_PORT:-"pcie-root-port"}
 NET_ROOT_PORT=${NET_ROOT_PORT-"pcie-root-port"}

@@ -17,13 +17,11 @@ if [ ! -d "$MACHINE_PATH" ]; then
 	exit 1
 fi
 
-
-
-echo "==> Detaching Devices..."
-for i in $( mon-send machine-js "qom-list /objects"  | grep "(child<input-linux>)" | grep evdev | cut -d " " -f 1 ); do
-mon-evdev-detach $MACHINE "$i"
+echo "==> Detaching Devices from $MACHINE..."
+for i in $( mon-send $MACHINE "qom-list /objects"  | grep "(child<input-linux>)" | grep evdev | cut -d " " -f 1 ); do
+	mon-evdev-detach "$MACHINE" "$i"
 done
 
-for i in $(cat $MACHINE_PATH/var/usb_state | grep -v "#usb"); do
-mon-usb-detach $MACHINE "$i"
+for i in  $( /srv/kvm/OSX-KVM/bin/mon-info $MACHINE usb | grep "usb_" | cut -d":" -f 2 | xargs echo );  do
+	mon-usb-detach "$MACHINE" "$i"
 done

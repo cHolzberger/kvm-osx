@@ -2,6 +2,10 @@
 
 modprobe vfio-pci
 
+fbcon-unbind
+
+sleep 2
+
 for dev in "$@"; do
 	current_override=$(cat /sys/bus/pci/devices/$dev/driver_override)
 	vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
@@ -34,11 +38,13 @@ for dev in "$@"; do
 	
 	echo -n $vendor $device > /sys/bus/pci/drivers/vfio-pci/remove_id
 	
-	if [ "x" == "y" ]; then
+	if [ ! -z "$GPU_AMD_RESET" ]; then
+		echo "Removing GPU"
 		echo -n 1 > /sys/bus/pci/devices/$dev/remove
+		sleep 2
+		echo "Rescanning PCI BUS"
 		echo -n 1 > /sys/bus/pci/rescan
 	fi
-
 done
 #echo 1b73 1100 > /sys/bus/pci/drivers/vfio-pci/new_id
 #echo 1002 679a >  /sys/bus/pci/drivers/vfio-pci/new_id

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "running">>/tmp/log.in
+while [[ ! -z $1 ]]; do
+	echo "$1">>/tmp/log.in
+	echo $1 
+	read r
+	echo $r >&3
+	echo "$r">>/tmp/log.in
+	shift
+done

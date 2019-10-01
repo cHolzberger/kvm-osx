@@ -42,7 +42,7 @@ done
 
 
 echo "Setra for lvm"
-ls -d /dev/vg-* && for i in /dev/vg-*/*; do
+ls -d /dev/vg* && for i in /dev/vg*/*; do
 	echo $i
 	blockdev --setra 16384 $i
 done

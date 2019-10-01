@@ -31,10 +31,10 @@ fi
 
 shift
 
-while [[ $# -gt 0 ]]; do
-	echo $1
-sleep 2
-printf '{ "execute": "qmp_capabilities" } %s' "$1" | nc -U -w 10 "$SOCKET_QMP" 
-shift
-done 
-echo $?
+CMD=( 
+	'{ "execute": "qmp_capabilities" }'
+	${@}
+)	
+echo "${CMD[@]} > $SOCKET_QMP" >&2
+
+printf '%s\n' "${CMD[@]}" | nc -U -w 10 "$SOCKET_QMP"  | jq -s ".[2:]"

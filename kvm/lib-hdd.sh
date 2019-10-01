@@ -28,7 +28,7 @@ export LIBISCSI_TARGET_CHAP_USERNAME
 export LIBISCSI_TARGET_CHAP_PASSWORD
 	
 : ${INDEX:=0}
-
+: ${BOOTINDEX:=0}
 : ${DISK_INIT:=true}
 
 if [ $DISK_INIT == true ]; then
@@ -114,9 +114,11 @@ function add_virtio_pci_disk() {
 
 	QEMU_OPTS+=( 
 	-object iothread,id=iothread$name,poll-max-ns=20,poll-grow=4,poll-shrink=0
-	-device virtio-blk-pci,ioeventfd=on,num-queues=8,drive=${name}HDD,scsi=off,bootindex=$INDEX,iothread=iothread$name,multifunction=on$VTM
+	-device virtio-blk-pci,ioeventfd=on,num-queues=8,drive=${name}HDD,scsi=off,bootindex=${BOOTINDEX},iothread=iothread$name,multifunction=on$VTM
 	-drive id=${name}HDD,if=none,$diskarg
 	)
+
+	BOOTINDEX=$((BOOTINDEX+1))
         let INDEX=INDEX+1
         let VBLK_INDEX=VBLK_INDEX+1
 	echo "Adding Virtio-PCI Disk: $name -> $diskarg"
@@ -206,9 +208,9 @@ function add_virtio_scsi_disk() {
 		"bus=$CONTROLLER"
 		"lun=$VSCSI_INDEX"
 		"drive=${name}HDD"
-		"bootindex=$INDEX"
+		"bootindex=${BOOTINDEX}"
 	)
-
+	BOOTINDEX=$(( BOOTINDEX + 1 ))
 	_DRIVE=(
 		"id=${name}HDD"
 		"if=none"
@@ -245,9 +247,20 @@ function add_ahci_disk() {
         let AHCI_INDEX=AHCI_INDEX+1
 	QEMU_OPTS+=( 
 #		-device ich9-ahci,id=ahci$INDEX,addr=4,bus=pcie.0
-		-device ide-hd,bus=ide.$AHCI_INDEX,drive=${name}HDD,bootindex=$AHCI_INDEX
+		-device ide-hd,bus=ide.$AHCI_INDEX,drive=${name}HDD,bootindex=$BOOTINDEX
 		-drive id=${name}HDD,if=none,$(diskarg $name)
 	)
+	BOOTINDEX=$((BOOTINDEX+1))
 }
 
+function add_ahci-raw_disk() {
+	add_ahci_disk ${@}
+}
 
+function add_virtio-blk-raw_disk() {
+	add_virtio_pci_disk ${@}
+}
+
+function add_virtio-scsi-raw_disk () {
+	add_virtio_scsi_disk ${@}
+}

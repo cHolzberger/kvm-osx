@@ -1,9 +1,8 @@
 #!/bin/bash
 # openbsd-nc is important! 
 SCRIPT_DIR=$(dirname $(readlink -f $0))
-source $SCRIPT_DIR/../kvm/lib-helper.sh
-source $SCRIPT_DIR/config-common
-source $SCRIPT_DIR/config-machine
+
+source $SCRIPT_DIR/config-machine-cmd
 
 if [ "x$MACHINE" == "x" ]; then
 	echo "Usage:"
@@ -19,15 +18,23 @@ fi
 
 STATE=$MACHINE_PATH/var/evdev_state
 ID="$( cat $STATE )"
-EVDEV="$2"
+
+EVTYPE="$2"
+EVPROPS="$3"
 source $MACHINE_PATH/config
 
-#if ! contains $ID $STATE; then
-	mon-send "$MACHINE" "object_add id=evdev_$ID,qom-type=$EVDEV"  
-	echo	"$(( ID +1 ))" > $STATE 
-	exit 0
-#else 
-#	echo "$ID $STATE allready connected"
-#fi
+cat <<-END > $MACHINE_PATH/var/evdev_$ID.json
+{ "execute": "qmp_capabilities" }
+{
+	"execute": "object-add",
+	"arguments": {
+		"id": "evdev_$ID",
+		"qom-type": "$EVTYPE",
+		"props": $EVPROPS
+	
+	}
+}
+END
 
-exit 1
+cat $MACHINE_PATH/var/evdev_$ID.json | "$SCRIPT_DIR/qmp-pipe" $MACHINE
+echo	"$(( ID +1 ))" > $STATE 

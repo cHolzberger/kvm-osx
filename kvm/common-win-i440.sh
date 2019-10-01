@@ -7,7 +7,7 @@ QEMU_CFG+=(
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
  -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
 )
-QEMU_OPTS=(	
+QEMU_OPTS+=(	
  -no-user-config
  -nodefaults
  -nographic

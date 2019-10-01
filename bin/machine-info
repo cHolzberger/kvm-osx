@@ -29,20 +29,24 @@ if [ ! -e "$MACHINE_PATH/config" ]; then
 	echo "Reason: 'config' does not exist in $MACHINE_PATH"
 	exit 2
 fi
+source $MACHINE_PATH/config
 
 if [ ! -e "$MACHINE_PATH/var/pid" ]; then
 	echo "Machine is not running... exiting"
 	exit 1
 fi
+QEMU_PID=$(<$MACHINE_PATH/var/pid)
+if [ -! e "/proc/$QEMU_PID" ]; then
+	echo "ERRROR: PID-File exists but machine seems not to be runnig"
+	exit 4
+fi
 
 #LOADING MACHINE CONFIG
-source $MACHINE_PATH/config
 source $SEAT_PREFIX/seat-$WANT_SEAT
 source $SCRIPT_DIR/../kvm/lib-cpu.sh
 
-
 SOCKET=$MACHINE_PATH/var/control
-QEMU_PID=$(<$MACHINE_PATH/var/pid)
+clear 
 
 printf "*******************************\n"
 printf "******** $WANT_MACHINE ( $(date) )\n"
@@ -83,3 +87,7 @@ function query() {
 }
 
 #query || :
+echo "Stderr:"
+tail $MACHINE_PATH/var/qemu.stderr.log
+echo "Stdout:"
+tail $MACHINE_PATH/var/qemu.stdout.log

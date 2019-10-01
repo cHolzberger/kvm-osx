@@ -1,6 +1,6 @@
 #+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
 
-QEMU_OPTS=(	
+QEMU_OPTS+=(	
  -no-user-config
  -nodefaults
  -enable-kvm 
@@ -9,12 +9,12 @@ QEMU_OPTS=(
  -name "$MACHINE"
  -overcommit mem-lock=off,cpu-pm=off
  -smbios type=2
- -device "isa-applesmc,osk=\"ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc\""
  -rtc clock=vm,base=utc
  -nographic
  -usb
 )
-
+# -device "isa-applesmc,osk=\"ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc\""
+# using virtualsmc.efi i nstread
 VPCI_BUS=(  0x1c.0:on 0x1c.1:off 0x1c.2:on 0x1c.3:off 0x1c.4:off 0x1c.5:off 0x1c.6:off
        0x1c.7:off 0x1c.8:off 0x11:off 0x12:off 0x13:off 0x14:off 0x15:off 0x16:off 0x17:off )
 

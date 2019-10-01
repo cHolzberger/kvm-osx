@@ -1,29 +1,37 @@
 CPU=(
-IvyBridge
-kvm=off
+host
+kvm=on
 vmware-cpuid-freq=on
 l3-cache=on
+topoext=on
+vendor=GenuineIntel
 )
+
+#hide kvm from guest, enable tsc timer
 
 CPUFLAGS=(
 +invtsc
++pcid
++ssse3
++sse4.2
++popcnt
 +aes
-+apic
-+xsave
 +avx
-+xsaveopt
-+smep
--tsc-deadline
++avx2
++xsave
++xsaveopt,
++vmx
++bmi2,+smep,+bmi1,+fma,+movbe
++x2apic
 )
-
 OIFS="$IFS"
 IFS=","
 #
 QEMU_OPTS+=(
  -cpu "${CPU[*]}","${CPUFLAGS[*]}"
  -smp "$CPU_SMP"
- -global kvm-pit.lost_tick_policy=discard
  -global ICH9-LPC.disable_s3=1
+# -no-hpet
 )
 
 IFS="$OIFS"

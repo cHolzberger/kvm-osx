@@ -27,7 +27,22 @@ source $MACHINE_PATH/config
 [[ ! -z $HOST_BUS ]] && HOST_BUS=,hostbus=$HOST_BUS
 
 if ! contains "$VENDOR_ID$PRODUCT_ID" $STATE; then
-	mon-send "$MACHINE" 'device_add usb-host,guest-reset=off'$HOST_BUS$HOST_ADDR',id=usb_'$VENDOR_ID$PRODUCT_ID',vendorid=0x'$VENDOR_ID',productid=0x'$PRODUCT_ID && echo "$VENDOR_ID:$PRODUCT_ID" >> $STATE
+ID="usb_$VENDOR_ID$PRODUCT_ID"
+cat <<-END > $MACHINE_PATH/var/usbhost_$ID.json
+{ "execute": "qmp_capabilities" }
+{ "execute": "device_add",
+ "arguments": {
+	"driver": "usb-host",
+	"guest-reset": "off",
+	"id": "$ID",
+	"vendorid": "0x$VENDOR_ID",
+	"productid": "0x$PRODUCT_ID"
+}
+}
+END
+
+cat $MACHINE_PATH/var/usbhost_$ID.json | "$SCRIPT_DIR/qmp-pipe" $MACHINE
+#	mon-send "$MACHINE" 'device_add usb-host,guest-reset=off'$HOST_BUS$HOST_ADDR',id=usb_'$VENDOR_ID$PRODUCT_ID',vendorid=0x'$VENDOR_ID',productid=0x'$PRODUCT_ID && echo "$VENDOR_ID:$PRODUCT_ID" >> $STATE
 exit 0
 fi 
 exit 1

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+exec 2>&4
+read r # QEMU Machine
+	echo $@
+	IFS="" read r #command echo
+	read r # first line
+	echo ""
+	while [[ "${r:0:6}" != "(qemu)" ]]; do
+		printf "%s\n" "$r" >&3
+		IFS=$'\n' read -r r
+	done

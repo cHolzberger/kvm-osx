@@ -1,22 +1,10 @@
 #!/bin/bash
-# openbsd-nc is important! 
+set -o allexport 
 SCRIPT_DIR=$(dirname $(readlink -f $0))
-source $SCRIPT_DIR/../kvm/lib-helper.sh
-source $SCRIPT_DIR/config-common
-source $SCRIPT_DIR/config-machine
-
-if [ "x$MACHINE" == "x" ]; then
-	echo "Usage:"
-	echo "$0 [machine-name]"
-	exit 3
-fi
-
-if [ ! -d "$MACHINE_PATH" ]; then
-	echo "Machine $MACHINE does not exists"
-	echo "Reason: $MACHINE_PATH does not exist"
-	exit 1
-fi
+source $SCRIPT_DIR/config-machine-cmd
 
 EVDEV="$2"
-source $MACHINE_PATH/config
-mon-send "$MACHINE" "object_del $EVDEV"
+cat <<-END | $SCRIPT_DIR/qmp-pipe $MACHINE
+	{ "execute": "qmp_capabilities" }
+	{ "execute": "object-del", "arguments": { "id": "$EVDEV" } }
+END

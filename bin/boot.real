@@ -45,6 +45,7 @@ echo -e "\tRunning from: $SCRIPT_DIR"
 cd $RUNTIME_PATH
 echo "[GENCONFIG] running..."
 source kvm/genconfig.sh
+
 echo [RUN] starting VM
 source kvm/run-clover.sh
 #source kvm/run-chrt.sh

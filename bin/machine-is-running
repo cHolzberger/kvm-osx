@@ -1,0 +1,27 @@
+#!/bin/bash
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+source $SCRIPT_DIR/config-common
+source $SCRIPT_DIR/config-machine
+
+
+VERBOSE=0
+if [[ "$1" == "-v" ]]; then
+	VERBOSE=1
+fi
+
+_sum=0
+
+if [ -e $MACHINE_PATH/var/pid ]; then
+	p=$(cat $MACHINE_PATH/var/pid)
+else 
+	echo "Machine not running" >&2
+	exit 1
+fi
+
+if [ -e "/proc/$p" ]; then
+	echo "Machine running"
+	exit 0
+fi	
+
+echo "Machine not runnning"
+exit 1

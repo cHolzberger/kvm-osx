@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # start execution
 QMP_CMD=(
 '{ "execute": "qmp_capabilities" }'
@@ -20,7 +22,7 @@ source kvm/bios-$BIOS.sh
 source kvm/cpu-$CPU_MODEL.sh
 source kvm/usb-$USB_MODE.sh
 source kvm/gfx-$GFX_MODE.sh
-source kvm/hdd-$HDD_MODE.sh
+source kvm/hdd-uni.sh
 source kvm/teradici.sh 
 source kvm/vm-genid.sh
 
@@ -48,7 +50,7 @@ fi
 
 CMD="qemu-system-x86_64"
 MON_PATH="$VM_PREFIX/$MACHINE/var"
-SOCKET=$MACHINE_PATH/var/control
+SOCKET=$MACHINE_PATH/var/qmp
 
 set -e 
 #CMD="taskset  -c ${USE_CPUS[*]} $CMD"
@@ -58,19 +60,11 @@ set -e
 IFS="$OIFS"
 # qemu gets io priority
 
-cat > $MACHINE_PATH/run <<-END
-#!/bin/bash
-source /srv/kvm/vms/config
-source /srv/kvm/vms/config.host
-cd "$MACHINE_PATH" 
-MACHINE='$MACHINE'
 
-function on_begin() {
-  	[[ "$USE_HUGEPAGES" = "1" ]] && source $SCRIPT_DIR/../kvm/hugepages.sh
-	$(printf "%s" "${PRE_CMD[@]/#/$'\n'}")
-}
 
-function on_run() {
+cat > $MACHINE_PATH/on-run <<-END
+exec ${OPEN_FD[@]}
+
 $CMD \
 	-serial unix:$MACHINE_PATH/var/console,server,nowait \
        ${CLOVER_OPTS[@]} \
@@ -91,48 +85,73 @@ $CMD \
 	-D $MACHINE_PATH/var/debug.log \
 	-global isa-debugcon.iobase=0x402 \
 	-debugcon file:$MACHINE_PATH/var/d.log \
-	-boot menu=on \
-	${OPEN_FD[@]} &
+	-boot menu=on 
+
+END
+
+cat > $MACHINE_PATH/on-exit <<-END
+MACHINE=$MACHINE
+
+set -euo pipefail
+source /srv/kvm/vms/config
+source /srv/kvm/vms/config.host
+
+	${POST_CMD[@]}
+
+	[[ "$USE_HUGEPAGES" = "1" ]] && echo "Freeing Hugepages" && source $SCRIPT_DIR/../kvm/hugepages_free.sh
+ if [[ -e $MACHINE_PATH/var/pid ]]; then
+        p="\$(cat $MACHINE_PATH/var/pid)"
+ 	if [[ ! -z \$p ]]; then
+		if [ -e "/proc/\$p" ]; then
+                	kill \$p
+        	fi	
+
+		rm $MACHINE_PATH/var/pid
+ 	fi
+ fi
+
+END
+
+cat > $MACHINE_PATH/run <<-END
+#!/bin/bash
+
+set -euo pipefail
+source /srv/kvm/vms/config
+source /srv/kvm/vms/config.host
+cd "$MACHINE_PATH" 
+MACHINE='$MACHINE'
+
+function pre_run() {
+	export GFX_AMD_UNBIND="$GFX_AMD_UNBIND"
+
+	[[ "$FBCON_UNBIND" == "1" ]] && fbcon-unbind 
+  	[[ "$USE_HUGEPAGES" = "1" ]] && source $SCRIPT_DIR/../kvm/hugepages.sh
+	$(printf "%s" "${PRE_CMD[@]/#/$'\n'}")
+}
+
+function on_run() {
+	source $MACHINE_PATH/on-run
 }
 
 function on_exit() {
  err="$?"
 
+ echo "Exit Code: $err" 
  echo "Done ... cleaing up"
  trap '' EXIT 
 
+ $MACHINE_PATH/on-exit &
 
-  $(printf "%s" "${POST_CMD[@]/#/$'\n'}")
-
-   echo "Exit Code: $err" 
- if [[ -e $MACHINE_PATH/var/pid ]]; then
-        p="\$(cat $MACHINE_PATH/var/pid)"
-        
-	rm $MACHINE_PATH/var/pid
- 
-	echo "Freeing Hugepages"
- 	[[ "$USE_HUGEPAGES" = "1" ]] && source $SCRIPT_DIR/../kvm/hugepages_free.sh
-
-	if [ -e "/proc/$p" ]; then
-                kill $p
-        fi
-
- fi
  exit $err
 }
 
 trap on_exit EXIT 
 
-on_begin
+pre_run
 on_run
-CMD_PID=\$!
-
-if [[ ! -z \$VIRT_INPUT ]]; then
-	echo "0" > $MACHINE_PATH/var/evdev_state
-	echo "#usb" > $MACHINE_PATH/var/usb_state
-	input-attach $MACHINE
-fi 
 END
 
 chmod u+x $VM_PREFIX/$MACHINE/run
+chmod u+x $VM_PREFIX/$MACHINE/on-run
+chmod u+x $VM_PREFIX/$MACHINE/on-exit
 CMD=$MACHINE_PATH/run

@@ -1,14 +1,12 @@
 #+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
 
 QEMU_OPTS=(	
- -device intel-iommu
  -enable-kvm 
  -m $MEM 
- -machine pc,accel=kvm,usb=off
+ -machine pc,accel=kvm
  -name "$MACHINE"
  -overcommit mem-lock=off,cpu-pm=off
  -smbios type=2
- -device "isa-applesmc,osk=\"ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc\""
  -nographic
  -rtc clock=vm,base=utc
 )

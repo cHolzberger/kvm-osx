@@ -15,7 +15,7 @@ echo "==> Attaching Devices to $MACHINE"
 echo "-> EVDEV"
 for i in "${EVDEV_DEVICE[@]}"; do
 echo " -> $i"
-	mon-evdev-attach $MACHINE "$i"
+	mon-evdev-attach $MACHINE  "input-linux" "$i"
 done
 echo "-> USB"
 for i in "${USB_DEVICE[@]}"; do

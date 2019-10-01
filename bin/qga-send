@@ -2,34 +2,14 @@
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 source $SCRIPT_DIR/config-common
 source $SCRIPT_DIR/config-machine
-
-WANT_SEAT=$(echo $1 | cut -d":" -f 2)
-WANT_MACHINE=$(echo $1 | cut -d":" -f 1)
-
-MACHINE=${WANT_MACHINE:-"default"}
-SEAT=${WANT_SEAT:-"$MACHINE"}
-
-MACHINE_PATH="$VM_PREFIX/$MACHINE"
-MACHINE_DISKS="$VM_PREFIX/$MACHINE/disks"
-
-if [ "x$MACHINE" == "x" ]; then
-	echo "Usage:"
-	echo "$0 [machine-name]"
-	exit 3
-fi
-
-if [ ! -d "$MACHINE_PATH" ]; then
-	echo "Machine $MACHINE does not exists"
-	echo "Reason: $MACHINE_PATH does not exist"
-	exit 1
-fi
-
-if [ ! -e "$MACHINE_PATH/config" ]; then
-	echo "Can't load $MACHINE"
-	echo "Reason: 'config' does not exist in $MACHINE_PATH"
-	exit 2
-fi
-
+source $SCRIPT_DIR/config-machine-cmd
 shift
 
-printf '%s' "$@" | nc -U -w 5 "$SOCKET_QGA" 
+while [[ $# -gt 0 ]]; do
+#	echo "[$SOCKET_QGA] $1" >&2
+	CMD=$1
+	RET=$(socat ${SOCKET_QGA} exec:"$SCRIPT_DIR/qga-sock '$CMD'",nofork 3>&1 4>&2 )
+	echo $RET
+	shift
+done 
+exit 0

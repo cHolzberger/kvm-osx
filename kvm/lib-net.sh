@@ -109,10 +109,34 @@ function add_macvtap_iface() {
 	FD="fd=${FD_INDEX}0"
 	VD="vhostfd=${FD_INDEX}1"
 	QEMU_OPTS+=(
- 		-netdev "tap,$FD,id=net$NET_INDEX,vhost=on,$VD" 
+ 		-netdev "tap,$FD,id=net$NET_INDEX,vhost=on,vhostforce=on,$VD" 
 	)
 	echo "Calling: $CB"
 	$CB "$NET_MACADDR" "$NET_BUS" "$NET_ADDR" "$QEMU_DEVICE"
+        let NET_INDEX=NET_INDEX+1                                                         
+}
+
+function add_bridge_iface() {
+	NET_BR="$1"
+	NET_MACADDR="$3"
+	NET_BUS=$4
+	NET_ADDR=$5	
+	NET_VLAN=$6
+	NET_MEMBER=$7
+	CB=${8:-_add_virtio_device} 
+	[[ -z "$NET_BR" ]] && echo "BR: Netdev empty" >&2  && return
+	[[ -z "$NET_MACADDR" ]] && echo "BR: Macaddr empty" >&2  && return
+	echo "'$NET_BR::$NET_VF Args -> NET_BR=$NET_BR NET_VF=$NET_VF NET_MACADDR=$NET_MACADDR NET_BUS=$NET_BUS NET_ADDR=$NET_ADDR NET_VLAN=$NET_VLAN QEMU_DEVICE=$QEMU_DEVICE CB=$CB NET_ARGS=$NET_ARGS"
+
+	VTAP_MACHINE=$(echo $MACHINE | sed -e s/-//g)
+	VTAP_MACHINE=${VTAP_MACHINE:0:11}
+	VTAP_NAME="t_${VTAP_MACHINE}n$NET_INDEX"
+
+	QEMU_OPTS+=(
+ 		"-netdev bridge,id=net$NET_INDEX,br=$NET_BR"
+	)
+	$CB $NET_MACADDR $NET_BUS $NET_ADDR
+
         let NET_INDEX=NET_INDEX+1                                                         
 }
 
@@ -130,64 +154,11 @@ function add_tap_iface() {
 	VTAP_MACHINE=$(echo $MACHINE | sed -e s/-//g)
 	VTAP_MACHINE=${VTAP_MACHINE:0:11}
 	VTAP_NAME="t_${VTAP_MACHINE}n$NET_INDEX"
-	if [[ ! -x /sys/class/net/$NET_BR ]]; then
-       	PRE_CMD+=( 
-		"echo BRIDGE Device does not exist: $NET_BR, ... creating it"
-       		"ip link add name $NET_BR type bridge"
-		"ip link set $NET_BR up"
-		)
-		if [[ ! -z "$NET_MEMBER" ]]; then
-		PRE_CMD+=(
-			"ip link set $NET_MEMBER up"
-			"ip link set $NET_MEMBER master $NET_BR"
-		)	
-		fi
-		fi
-
-	PRE_CMD+=(
-		"[[ -x /sys/class/net/$VTAP_NAME ]] && echo MACVTAP Device Exists: $VTAP_NAME, ... recreating it && ip tuntap del dev ${VTAP_NAME} mode tap"
-                "sleep 1"
-		"echo '$NETDEV::$VTAP_NAME * creating $VTAP_NAME'"
-                "ip tuntap add dev $VTAP_NAME mode tap"
-#                "ip tuntap link dev $VTAP_NAME mode tap"
-
-		"echo '$NETDEV::$VTAP_NAME -> add to $NET_BR'"
-		"ip link set $VTAP_NAME master $NET_BR"
-
-#		"echo '$NETDEV::$VTAP_NAME -> hairpin on'"
-#		"ip link set $VTAP_NAME type bridge_slave hairpin on"
-                
-		"sleep 1"
-                "TAPNUM_${NET_INDEX}=\$(< /sys/class/net/$VTAP_NAME/ifindex)"
-	)
-
-	POST_CMD+=(
-		"echo '$NETDEV::$VTAP_NAME <- del $VTAP_NAME'"
-		"ip tuntap del $VTAP_NAME mode tap"
-	)
-
-
-	if [[ "$NET_VLAN" = "isolated" ]]; then
-		PRE_CMD+=(
-		"echo '$NETDEV::$VTAP_NAME -> isolated on'"
-		"ip link set $VTAP_NAME type bridge_slave isolated on"
-		)
-	else 
-		PRE_CMD+=(
-		"echo '$NETDEV::$VTAP_NAME -> isolated off'"
-		"ip link set $VTAP_NAME type bridge_slave isolated off"
-		)
-	fi
-	PRE_CMD+=(
-		"echo '$NETDEV::$VTAP_NAME -> up'"
-		"ip link set $VTAP_NAME up"
-	)
 
 	QEMU_OPTS+=(
-		
- 		"-netdev tap,id=net$NET_INDEX,downscript=no,script=no,ifname=$VTAP_NAME"
+ 		"-netdev tap,id=net$NET_INDEX,downscript=/etc/qemu/tapdown,script=/etc/qemu/tapup,ifname=$VTAP_NAME"
 	)
-	_add_virtio_device $NET_MACADDR $NET_BUS $NET_ADD
+	_add_virtio_device $NET_MACADDR $NET_BUS $NET_ADDR
 
         let NET_INDEX=NET_INDEX+1                                                         
 }

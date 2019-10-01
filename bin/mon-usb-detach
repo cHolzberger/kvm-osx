@@ -29,6 +29,4 @@ source $MACHINE_PATH/config
 [[ ! -z $HOST_BUS ]] && HOST_BUS=,hostbus=$HOST_BUS
 
 echo $VENDOR_ID $PRODUCT_ID
-if contains "$VENDOR_ID:$PRODUCT_ID" $STATE ; then
 mon-send "$MACHINE" 'device_del usb_'$VENDOR_ID$PRODUCT_ID && cat >> $STATE <<< $( grep -x -v "$VENDOR_ID:$PRODUCT_ID" $STATE ) 
-fi

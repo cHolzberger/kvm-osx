@@ -1,12 +1,12 @@
 #+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
 # settings von https://forum.level1techs.com/t/increasing-vfio-vga-performance/133443/19
 
-QEMU_OPTS=(	
+QEMU_OPTS+=(	
  -no-user-config 
  -nodefaults 
  -enable-kvm 
 # -m $MEM 
- -machine q35,accel=kvm,kernel_irqchip=split,usb=off,dump-guest-core=off
+ -machine q35,accel=kvm,kernel_irqchip=on,usb=off,dump-guest-core=off
  -name "$MACHINE",process="qemu:q35:$MACHINE"
  -overcommit mem-lock=on,cpu-pm=off
  -smbios type=2

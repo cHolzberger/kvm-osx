@@ -1,0 +1,30 @@
+#!/bin/bash
+
+u=$RANDOM
+echo '{"execute": "guest-sync", "arguments": {"id": '$u' }}'
+
+read i 
+s=$( echo "$i" | jq -r ".return")
+
+if [[ "$s" != "$u" ]]; then
+	echo 'error_class="NO_SYNC"' >&3
+	echo "error_desc='cant sync with qemu'" >&3
+	exit 1
+fi 
+
+while [[ ! -z $1 ]]; do
+	IFS=$'\n'
+	echo $1 
+	read r
+	r=$(echo "$r" | jq -r ' paths(scalars) as $p | [ ( $p |  join("_")), getpath($p)] |  ( .[0] | gsub( "-"; "_")) +  @sh "=\(.[1])" ')
+	for l in "$r"; do
+		eval "set $l" >&3
+	done
+	printf "%s" "$r" >&3
+	if [[ ! -z $error_class ]]; then
+		exit 1
+	fi
+	shift
+done
+
+exit 0

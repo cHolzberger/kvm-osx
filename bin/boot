@@ -40,4 +40,15 @@ source $SCRIPT_DIR/../kvm/lib-helper.sh
 source $SCRIPT_DIR/cpu-performance.sh
 source $SCRIPT_DIR/hdd-performance.sh
 source $SCRIPT_DIR/reserve_hugepages.sh
-$SCRIPT_DIR/screen-session "$MACHINE" "$SEAT" 
+$SCRIPT_DIR/session "$MACHINE:$SEAT" "boot.real $MACHINE:$SEAT"
+
+for i in "1 2 3 4"; do
+       sleep 1	
+if ! wait-for-state $MACHINE running; then
+	echo "Error while starting the vm:"
+	echo $MACHINE:$MACHINE_PATH
+	
+	cat $MACHINE_PATH/var/qemu.stdout.log
+	cat $MACHINE_PATH/var/qemu.stderr.log
+fi
+done

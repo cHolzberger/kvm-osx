@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+export PATH=/opt/qemu-ms/bin:$PATH
 IMG=$1
 modprobe nbd max_part=8
 qemu-nbd --connect=/dev/nbd0 $IMG
