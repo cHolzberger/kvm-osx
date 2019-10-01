@@ -36,7 +36,7 @@ BIOS_OPTS+=()
  -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
 # -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
- -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
+# -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
  -machine q35,accel=kvm,mem-merge=off,vmport=off
 )
 

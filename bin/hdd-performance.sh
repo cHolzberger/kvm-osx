@@ -9,6 +9,11 @@
 # 64M of kernel memory if all disks hit an aio request at the same time.
 sysctl -w fs.aio-max-nr=1048576
 
+
+echo "Setting Disk Performance (need debugging)"
+
+(
+set +e
 ### disK PERFORMANcE
 ls -d /sys/class/block/nvme*/queue/ | while read i; do
 echo $i
@@ -70,3 +75,4 @@ echo -n 20000 > /proc/sys/vm/dirty_writeback_centisecs
 sysctl -w vm.dirty_bytes=16777216 #16Mb
 sysctl -w vm.dirty_background_bytes=835584 #mb
 sysctl -w vm.swappiness=1
+) 2>/dev/null 1>/dev/null

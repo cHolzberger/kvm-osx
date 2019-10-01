@@ -2,7 +2,7 @@
 source $SCRIPT_DIR/../kvm/lib-cfh.sh
 
 CPU=(
-Haswell
+host
 kvm=on
 l3-cache=on
 )

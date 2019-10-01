@@ -11,8 +11,9 @@ if [ -e /proc/sys/kernel/numa_balancing ]; then
 fi
 
 CPUCOUNT=$(ls /sys/bus/cpu/devices/ | wc -l)
+echo "Performance Settings for CPU"
 
-	echo "enable ksm for host"
+(
 echo -n 0 >  /sys/kernel/mm/ksm/run || true
 echo -n 0 > /sys/kernel/mm/ksm/merge_across_nodes || true
 sysctl -w kernel.sched_rt_runtime_us=-1 || true
@@ -40,3 +41,4 @@ echo -n 01 > /sys/bus/workqueue/devices/writeback/cpumask || :
 # THP can allegedly result in jitter. Better keep it off.
 #echo never > /sys/kernel/mm/transparent_hugepage/enabled
 echo 0 > /sys/bus/workqueue/devices/writeback/numa || :
+) 2>/dev/null 1>/dev/null

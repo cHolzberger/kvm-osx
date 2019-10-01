@@ -63,7 +63,15 @@ IFS="$OIFS"
 
 
 cat > $MACHINE_PATH/on-run <<-END
+export PATH="$PATH"
 exec ${OPEN_FD[@]}
+
+set -o allexport
+set -euo pipefail
+
+source /srv/kvm/vms/config
+source /srv/kvm/vms/config.host
+
 
 $CMD \
 	-serial unix:$MACHINE_PATH/var/console,server,nowait \
@@ -81,7 +89,6 @@ $CMD \
 	-S \
 	-pidfile $MON_PATH/pid \
 	-writeconfig $MACHINE_PATH/qemu.cfg \
-	-d unimp,trace:vm_state_notify \
 	-D $MACHINE_PATH/var/debug.log \
 	-global isa-debugcon.iobase=0x402 \
 	-debugcon file:$MACHINE_PATH/var/d.log \
@@ -90,9 +97,12 @@ $CMD \
 END
 
 cat > $MACHINE_PATH/on-exit <<-END
+export PATH="$PATH"
 MACHINE=$MACHINE
 
+set -o allexport
 set -euo pipefail
+
 source /srv/kvm/vms/config
 source /srv/kvm/vms/config.host
 
