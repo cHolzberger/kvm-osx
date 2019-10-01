@@ -3,7 +3,7 @@
 QEMU_MACHINE="q35"
 VIRTIO_MODE="transitional"
 
-QEMU_OPTS=(
+QEMU_OPTS+=(
  -enable-kvm 
  -no-user-config
  -nodefaults
@@ -27,8 +27,8 @@ STORE_ROOT_PORT=ioh3420
 
 
 
-CLOVER_OPTS=()
-BIOS_OPTS=()
+CLOVER_OPTS+=()
+BIOS_OPTS+=()
 	GFXPT_BUS="pcie.8"
 	GFXPT_ADDR="0x0"
 	QEMU_OPTS+=(
@@ -44,7 +44,7 @@ BIOS_OPTS=()
 QEMU_OPTS+=(
  -m $MEM 
  -name "$MACHINE"
- -overcommit mem-lock=off,cpu-pm=off
+ -overcommit mem-lock=on,cpu-pm=off
 # -smbios type=2
  -rtc base=utc
 )
