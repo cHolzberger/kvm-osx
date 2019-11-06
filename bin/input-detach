@@ -19,9 +19,11 @@ fi
 
 echo "==> Detaching Devices from $MACHINE..."
 for i in $( mon-send $MACHINE "qom-list /objects"  | grep "(child<input-linux>)" | grep evdev | cut -d " " -f 1 ); do
+	echo " -> $i"
 	mon-evdev-detach "$MACHINE" "$i"
 done
 
-for i in  $( /srv/kvm/OSX-KVM/bin/mon-info $MACHINE usb | grep "usb_" | cut -d":" -f 2 | xargs echo );  do
+for i in $( mon-send $MACHINE "qom-list /machine/peripheral"  | grep "(child<usb-host>)" | grep usb | cut -d " " -f 1 ); do
+	echo " -> $i"
 	mon-usb-detach "$MACHINE" "$i"
 done

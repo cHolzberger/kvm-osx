@@ -10,13 +10,14 @@ RAW_OPTS_local_default_="aio=native,cache.direct=on,cache=none,discard=unmap"
 RAW_OPTS_local_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap"
 RAW_OPTS_local_virtio_scsi_pci="aio=native,cache.direct=on,cache=writethrough"
 
-RAW_OPTS_iscsi_default_="aio=threads,cache.direct=on,cache=writeback,discard=unmap"
-RAW_OPTS_iscsi_virtio_blk_pci="aio=threads,cache.direct=on,cache=writeback,discard=unmap"
-RAW_OPTS_iscsi_virtio_scsi_pci="aio=threads,cache.direct=on,cache=writeback"
+RAW_OPTS_iscsi_default_="aio=native,cache.direct=on,cache=writeback,discard=unmap"
+RAW_OPTS_iscsi_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap"
+RAW_OPTS_iscsi_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback"
 
 
 CONTROLLER_OPTS_default=""
-CONTROLLER_OPTS_virtio_scsi_pci="num_queues=4"
+CONTROLLER_OPTS_virtio_scsi_pci="num_queues=8"
+CONTROLLER_OPTS_virtio_blk_pci="num_queues=8"
 
 QCOW2_OPTS="cache=off,aio=threads,l2-cache-size=60M"
 #QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=on,detect-zeroes=off,cache.direct=on"

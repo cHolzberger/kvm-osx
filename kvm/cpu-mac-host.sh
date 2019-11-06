@@ -3,7 +3,7 @@ host
 kvm=on
 vmware-cpuid-freq=on
 l3-cache=on
-topoext=on
+#topoext=on
 vendor=GenuineIntel
 )
 

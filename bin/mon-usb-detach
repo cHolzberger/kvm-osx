@@ -1,32 +1,10 @@
 #!/bin/bash
-# openbsd-nc is important! 
+set -o allexport 
 SCRIPT_DIR=$(dirname $(readlink -f $0))
-source $SCRIPT_DIR/../kvm/lib-helper.sh
-source $SCRIPT_DIR/config-common
-source $SCRIPT_DIR/config-machine
+source $SCRIPT_DIR/config-machine-cmd
 
-if [ "x$MACHINE" == "x" ]; then
-	echo "Usage:"
-	echo "$0 [machine-name]"
-	exit 3
-fi
-
-if [ ! -d "$MACHINE_PATH" ]; then
-	echo "Machine $MACHINE does not exists"
-	echo "Reason: $MACHINE_PATH does not exist"
-	exit 1
-fi
-
-STATE=$MACHINE_PATH/var/usb_state
-
-touch $STATE
-VENDOR_ID=$( echo $2 | cut -d":" -f 1 )
-PRODUCT_ID=$( echo $2 | cut -d":" -f 2 )
-HOST_BUS=$( echo $3 | cut -d":" -f 1 )
-HOST_ADDR=$( echo $3 | cut -d":" -f 2 )
-source $MACHINE_PATH/config
-[[ ! -z $HOST_ADDR ]] && HOST_ADDR=,hostaddr=$HOST_ADDR
-[[ ! -z $HOST_BUS ]] && HOST_BUS=,hostbus=$HOST_BUS
-
-echo $VENDOR_ID $PRODUCT_ID
-mon-send "$MACHINE" 'device_del usb_'$VENDOR_ID$PRODUCT_ID && cat >> $STATE <<< $( grep -x -v "$VENDOR_ID:$PRODUCT_ID" $STATE ) 
+EVDEV="$2"
+cat <<-END | $SCRIPT_DIR/qmp-pipe $MACHINE
+	{ "execute": "qmp_capabilities" }
+	{ "execute": "device_del", "arguments": { "id": "$EVDEV" } }
+END

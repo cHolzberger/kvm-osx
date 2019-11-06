@@ -1,17 +1,27 @@
 set -x
-if [[ "$VIRTIO_MODE" = "modern" ]]; then
+
+case $VIRTIO_MODE in
+	modern)
 	QEMU_OPTS+=(
 		-global virtio-pci.disable-legacy=on
 		-global virtio-pci.disable-modern=off
 		-global virtio-pci.modern-pio-notify=on
+	);;
+	transitional)
+	QEMU_OPTS+=(
+		-global virtio-pci.disable-legacy=off
+		-global virtio-pci.disable-modern=off
+		-global virtio-pci.modern-pio-notify=off
 	)
-else
+	;;
+	*)
 	QEMU_OPTS+=(
 		-global virtio-pci.disable-legacy=off
 		-global virtio-pci.disable-modern=on
 		-global virtio-pci.modern-pio-notify=off
 	)
-fi
+	;;
+esac
 
 QEMU_OPTS+=(
 	-chardev socket,id=monitor,path=$MACHINE_PATH/var/monitor,server,nowait 

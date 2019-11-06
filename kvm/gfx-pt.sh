@@ -23,7 +23,10 @@ if [[ ! -e "$dev_path" ]]; then
 	echo "gfx-pt: cant find device $dev_path"
 	exit -1
 else 
-./vfio-bind $dev
+PRE_CMD+=(
+"vfio-bind \"$dev\""
+
+)
 
 QEMU_OPTS+=( 
 	-device vfio-pci,bus=$GFXPT_BUS,x-msix-relocation=auto,addr=$GFXPT_ADDR,multifunction=on,host=$GFXPCI.0$GFX_ARGS$ROMFILE$XVGA
@@ -34,8 +37,9 @@ if [[ ! -e "$audio_dev_path" ]]; then
 	echo "gfx-pt: no audio device for $dev"
 else 
 
-	./vfio-bind $audio_dev
-	
+	PRE_CMD+=(
+	"vfio-bind \"$audio_dev\""
+)
 QEMU_OPTS+=( 
 	-device vfio-pci,bus=$GFXPT_BUS,addr=$GFXPT_ADDR.0x1,host=$GFXPCI.1
 	)

@@ -27,8 +27,8 @@ function add_hyperv_flags() {
 	#	hv_synic=on
 		hv_vpindex=on
 		#+kvm_pv_unhalt
-		#hv_reset
-		#hv_runtime
+		hv_reset
+	#	hv_runtime
 		#hv_crash
 		#migratable=no
 		$(has_flag x2apic "hv_vapic=on")

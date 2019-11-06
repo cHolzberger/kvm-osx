@@ -1,0 +1,1 @@
+echo '{"execute": "qmp_capabilities"}{ "execute": "device_add", "arguments": { "driver": "virtio-net-pci", "id": "virtio-net1", "bus": "hp.1" } }' | /srv/kvm/OSX-KVM/bin/qmp-pipe machine-js

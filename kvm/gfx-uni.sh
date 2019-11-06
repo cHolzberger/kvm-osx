@@ -6,6 +6,11 @@ echo "Using VGPU: std/vmware"
 if [[ "$BIOS" == "seabios" ]] || [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 	GFX_VGPU=${GFX_VGPU:-std}
 	add_vgpu "std" "$GFX_VGPU" "true" "$GFX_VNCPORT"
+
+elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
+	GFX_VGPU=${GFX_VGPU:-qxl}
+	add_vgpu "std" "$GFX_VGPU" "true" "$GFX_VNCPORT"
+
 else
 	GFX_VGPU=${GFX_VGPU:-"vmware-svga"}
 	add_vgpu "true" "$GFX_VGPU" "true" "$GFX_VNCPORT"

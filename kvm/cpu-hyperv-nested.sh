@@ -10,6 +10,7 @@ l3-cache=on
 
 CPUFLAGS=(
 +invtsc
++vmx
 )
 
 add_hyperv_flags

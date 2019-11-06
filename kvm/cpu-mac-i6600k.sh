@@ -20,7 +20,10 @@ CPUFLAGS=(
 +avx2
 +xsave
 +xsaveopt,
+# nested virt
 +vmx
++rdtscp
+# stuff
 +bmi2,+smep,+bmi1,+fma,+movbe
 +x2apic
 )

@@ -12,6 +12,22 @@ if [[ -z "$NET_VIRTIO_CURRENT_SLOT" ]]; then
 	NET_VIRTIO_CURRENT_SLOT="1"
 fi
 
+function add_e1000_iface() {
+	add_macvtap_iface "$1" "$2" "$3" "$4" "$5" "$6" "e1000-82545em" "_add_e1000_device" 
+}
+
+function _add_e1000_device() {
+	NET_MACADDR=$1
+	NET_BUS=$2
+	NET_ADDR=$3	
+
+	#DISABLE_OFFLX=",csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
+	#DISABLE_OFFL=",csum=on,gso=on,guest_tso4=on,guest_tso6=on,guest_ecn=on"
+	QEMU_OPTS+=(
+ 		-device e1000-82545em,bus=$NET_BUS,addr=$NET_ADDR,netdev=net$NET_INDEX,mac=$NET_MACADDR
+	)
+	let NET_PCI_CURRENT_SLOT=$NET_PCI_CURRENT_SLOT+1
+}
 function add_vmxnet_iface () {
 	add_macvtap_iface "$1" "$2" "$3" "$4" "$5" "$6" "vmxnet" "_add_vmxnet_device" 
 }
@@ -100,17 +116,19 @@ function add_macvtap_iface() {
 	POST_CMD+=(
 		"ip link del dev $VTAP_NAME"
 	)
-
-	let FD_INDEX=NET_INDEX+3
-	OPEN_FD+=(
-		"${FD_INDEX}0<>/dev/tap\$TAPNUM_${NET_INDEX}"
-		"${FD_INDEX}1<>/dev/vhost-net"
-	)
+	let FD_INDEX=NET_INDEX+3 
 	FD="fd=${FD_INDEX}0"
-	VD="vhostfd=${FD_INDEX}1"
-	QEMU_OPTS+=(
- 		-netdev "tap,$FD,id=net$NET_INDEX,vhost=on,vhostforce=on,$VD" 
+	OPEN_FD+=( 
+		"${FD_INDEX}0<>/dev/tap\$TAPNUM_${NET_INDEX}"
 	)
+	
+		OPEN_FD+=(
+			"${FD_INDEX}1<>/dev/vhost-net"
+		)
+		VD="vhostfd=${FD_INDEX}1"
+		QEMU_OPTS+=(
+ 			-netdev "tap,$FD,id=net$NET_INDEX,vhost=on,vhostforce=on,$VD" 
+		)
 	echo "Calling: $CB"
 	$CB "$NET_MACADDR" "$NET_BUS" "$NET_ADDR" "$QEMU_DEVICE"
         let NET_INDEX=NET_INDEX+1                                                         
@@ -264,12 +282,18 @@ function _add_virtio_device() {
 	ENABLE_MQ=",mq=on,vectors=8"
 	QUEUE_SIZE=",tx_queue_size=1024,rx_queue_size=1024"
 	VTM=""
-	if [[ "$VIRTIO_MODE" = "modern" ]]; then
+
+	case $VIRTIO_MODE in
+		modern)
 		VTM=",disable-legacy=on,disable-modern=off,modern-pio-notify=on,ats=on"$DISABLE_OFFL""$ENABLE_MQ""$QUEUE_SIZE
-		#VTM=""
-	else 
+		;;
+		transitional)
+		VTM=",disable-legacy=off,disable-modern=off,modern-pio-notify=off,ats=on"$DISABLE_OFFL""$ENABLE_MQ""$QUEUE_SIZE
+		;;
+		*)
 		VTM=",disable-legacy=off,disable-modern=on"$QUEUE_SIZE""$DISABLE_OFFL
-	fi
+		;;
+	esac
 #,mq=on,vectors=6
 	QEMU_OPTS+=(
  		-device $DEVICE""$VTM,bus=$NET_BUS,addr=$NET_ADDR,netdev=net$NET_INDEX,mac=$NET_MACADDR
