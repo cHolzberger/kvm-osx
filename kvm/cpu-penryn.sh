@@ -3,21 +3,11 @@ Penryn
 kvm=on
 vmware-cpuid-freq=on
 l3-cache=on
-vmx
-rdtscp
 )
 
 # not working
 #kvm=off,vendor=GenuineIntel,hv_relaxed,hv_vapic,hv_spinlocks=0x1000,+x2apic
 CPUFLAGS=(
-+invtsc
-+aes
-+apic
-+xsave
-+avx 
-+avx2
-+xsaveopt
-+smep
 )
 OIFS="$IFS"
 IFS=","

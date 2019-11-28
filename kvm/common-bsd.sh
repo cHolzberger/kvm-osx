@@ -3,7 +3,7 @@
 QEMU_MACHINE="q35"
 VIRTIO_MODE="transitional"
 
-QEMU_OPTS=(
+QEMU_OPTS+=(
  -enable-kvm 
  -no-user-config
  -nodefaults
@@ -27,8 +27,8 @@ STORE_ROOT_PORT=ioh3420
 
 
 
-CLOVER_OPTS=()
-BIOS_OPTS=()
+CLOVER_OPTS+=()
+BIOS_OPTS+=()
 	GFXPT_BUS="pcie.8"
 	GFXPT_ADDR="0x0"
 	QEMU_OPTS+=(
@@ -36,14 +36,14 @@ BIOS_OPTS=()
  -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
 # -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
- -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
+# -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
  -machine q35,accel=kvm,mem-merge=off,vmport=off
 )
 
 
 QEMU_OPTS+=(
  -m $MEM 
- -overcommit mem-lock=off,cpu-pm=off
+ -overcommit mem-lock=on,cpu-pm=off
 # -smbios type=2
  -rtc base=utc
 )

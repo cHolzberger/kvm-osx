@@ -2,7 +2,7 @@
 QEMU_MACHINE="pc-i440fx"
 QEMU_CFG+=(
  -readconfig $SCRIPT_DIR/../cfg/i440base.cfg
- -readconfig $SCRIPT_DIR/../cfg/i440rng.cfg
+# -readconfig $SCRIPT_DIR/../cfg/i440rng.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
  -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg

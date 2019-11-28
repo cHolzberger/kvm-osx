@@ -64,7 +64,15 @@ IFS="$OIFS"
 data "Genconfig on $(date)" > $MACHINE_VAR/machine-boot.log
 
 cat > $MACHINE_PATH/on-run <<-END
+export PATH="$PATH"
 exec ${OPEN_FD[@]}
+
+set -o allexport
+set -euo pipefail
+
+source /srv/kvm/vms/config
+source /srv/kvm/vms/config.host
+
 
 $CMD \
 	-serial unix:$MACHINE_VAR/console,server,nowait \
@@ -90,9 +98,12 @@ $CMD \
 END
 
 cat > $MACHINE_PATH/on-exit <<-END
+export PATH="$PATH"
 MACHINE=$MACHINE
 
+set -o allexport
 set -euo pipefail
+
 source /srv/kvm/vms/config
 source /srv/kvm/vms/config.host
 
