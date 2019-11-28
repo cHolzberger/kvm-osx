@@ -7,7 +7,7 @@ QEMU_OPTS+=(
  -enable-kvm 
 # -m $MEM 
  -machine q35,accel=kvm,kernel_irqchip=on,usb=off,dump-guest-core=off
- -name "$MACHINE",process="qemu:q35:$MACHINE"
+# -name "$MACHINE",process="qemu:q35:$MACHINE"
  -overcommit mem-lock=on,cpu-pm=off
  -smbios type=2
  -rtc base=utc

@@ -43,7 +43,6 @@ BIOS_OPTS=()
 
 QEMU_OPTS+=(
  -m $MEM 
- -name "$MACHINE"
  -overcommit mem-lock=off,cpu-pm=off
 # -smbios type=2
  -rtc base=utc

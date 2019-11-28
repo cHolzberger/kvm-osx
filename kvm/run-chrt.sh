@@ -1,5 +1,5 @@
 CMD="qemu-system-x86_64"
-MON_PATH="$VM_PREFIX/$MACHINE/var"
+MON_PATH="$MACHINE_VAR"
 
 OIFS="$IFS"
 IFS=","

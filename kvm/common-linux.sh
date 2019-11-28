@@ -68,7 +68,6 @@ MACHINE_OS=linux
 
 QEMU_OPTS+=(
  -m $MEM 
- -name "$MACHINE"
 # -smbios type=2
  -rtc base=utc
   -overcommit mem-lock=on,cpu-pm=off

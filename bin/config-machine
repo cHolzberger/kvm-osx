@@ -7,6 +7,17 @@ source $SCRIPT_DIR/config-machine-cmd
 #LOADING MACHINE CONFIG
 source $MACHINE_PATH/config
 
+MACHINE_VAR="$MACHINE_PATH/var"
+MACHINE_LOG="$MACHINE_PATH/log"
+
+if [[ ! -d $MACHINE_LOG ]]; 
+	mkdir -p $MACHINE_LOG 
+fi
+
+if [[ ! -d $MACHINE_VAR ]];
+	mkdir -p $MACHINE_VAR
+fi 
+ 
 if [ "x$USE_CPUS" = "x" ]; then
 #	echo "Generating USE_CPUS from USE_CPUS_RANGE ($USE_CPUS_RANGE)"
 	START=$(echo $USE_CPUS_RANGE | cut -d"-" -f1)

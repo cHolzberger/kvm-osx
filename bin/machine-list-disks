@@ -1,0 +1,41 @@
+#!/bin/bash
+
+disks=( system data data1 data2 data3 clover )
+
+backup_disks() {
+		local MACHINE_PATH="$1"
+		local vm="$2"
+		local d="$3"
+	
+		local var="\$DISK_$d"
+		iscsi_disk=""
+		eval iscsi_disk="$var"
+		local path_rawdisk=$(realpath $MACHINE_PATH/disks/$d.raw 2>/dev/null )		
+		local path_qcowdisk=$(realpath $MACHINE_PATH/disks/$d.qcow2 2>/dev/null )		
+		local disk=""
+		if [[ -n $iscsi_disk ]]; then
+			disk="$iscsi_disk"
+	  elif [[ -f $path_rawdisk || -b $path_rawdisk ]]; then
+			disk="disks/$d.raw"
+		elif [[ -f $path_qcowdisk || -b $path_rawdisk ]]; then
+			disk="disks/$d.qcow2"
+		fi
+
+		if [[ -n $disk ]]; then
+			echo $vm $disk
+		fi
+}
+
+for m in /srv/kvm/vms/*/config; do
+	MACHINE_PATH="$(dirname $m)"
+	vm=$(basename $MACHINE_PATH)
+	for d in ${disks[@]}; do 
+		declare "DISK_$d"=""
+	done
+
+  source $MACHINE_PATH/config
+
+	for d in ${disks[@]}; do 
+		backup_disks "$MACHINE_PATH" "$vm" "$d"
+	done
+done

@@ -13,8 +13,8 @@ echo -e -n '10' >&10
 echo "Qemu is: " $(which qemu-system-x86_64)
 echo "Running: $CMD"
 nohup $CMD \
- 2>$MACHINE_PATH/var/qemu.stderr.log \
- 1>$MACHINE_PATH/var/qemu.stdout.log &
+ 2>$MACHINE_LOG/qemu.stderr.log \
+ 1>$MACHINE_LOG/qemu.stdout.log &
 CMD_PID=$!
 
 
@@ -45,8 +45,8 @@ done
 
 
 if [[ ! -z \$VIRT_INPUT ]]; then
-	echo "0" > $MACHINE_PATH/var/evdev_state
-	echo "#usb" > $MACHINE_PATH/var/usb_state
+	echo "0" > $MACHINE_VAR/evdev_state
+	echo "#usb" > $MACHINE_VAR/usb_state
 	input-attach $MACHINE
 fi      
 

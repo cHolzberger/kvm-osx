@@ -3,7 +3,7 @@
 echo "Using GFX Card:"
 echo "std"
 
-lp="$MACHINE_PATH/var/debugcon.log"
+lp="$MACHINE_VAR/debugcon.log"
 QEMU_OPTS+=(
 	-vga none
 	-nographic

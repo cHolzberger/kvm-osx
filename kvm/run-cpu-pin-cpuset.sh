@@ -13,14 +13,14 @@ if [ ! -d "$MACHINE_PATH" ]; then
 fi
 
 MACHINE_NAME=$MACHINE
-SOCKET=$MACHINE_PATH/var/control
+SOCKET=$MACHINE_VAR/control
 
 source $SCRIPT_DIR/config-machine
 
 destroy_cpuset "$MACHINE_NAME"
 sleep 1
 
-qemu_pid=$(cat $MACHINE_PATH/var/pid)
+qemu_pid=$(cat $MACHINE_VAR/pid)
 echo "CPU Pinning for $MACHINE with socket $SOCKET"
 echo "Querying QEMU for VCPU Pids"
 

@@ -49,8 +49,8 @@ if [[ ! -z $FS9P ]]; then
 fi
 
 CMD="qemu-system-x86_64"
-MON_PATH="$VM_PREFIX/$MACHINE/var"
-SOCKET=$MACHINE_PATH/var/qmp
+MON_PATH="$MACHINE_VAR"
+SOCKET="$MACHINE_VAR/qmp"
 
 set -e 
 #CMD="taskset  -c ${USE_CPUS[*]} $CMD"
@@ -61,12 +61,13 @@ IFS="$OIFS"
 # qemu gets io priority
 
 
+data "Genconfig on $(date)" > $MACHINE_VAR/machine-boot.log
 
 cat > $MACHINE_PATH/on-run <<-END
 exec ${OPEN_FD[@]}
 
 $CMD \
-	-serial unix:$MACHINE_PATH/var/console,server,nowait \
+	-serial unix:$MACHINE_VAR/console,server,nowait \
        ${CLOVER_OPTS[@]} \
 	${MEMORY_FLAGS[@]} \
 	\
@@ -80,11 +81,10 @@ $CMD \
 	\
 	-S \
 	-pidfile $MON_PATH/pid \
-	-writeconfig $MACHINE_PATH/qemu.cfg \
-	-d unimp,trace:vm_state_notify \
-	-D $MACHINE_PATH/var/debug.log \
+	-writeconfig $MACHINE_VAR/qemu.cfg \
+	-D $MACHINE_VAR/debug.log \
 	-global isa-debugcon.iobase=0x402 \
-	-debugcon file:$MACHINE_PATH/var/d.log \
+	-debugcon file:$MACHINE_VAR/debugcon.log \
 	-boot menu=on 
 
 END
@@ -99,14 +99,14 @@ source /srv/kvm/vms/config.host
 	${POST_CMD[@]}
 
 	[[ "$USE_HUGEPAGES" = "1" ]] && echo "Freeing Hugepages" && source $SCRIPT_DIR/../kvm/hugepages_free.sh
- if [[ -e $MACHINE_PATH/var/pid ]]; then
-        p="\$(cat $MACHINE_PATH/var/pid)"
+ if [[ -e $MACHINE_VAR/pid ]]; then
+        p="\$(cat $MACHINE_VAR/pid)"
  	if [[ ! -z \$p ]]; then
 		if [ -e "/proc/\$p" ]; then
                 	kill \$p
         	fi	
 
-		rm $MACHINE_PATH/var/pid
+		rm $MACHINE_VAR/pid
  	fi
  fi
 

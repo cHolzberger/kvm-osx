@@ -30,6 +30,7 @@ QEMU_OPTS+=(
 	-monitor chardev:monitor	
 	-qmp chardev:qmp
 	-serial chardev:tty0
+	-name $MACHNE,debug-threads=on
 )
 #could be pcie-root-port
 USB_ROOT_PORT=${USB_ROOT_PORT:-"pcie-root-port"}

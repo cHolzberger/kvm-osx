@@ -14,7 +14,7 @@ if [ ! -d "$MACHINE_PATH" ]; then
 	exit 1
 fi
 MACHINE_NAME=$MACHINE
-SOCKET=$MACHINE_PATH/var/control
+SOCKET=$MACHINE_VAR/control
 source $MACHINE_PATH/config
 
 IO_CPUS=( 0 1 ) #(${IO_CPUS[*]})

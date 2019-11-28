@@ -15,7 +15,6 @@ function add_vpci() {
 		exit -1
 	fi
 	VB=${VPCI_BUS[0]}
-	FN="$MACHINE_PATH/pcie.${SLOT_COUNT}.cfg"
 	VPCI_BUS=( ${VPCI_BUS[@]:1} )
 	
 	if [[ $QEMU_MACHINE == "pc-i440fx" ]]; then
@@ -23,6 +22,7 @@ function add_vpci() {
 	else
 		ROOT_BUS="pcie.0"
 	fi
+	FN="$MACHINE_PATH/$ROOT_BUS.${SLOT_COUNT}.cfg"
 	
 
 	vpci_template "$result_var" "$VB" "$SLOT_COUNT" "$PORT" "$FN" "$ROOT_BUS"
