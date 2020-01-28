@@ -15,7 +15,7 @@ for dev in "$@"; do
 		echo "Nonexisting device $dev"
 	fi
 
-	current_driver=$(lspci -s 08:00.0 -v | grep "Kernel driver in use" | cut -d ":" -f 2 | xargs echo)
+	current_driver=$(lspci -s $dev -v | grep "Kernel driver in use" | cut -d ":" -f 2 | xargs echo)
 	current_override=$(cat /sys/bus/pci/devices/$dev/driver_override)
 	vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
   	device=$(cat /sys/bus/pci/devices/$dev/device)
