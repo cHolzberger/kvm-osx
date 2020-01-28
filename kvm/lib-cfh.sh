@@ -19,10 +19,8 @@ function add_hyperv_flags() {
 		hv_relaxed=on
 		hv_spinlocks=0x8191
 		hv_time=on
-		hv_evmcs
 		hv_tlbflush
 		hv_ipi
-		hv_vapic
 	#	hv_stimer=on
 	#	hv_synic=on
 		hv_vpindex=on
@@ -31,7 +29,9 @@ function add_hyperv_flags() {
 	#	hv_runtime
 		#hv_crash
 		#migratable=no
+#		hv_vapic -> watch it makes problems on cpus not having x2apic
 		$(has_flag x2apic "hv_vapic=on")
+		$(has_flag x2apic "hv_evmcs=on")
 	)
 
 	add_x86_flags
@@ -64,7 +64,7 @@ function add_x86_flags() {
 		$(has_flag avx)
 		$(has_flag avx2)
 		$(has_flag aes)
-		$(has_flag vmx)
+#		$(has_flag vmx)
 		$(has_flag pcid)
 		$(has_flag pdpe1gb)
 		+lahf_lm

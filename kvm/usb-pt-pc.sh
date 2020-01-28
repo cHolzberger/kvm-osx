@@ -13,5 +13,7 @@ for dev in "${PCI_PT[@]}" ; do
 		-device vfio-pci,host=$dev.0,bus=pci.0,addr=$addr
 	)
 	
-	./vfio-bind 0000:${dev}.0
+	RUN_PRE_BOOT+=(
+		vfio-bind 0000:${dev}.0
+	)
 done

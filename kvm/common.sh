@@ -23,6 +23,18 @@ case $VIRTIO_MODE in
 	;;
 esac
 
+i=0
+CPUCOUNT=${#USE_CPUS[@]}
+for t in ${USE_CPUS[@]} ; do                          
+        CPUNUM=${USE_CPUS[$i]}
+		QEMU_OPTS+=(
+			"-vcpu vcpunum=$i,affinity=$CPUNUM"
+		)
+        let i="($i + 1)"
+done 
+
+
+
 QEMU_OPTS+=(
 	-chardev socket,id=monitor,path=$MACHINE_PATH/var/monitor,server,nowait 
 	-chardev socket,id=qmp,path=$MACHINE_PATH/var/qmp,nowait,server	
@@ -32,6 +44,8 @@ QEMU_OPTS+=(
 	-serial chardev:tty0
 	-name $MACHNE,debug-threads=on
 )
+GFXPT_BUS="gpu.1"
+GFXPT_ADDR="0x0"
 #could be pcie-root-port
 USB_ROOT_PORT=${USB_ROOT_PORT:-"pcie-root-port"}
 NET_ROOT_PORT=${NET_ROOT_PORT-"pcie-root-port"}

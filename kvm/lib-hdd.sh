@@ -14,6 +14,11 @@ RAW_OPTS_iscsi_default_="aio=native,cache.direct=on,cache=writeback,discard=unma
 RAW_OPTS_iscsi_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap"
 RAW_OPTS_iscsi_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback"
 
+RAW_OPTS_nbd_default_="aio=native,cache.direct=on,cache=writeback,discard=unmap"
+RAW_OPTS_nbd_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap"
+RAW_OPTS_nbd_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback"
+
+
 
 CONTROLLER_OPTS_default=""
 CONTROLLER_OPTS_virtio_scsi_pci="num_queues=8"
@@ -29,7 +34,7 @@ export LIBISCSI_TARGET_CHAP_USERNAME
 export LIBISCSI_TARGET_CHAP_PASSWORD
 	
 : ${INDEX:=0}
-: ${BOOTINDEX:=0}
+: ${BOOTINDEX:=1}
 : ${DISK_INIT:=true}
 
 if [ $DISK_INIT == true ]; then
@@ -58,18 +63,33 @@ function diskarg() {
 	
 	ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
 	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
-	kind="local"
-	if [[ ! -z "$ISCSI_TARGET" ]]; then
-		kind="iscsi"
-	fi
 	
+	kind="local"
+
+	DISK_TYPE_VAR="DISK_${name}_TYPE"
+	DISK_TYPE=${!DISK_TYPE_VAR}
+
+	case "$DISK_TYPE" in
+		"nbd") 
+	  	kind="nbd"
+			echo "==> Add NBD HDD" >&2 
+			NBD_TARGET="$MACHINE_VAR/${name}.nbd.sock"
+			;;
+		"iscsi-tgt") 
+		 	kind="iscsi-tgt"
+			echo "==> Add ISCSI HDD" >&2 
+			ISCSI_TARGET=${ISCSI_TARGET:-iscsi://127.0.0.1/iqn.2001-04.com.$(hostname)-$MACHINE-$name/1}
+			kind="iscsi"
+			;;
+	esac
 	controller=RAW_OPTS_${kind}_${2:default}
 	RAW_OPTS=${!controller}
 	
-
-	if [ ! -z "$ISCSI_TARGET" ]; then
+	if [[ $kind == "nbd" ]]; then
+		echo "file=nbd:unix:$NBD_TARGET,format=raw"
+	elif [ $kind == "iscsi" ]; then
 		echo "file=$ISCSI_TARGET,format=raw,$RAW_OPTS"
-        elif [ -e "$DISKS_PATH/$name.raw" ]; then	
+  elif [ -e "$DISKS_PATH/$name.raw" ]; then	
 		echo "file=$DISKS_PATH/$name.raw,format=raw,$RAW_OPTS"
 	elif [ -e "$DISKS_PATH/$name.qcow2" ]; then
 		echo "file=$DISKS_PATH/$name.qcow2,format=qcow2,$QCOW2_OPTS"
@@ -85,16 +105,19 @@ function diskarg() {
 function devicearg() {
 	name=$1
 	DISK_SERIAL="$2"
+
 	ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
 	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
+	NBD_TARGET_VAR="DISK_${name}_TYPE"
+  NBD_TARGET=${!NBD_TARGET_VAR}
 
-	if [[ ! -z "$ISCSI_TARGET" && "$MACHINE_OS" = "win" ]]; then
+
+	if [[ -n "$ISCSI_TARGET" && "$MACHINE_OS" = "win" ]]; then
 		echo "scsi-block" #,serial=$DISK_SERIAL"
-	elif [[ ! -z "$ISCSI_TARGET" && "$MACHINE_OS" = "linux" ]]; then
+	elif [[ -n "$ISCSI_TARGET" && "$MACHINE_OS" = "linux" ]]; then
 		echo "scsi-generic" #,serial=$DISK_SERIAL"
 	else 
 		echo "scsi-hd"
-		#echo ""
 	fi
 }
 

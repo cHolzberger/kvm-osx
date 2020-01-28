@@ -1,3 +1,4 @@
+#!/bin/bash
 
 set -e 
 #CMD="taskset  -c ${USE_CPUS[*]} $CMD"
@@ -8,14 +9,14 @@ IFS="$OIFS"
 # set dma
 exec 10> /dev/cpu_dma_latency
 
+
 echo -e -n '10' >&10
 #echo -e -n '-1' > /proc/sys/kernel/sched_rt_runtime_us
 
 echo "Qemu is: " $(which qemu-system-x86_64)
 echo "Running: $CMD"
 #systemd-run --no-block --unit=qemu-${MACHINE/-/__} --slice=qemu machine-boot-kickstart $MACHINE || true 
-systemd-run --no-block --unit=qemu-${MACHINE/-/__} --scope --slice=qemu $CMD  &
-machine-boot-kickstart $MACHINE
+systemd-run --no-block --unit=qemu-${MACHINE/-/__} --scope --slice=qemu $CMD 
 #\
 # 2>$MACHINE_LOG/qemu.stderr.log \
 # 1>$MACHINE_LOG/qemu.stdout.log &

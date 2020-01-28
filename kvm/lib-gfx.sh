@@ -81,13 +81,14 @@ elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
 		-vga qxl
 	)
 elif [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ ! -z "$GFX_VGPU" ]];then 
-	QEMU_CFG+=(
-	  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
-	)
+#	QEMU_CFG+=(
+#	  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+#	)
 
 	QEMU_OPTS+=(
 	-vga none
-        -device $GFX_VGPU,bus=gpu.1,addr=0x0,rombar=1
+  -device $GFX_VGPU,bus=$GFXPCI,addr=0x0.0,multifunction=on,rombar=1
+  #-device $GFX_VGPU,bus=gpu.1,addr=0x0.0,slot=0,rombar=1
 	#-display egl-headless
 	)
 

@@ -7,8 +7,9 @@ QMP_CMD=(
 
 
 QMP_CMD_POST+=(
-'{ "execute": "cont" }' 
 )
+
+RUN_PRE_BOOT=()
 
 QEMU_CFG=()
 
@@ -48,7 +49,7 @@ if [[ ! -z $FS9P ]]; then
 	source kvm/fs-shared.sh
 fi
 
-CMD="qemu-system-x86_64"
+CMD="/opt/qemu-ms/bin/qemu-system-x86_64"
 MON_PATH="$MACHINE_VAR"
 SOCKET="$MACHINE_VAR/qmp"
 
@@ -61,7 +62,12 @@ IFS="$OIFS"
 # qemu gets io priority
 
 
-data "Genconfig on $(date)" > $MACHINE_VAR/machine-boot.log
+echo "Genconfig on $(date)" > $MACHINE_VAR/machine-boot.log
+
+cat > $MACHINE_PATH/bootup.env <<-END
+$(declare -p QMP_CMD)
+$(declare -p QMP_CMD_POST)
+END
 
 cat > $MACHINE_PATH/on-run <<-END
 export PATH="$PATH"
@@ -72,6 +78,13 @@ set -euo pipefail
 
 source /srv/kvm/vms/config
 source /srv/kvm/vms/config.host
+
+echo -e "\n\n"
+echo "================>> NBD / ISCSI"
+/srv/kvm/OSX-KVM/exec/systemd/run-nbd.sh $MACHINE
+/srv/kvm/OSX-KVM/exec/systemd/run-iscsi-tgt.sh $MACHINE
+echo "<================="
+
 
 
 $CMD \
@@ -133,14 +146,16 @@ cd "$MACHINE_PATH"
 MACHINE='$MACHINE'
 
 function pre_run() {
-	export GFX_AMD_UNBIND="$GFX_AMD_UNBIND"
 
-	[[ "$FBCON_UNBIND" == "1" ]] && fbcon-unbind 
+	${RUN_PRE_BOOT[*]}
+
+	export GFX_AMD_UNBIND="$GFX_AMD_UNBIND"
   	[[ "$USE_HUGEPAGES" = "1" ]] && source $SCRIPT_DIR/../kvm/hugepages.sh
 	$(printf "%s" "${PRE_CMD[@]/#/$'\n'}")
 }
 
 function on_run() {
+
 	source $MACHINE_PATH/on-run
 }
 

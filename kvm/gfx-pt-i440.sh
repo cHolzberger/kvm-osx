@@ -1,7 +1,9 @@
 #!/bin/bash
 source $SCRIPT_DIR/../kvm/lib-gfx.sh
 
-./vfio-bind 0000:${GFXPCI}.0 0000:${GFXPCI}.1 
+RUN_PRE_BOOT+=( 
+	vfio-bind 0000:${GFXPCI}.0 0000:${GFXPCI}.1 
+)
 
 ROMFILE=$(get_rom $GFXPCI)
 XVGA=$(get_xvga $GFXVGA)

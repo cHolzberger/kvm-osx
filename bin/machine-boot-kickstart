@@ -1,0 +1,82 @@
+#!/bin/bash
+
+source /srv/kvm/OSX-KVM/bin/config-common
+
+WANT_SEAT=$(echo $1 | cut -d":" -f 2)
+WANT_MACHINE=$(echo $1 | cut -d":" -f 1)
+
+MACHINE=${WANT_MACHINE:-"default"}
+SEAT=${WANT_SEAT:-"$MACHINE"}
+
+MACHINE_PATH="$VM_PREFIX/$MACHINE"
+MACHINE_DISKS="$VM_PREFIX/$MACHINE/disks"
+
+if [ "x$MACHINE" == "x" ]; then
+	echo "Usage:"
+	echo "$0 [machine-name]"
+	exit 3
+fi
+
+if [ ! -d "$MACHINE_PATH" ]; then
+	echo "Machine $MACHINE does not exists"
+	echo "Reason: $MACHINE_PATH does not exist"
+	exit 1
+fi
+
+if [ ! -e "$MACHINE_PATH/config" ]; then
+	echo "Can't load $MACHINE"
+	echo "Reason: 'config' does not exist in $MACHINE_PATH"
+	exit 2
+fi
+
+#LOADING MACHINE CONFIG
+source $MACHINE_PATH/config
+source $MACHINE_PATH/bootup.env
+
+set -e 
+IFS="$OIFS"
+echo "Qemu is: " $(which qemu-system-x86_64)
+
+if [[ $(machine-state $MACHINE) == "running" ]]; then
+	echo "Machine allready running"
+	exit 1
+fi
+
+if ! wait-for-state $MACHINE prelaunch; then
+	echo "Machine is down!"
+	exit 1
+fi
+
+echo "" >  $VM_PREFIX/$MACHINE/qmp_commands
+for i in "${QMP_CMD[@]}" ; do
+	echo "Running QMP Commands: $i"
+	printf "%s\n" "$i" >> $VM_PREFIX/$MACHINE/qmp_commands  
+	echo qmp-send "$MACHINE" "$i" 
+	qmp-send "$MACHINE" "$i" 
+done
+
+/srv/kvm/OSX-KVM/exec/systemd/update-pid-cpu.sh $MACHINE
+#/srv/kvm/OSX-KVM/exec/systemd/update-pid-io.sh $MACHINE
+
+machine-continue $MACHINE
+if ! wait-for-state $MACHINE running; then
+	echo "Machine is down!"
+	exit 1
+fi
+
+for i in "${QMP_CMD_POST[@]}" ; do
+	echo "Running QMP POST Commands: $i"
+	printf "%s\n" "$i" >> $VM_PREFIX/$MACHINE/qmp_commands  
+	qmp-send "$MACHINE" "$i"
+done
+
+if [[ ! -z \$VIRT_INPUT ]]; then
+	echo "0" > $MACHINE_VAR/evdev_state
+	echo "#usb" > $MACHINE_VAR/usb_state
+	input-attach $MACHINE
+fi      
+
+if ! wait-for-state $MACHINE running; then
+	echo "Machine is down!"
+	exit 1
+fi

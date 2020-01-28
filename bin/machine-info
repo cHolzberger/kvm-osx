@@ -36,7 +36,7 @@ if [ ! -e "$MACHINE_PATH/var/pid" ]; then
 	exit 1
 fi
 QEMU_PID=$(<$MACHINE_PATH/var/pid)
-if [ -! e "/proc/$QEMU_PID" ]; then
+if [ ! -e "/proc/$QEMU_PID" ]; then
 	echo "ERRROR: PID-File exists but machine seems not to be runnig"
 	exit 4
 fi
@@ -57,16 +57,23 @@ printf "PID:\t\t%s\t | CPUSET DIR:\t%s\n" "$QEMU_PID" "$CPUSET_DIR"
 printf "Seat:\t\t%s\t | PATH:\t%s\n" "$WANT_SEAT" "$MACHINE_PATH"
 printf "CPU Model:\t%s\t | CORES:\t%s (%s)\n" "$CPU_MODEL" "$NUM_CPUS" "${USE_CPUS[*]}"
 printf "\nGPU:\t\t%s (%s)\t | VNC: \t%s\n\n" "$GFX_MODE" "$GFXPCI" "$GFX_VNCPORT"
+printf "State: $(machine-state $MACHINE)\n\n"
 printf "Tasks:\n"
 
+ps -e -o fname -o psr -o pcpu -o numa -o nlwp -o vsz -o seat -o machine -o slice  h -L -q "$QEMU_PID"
+exit 0
 function tasks2list() {
 	fn=$1
 	ln=$(cat $fn)
 	ln=( $ln )
-
+	
 	OIFS=$IFS
 	IFS=","
-	echo "${ln[*]}"
+	#echo "${ln[*]}"
+	for i in ${ln[@]}; do
+  	c=$( ps -eo psr h -q "$i" | xargs echo )
+		echo "T{$i} C: {$c}"
+	done
 	IFS=$OIFS	
 }
 
@@ -74,9 +81,9 @@ printf "ALL:\t%s\n" "$(tasks2list $CPUSET_DIR/tasks)"
 printf "QEMU:\t%s\n" "$(tasks2list $CPUSET_DIR/qemu/tasks)"
 printf "IO:\t%s\n" "$( tasks2list $CPUSET_DIR/io/tasks )"
 
-for i in ${USE_CPUS[@]}; do
-	printf "VCPU$i:\t%s\n" "$( tasks2list $CPUSET_DIR/vcpu$i/tasks)"
-done
+#for i in ${USE_CPUS[@]}; do
+#	printf "VCPU$i:\t%s\n" "$( tasks2list $CPUSET_DIR/vcpu$i/tasks)"
+#done
 function query() {
 	#$SCRIPT_DIR/qmp-send "$MACHINE" '{ "execute": "guest-info" }'
 	qga-send "$MACHINE" '{ "execute": "guest-info" }' \

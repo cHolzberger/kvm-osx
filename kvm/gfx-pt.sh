@@ -2,7 +2,7 @@
 source $SCRIPT_DIR/../kvm/lib-gfx.sh
 
 QEMU_CFG+=(
-  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+#  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
 )
 
 hdr Gfx Passthrough 
