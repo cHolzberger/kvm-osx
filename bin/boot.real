@@ -29,22 +29,25 @@ if [ ! -e "$MACHINE_PATH/config" ]; then
 	exit 2
 fi
 
-if [ -e $MACHINE_PATH/var/pid ]; then
-	p=$(cat $MACHINE_PATH/var/pid)
-	echo "Found pid file... checking if vm is allready running"
-	if [ -e "/proc/$p" ]; then
-		echo "VM allready running"
-		exit 4
-	fi	
-	rm $MACHINE_PATH/var/pid
-fi
+if [[ ! -d /var/run/qemu/ ]]; then
+  mkdir -p /var/run/qemu
+elif [ -e /var/run/qemu/$MACHINE.pid ]; then
+        p=$(cat $MACHINE_PATH/var/pid)
+        echo "Found pid file... checking if vm is allready running"
+        if [ -e "/proc/$p" ]; then
+                echo "VM allready running"
+                exit 4
+        fi
+        rm $MACHINE_PATH/var/pid
+fi 
 
-echo -e "\tRunning from: $SCRIPT_DIR"
 
 cd $RUNTIME_PATH
 echo "[GENCONFIG] running..."
 source kvm/genconfig.sh
 
+if [[ -z $JUST_GEN ]]; then
+echo -e "\tRunning from: $SCRIPT_DIR"
 echo [RUN] starting VM
 source kvm/run-clover.sh
 #source kvm/run-chrt.sh
@@ -53,3 +56,4 @@ echo "Execution finished"
 cat $MACHINE_PATH/var/debug.log
 
 echo "[ MACHINE TURNED OFF ]"
+fi

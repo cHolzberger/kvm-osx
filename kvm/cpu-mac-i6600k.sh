@@ -10,6 +10,7 @@ vendor=GenuineIntel
 #hide kvm from guest, enable tsc timer
 
 CPUFLAGS=(
+-erms
 +invtsc
 +pcid
 +ssse3
@@ -26,6 +27,7 @@ CPUFLAGS=(
 # stuff
 +bmi2,+smep,+bmi1,+fma,+movbe
 +x2apic
++misalignsse,+movbe,+osvw,+pclmuldq,+pdpe1gb,+rdrand,+rdseed,+rdtscp,+sha-ni,+smap,+smep,+svm,+vme,+xgetbv1,+xsave,+xsavec,+clwb,+umip,+topoext,+perfctr-core,+wbnoinvd
 )
 OIFS="$IFS"
 IFS=","

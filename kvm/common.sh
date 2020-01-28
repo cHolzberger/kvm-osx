@@ -23,6 +23,18 @@ case $VIRTIO_MODE in
 	;;
 esac
 
+i=0
+CPUCOUNT=${#USE_CPUS[@]}
+for t in ${USE_CPUS[@]} ; do                          
+        CPUNUM=${USE_CPUS[$i]}
+		QEMU_OPTS+=(
+			"-vcpu vcpunum=$i,affinity=$CPUNUM"
+		)
+        let i="($i + 1)"
+done 
+
+
+
 QEMU_OPTS+=(
 	-chardev socket,id=monitor,path=$MACHINE_PATH/var/monitor,server,nowait 
 	-chardev socket,id=qmp,path=$MACHINE_PATH/var/qmp,nowait,server	

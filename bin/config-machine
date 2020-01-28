@@ -1,8 +1,6 @@
 #!/bin/bash
 set -o allexport
-SCRIPT_DIR=$(dirname $(readlink -f $0))
-source $SCRIPT_DIR/config-common
-source $SCRIPT_DIR/config-machine-cmd
+source /srv/kvm/OSX-KVM/bin/config-machine-cmd
 
 #LOADING MACHINE CONFIG
 source $MACHINE_PATH/config
@@ -10,11 +8,11 @@ source $MACHINE_PATH/config
 MACHINE_VAR="$MACHINE_PATH/var"
 MACHINE_LOG="$MACHINE_PATH/log"
 
-if [[ ! -d $MACHINE_LOG ]]; 
+if [[ ! -d $MACHINE_LOG ]]; then
 	mkdir -p $MACHINE_LOG 
 fi
 
-if [[ ! -d $MACHINE_VAR ]];
+if [[ ! -d $MACHINE_VAR ]]; then
 	mkdir -p $MACHINE_VAR
 fi 
  

@@ -37,9 +37,9 @@ while [[ $CURRENT_STATE != $STATE ]]; do
 #		exit 1
 #	fi
 
-	echo "Current State: $CURRENT_STATE" >&2
-	echo "Target State: $STATE" >&2
-	echo "watching state..." >&2
+#	echo "Current State: $CURRENT_STATE" >&2
+#	echo "Target State: $STATE" >&2
+#	echo "watching state..." >&2
 	sleep 1
 	
 	CURRENT_STATE=$(qmp-status $MACHINE)

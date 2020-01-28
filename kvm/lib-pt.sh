@@ -58,7 +58,9 @@ function add_pciept_dev() {
 		echo -n 1 > $dev/delete
 	done
         sleep 2
-	./vfio-bind $HOST_PCIPORT
+	RUN_PRE_BOOT+=( 
+		vfio-bind $HOST_PCIPORT
+  )
 	if [[ -z "$VM_BUS" ]];then
 		VM_BUS="pt_${PCI_CURRENT_SLOT}"
 		add_io3420_port $VM_BUS

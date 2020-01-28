@@ -33,7 +33,5 @@ fi
 #LOADING MACHINE CONFIG
 source $MACHINE_PATH/config
 
-
-SOCKET=$MACHINE_PATH/var/control
-$SCRIPT_DIR/qmp-send "$MACHINE" '{ "execute": "qmp_capabilities" }\n' 
-rm $MACHINE_PATH/var/frozen
+qmp-status $MACHINE 2>/dev/null
+[[ -f $VAR_PATH/frozen ]] && rm $VAR_PATH/frozen

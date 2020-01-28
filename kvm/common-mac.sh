@@ -8,7 +8,7 @@ QEMU_OPTS+=(
  -machine pc-q35-4.1,accel=kvm,usb=off,kernel-irqchip=on
  -overcommit mem-lock=off,cpu-pm=off
  -smbios type=2
- -rtc clock=vm,base=utc
+ -rtc clock=vm,base=utc,driftfix=slew
  -nographic
  #-usb
 )
@@ -39,7 +39,8 @@ fi
 CLOVER_OPTS=()
 BIOS_OPTS=()
 
+#GFXPT_BUS="gpu.1"
 GFXPT_BUS="gpu.1"
-GFXPT_ADDR="0x0"
+GFXPT_ADDR="0x00"
 
 MACHINE_OS=mac

@@ -1,0 +1,7 @@
+[Unit]
+Description="Per CPU Watcher %I"
+Slice=qemu 
+
+[Service]
+Type=Exec
+PIDFile=/var/run/qemu/%I

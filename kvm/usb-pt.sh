@@ -2,8 +2,9 @@
 
 source $SCRIPT_DIR/../kvm/lib-pci.sh
 
-./vfio-bind 0000:${USBPCI}.0
-
+RUN_PRE_BOOT+=(
+vfio-bind 0000:${USBPCI}.0
+)
 
 add_vpci USBPCI_BUS $USB_ROOT_PORT
 QEMU_OPTS+=( 
@@ -17,14 +18,21 @@ add_vpci USBPCI_BUS $USB_ROOT_PORT
 QEMU_OPTS+=(
 -device vfio-pci,host=$USBPCI_1.0,bus=$USBPCI_BUS,addr=0,rombar=1
 )
-./vfio-bind 0000:${USBPCI_1}.0
+
+RUN_PRE_BOOT+=(
+vfio-bind 0000:${USBPCI_1}.0
+)
+
 fi
 if [ "x$USBPCI_2" != "x" ]; then
 add_vpci USBPCI_BUS $USB_ROOT_PORT
 QEMU_OPTS+=(
 -device vfio-pci,host=$USBPCI_2.0,bus=$USBPCI_BUS,addr=0.0,rombar=1
 )
-./vfio-bind 0000:${USBPCI_2}.0
+
+RUN_PRE_BOOT+=(
+vfio-bind 0000:${USBPCI_2}.0
+)
 fi
 
 

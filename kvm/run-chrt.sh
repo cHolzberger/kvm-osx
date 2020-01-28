@@ -1,4 +1,4 @@
-CMD="qemu-system-x86_64"
+CMD="/opt/qemu/bin/qemu-system-x86_64"
 MON_PATH="$MACHINE_VAR"
 
 OIFS="$IFS"

@@ -1,0 +1,21 @@
+#!/bin/bash
+set -o pipefail 
+
+DEV="$2"
+MACHINE="$1" 
+TAGS="$3"
+
+function usage() {
+	echo "Usage: "
+	echo "backup-blockdev MACHINE PATH [TAG1 TAG2 ... TAGn]"
+}
+
+[[ -z $DEV ]] && usage && exit 1
+[[ -z $MACHINE ]] && usage && exit 2
+
+TAGS="machine:$MACHINE path:$DEV $TAGS"
+for i in  $TAGS ; do
+	_TAGS="$_TAGS --tag \"$i\""
+done
+
+backup-cmd backup $_TAGS $DEV  

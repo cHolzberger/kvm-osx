@@ -1,0 +1,26 @@
+OS=linux
+BIOS=efi
+EFI_ROM="clearlinux"
+EFI_VARS="clearlinux"
+
+UUID="e94997a8-b772-4092-8bc6-2229d0338b4f" 
+HDD_MODE=virtio_scsi
+
+NET1_MODE=macvtap
+NET1_DEV=lan
+NET1_MACADDR="52:54:00:AB:09:B7"
+
+CPU_MODEL=hyperv-nested
+
+NUM_CPUS=4
+USE_CPUS_RANGE=10-13
+CPU_SMP=$NUM_CPUS,sockets=1,cores=$NUM_CPUS,threads=1
+
+MEM=8G
+VIRTIO_MODE="modern"
+HDD_system_ISCSI_TARGET="iscsi://127.0.0.1/iqn.2019.09.com.mosaiksoftware:ch-deepin/1"
+DISK_system="/dev/vg0/vm-ch-deepin"
+
+QEMU_EXTRA_OPTS=(
+	-cdrom /mnt/iso/OS/Deepin/deepin-15.11-amd64.iso
+)

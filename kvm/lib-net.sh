@@ -192,10 +192,12 @@ function _add_pcie_iface() {
 	[[ -z "$NET_ADDR" ]] && echo "PCIPORT: Missing NET ADDR" >&2  && return
        
 	echo "'$NET_BR::$NET_VF Args -> NET_BR=$NET_BR NET_VF=$NET_VF NET_MACADDR=$NET_MACADDR NET_BUS=$NET_BUS NET_ADDR=$NET_ADDR NET_VLAN=$NET_VLAN QEMU_DEVICE=$QEMU_DEVICE CB=$CB NET_ARGS=$NET_ARGS"
+
 	PRE_CMD+=(
 	"echo 'PCIPORT: biding to $PCIPORT'"
 	"$RUNTIME_PATH/vfio-bind $PCIPORT"
 	)
+
 	echo "Using Network from $PCIPORT" >&2
         QEMU_OPTS+=(-device vfio-pci,tx_queue_size=1024,rx_queue_size=1024,host=$PCIPORT,bus=$NET_BUS,addr=$NET_ADDR,csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off,mrg_rxbuf=off,rombar=0)
 #rombar=0

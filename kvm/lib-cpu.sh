@@ -12,6 +12,8 @@ fi
 
 CPUSET_DIR="$CPUSET/kvm/$MACHINE"
 
+VAR_RUN_DIR="/var/run/qemu"
+
 C_MEMS="${CPUSET_PREFIX}mems"
 C_CPUS="${CPUSET_PREFIX}cpus"
 C_TASKS="tasks"
@@ -19,6 +21,13 @@ C_SCHED="${CPUSET_PREFIX}sched_load_balance"
 
 DEF_MEMSET=$(cat $CPUSET/$C_MEMS)
 DEF_CPUSET=$(cat $CPUSET/$C_CPUS)
+
+function system_watch_by_pid () {
+	MACHINE="$1"
+	PID_FILE="$2"
+  UNIT="$3"
+  systemd-run --scope qemu-${MACHINE/-/__} --type exec --unit="qemu-${MACHINE/-/__}-$UNIT" -p PIDFile="$PID_FILE"
+}
 
 function destroy_cpuset() {
 	VMNAME=$1

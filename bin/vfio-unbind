@@ -4,17 +4,19 @@ modprobe vfio-pci
 
 for dev in "$@"; do
 	current_override=$(cat /sys/bus/pci/devices/$dev/driver_override)
+
 	vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
-        device=$(cat /sys/bus/pci/devices/$dev/device)
+q        device=$(cat /sys/bus/pci/devices/$dev/device)
 
 	echo "$current_override"
 	
-	echo "Binding $dev"
+	echo "Unbinding $dev"
 	dir="/sys/bus/pci/devices/$dev"
 
-	echo "Overriding Driver"
+	echo "Releasing Driver"
 	echo -e -n "" > /sys/bus/pci/devices/$dev/driver_override
         sleep 2
+	
 	echo -n $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
 	
 	if [ ! -d "$dir" ];then
