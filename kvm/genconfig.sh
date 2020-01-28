@@ -49,7 +49,7 @@ if [[ ! -z $FS9P ]]; then
 	source kvm/fs-shared.sh
 fi
 
-CMD="/opt/qemu-ms/bin/qemu-system-x86_64"
+CMD="/opt/qemu/bin/qemu-system-x86_64"
 MON_PATH="$MACHINE_VAR"
 SOCKET="$MACHINE_VAR/qmp"
 

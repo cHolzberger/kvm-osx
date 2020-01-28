@@ -25,7 +25,6 @@ for dev in "$@"; do
 		continue
 	fi
 
-
 	if [ "$current_override" = "vfio-pci" ]; then
 		echo $dev allready claimed
 		continue
