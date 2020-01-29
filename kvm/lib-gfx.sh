@@ -25,19 +25,20 @@ function get_rom () {
 	svendor=$( cat /sys/bus/pci/devices/$dev/subsystem_vendor | sed -e s/0x// )
 	sdevice=$( cat /sys/bus/pci/devices/$dev/subsystem_device | sed -e s/0x// )
 	
-	ROMFILE="$SCRIPT_DIR/../roms/${vendor}_${device}-${svendor}_${sdevice}.rom"
-	ROMFILE_SHORT="$SCRIPT_DIR/../roms/${vendor}_${device}.rom"
+#	ROMFILE="$SCRIPT_DIR/../roms/${vendor}_${device}-${svendor}_${sdevice}.rom"
+#	ROMFILE_SHORT="$SCRIPT_DIR/../roms/${vendor}_${device}.rom"
 
+#	echo "Looking for ${ROMFILE_SHORT}" 1>&2
+	echo ""
+	echo "====> GFX ROM LOOKUP"
+	echo "Looking for $vendor:$device $svendor:$sdevice" 1>&2
+	
+	ROM_SHA1=$( cat $SCRIPT_DIR/../roms/table | grep -v "^\#" | grep "$vendor:$device $svendor:$sdevice" | cut -d">" -f 2 | xargs echo)
 
-	echo "Looking for ${ROMFILE_SHORT}" 1>&2
-	echo "Looking for ${ROMFILE}" 1>&2
-
+	ROMFILE="$( realpath $SCRIPT_DIR/../roms/$ROM_SHA1 || echo '_no-rom-avail_' )"
 	if [[ -e "$ROMFILE" ]]; then
 		echo "Using  $ROMFILE" 1>&2
 		echo ",romfile=$ROMFILE"
-	elif [[ -e $ROMFILE_SHORT ]]; then
-		echo "Using $ROMFILE_SHORT" 1>&2
-		echo ",romfile=$ROMFILE_SHORT"
 	fi
 }
 
