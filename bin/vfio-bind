@@ -45,7 +45,9 @@ for dev in "$@"; do
 
 	echo "Overriding Driver"
 	echo -n "vfio-pci" > $dir/driver_override
+	if [[ -e $dir/driver/unbind ]]; then
   	echo -n "$dev" > "$dir/driver/unbind"
+	fi
 	echo -n "$dev" > /sys/bus/pci/drivers_probe
 	#echo -n $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
 	

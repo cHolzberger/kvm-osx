@@ -25,7 +25,7 @@ function add_root_port() {
 	NAME=$1
 
 	QEMU_SW+=(
-    	-device pcie-root-port,port=0x1$CHASSIS_COUNT,chassis=1$CHASSIS_COUNT,id=$NAME.1,bus=pcie.0,addr=0x2.0x$CHASSIS_COUNT
+    	-device pcie-root-port,slot=$CHASSIS_COUNT,port=0x1$CHASSIS_COUNT,chassis=1$CHASSIS_COUNT,id=$NAME.1,bus=pcie.0,addr=0x2.0x$CHASSIS_COUNT
 	)
 
 	let CHASSIS_COUNT=$CHASSIS_COUNT+1
@@ -53,11 +53,11 @@ function add_pciept_dev() {
 		VM_ADDR=0x0
 	fi
 	
-	find /sys/bus/pci/devices/$HOST_PCIPORT/ -wholename \*/block/\*/device | while read dev; do
-		echo "\tUnplugging $dev"
-		echo -n 1 > $dev/delete
-	done
-        sleep 2
+#	find /sys/bus/pci/devices/$HOST_PCIPORT/ -wholename \*/block/\*/device | while read dev; do
+#		echo "\tUnplugging $dev"
+#		echo -n 1 > $dev/delete
+#	done
+ #       sleep 2
 	RUN_PRE_BOOT+=( 
 		vfio-bind $HOST_PCIPORT
   )
@@ -70,7 +70,7 @@ function add_pciept_dev() {
 
 	fi
 
-        QEMU_OPTS+=(-device vfio-pci,host=$HOST_PCIPORT,bus=$VM_BUS,addr=0x0,rombar=1,romfile="")
+        QEMU_OPTS+=(-device vfio-pci,host=$HOST_PCIPORT,bus=$VM_BUS,addr=0x0,romfile="")
 #rombar=0
 }
 

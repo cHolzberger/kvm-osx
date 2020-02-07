@@ -3,6 +3,7 @@ host
 kvm=on
 vmware-cpuid-freq=on
 l3-cache=on
+host-cache-info=off
 #topoext=on
 vendor=GenuineIntel
 )
@@ -33,7 +34,7 @@ QEMU_OPTS+=(
  -cpu "${CPU[*]}","${CPUFLAGS[*]}"
  -smp "$CPU_SMP"
  -global ICH9-LPC.disable_s3=1
-# -no-hpet
+ -no-hpet
 )
 
 IFS="$OIFS"

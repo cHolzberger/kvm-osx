@@ -88,7 +88,9 @@ echo "<================="
 
 
 $CMD \
-	-serial unix:$MACHINE_VAR/console,server,nowait \
+   -device virtio-serial \
+   -chardev socket,id=charconsole1,path=$MACHINE_VAR/console,server,nowait,logfile=$MACHINE_VAR/console2.log,logappend=on \
+   -device virtconsole,chardev=charconsole1,id=console1 \
        ${CLOVER_OPTS[@]} \
 	${MEMORY_FLAGS[@]} \
 	\

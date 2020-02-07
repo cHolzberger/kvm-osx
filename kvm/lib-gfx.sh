@@ -29,14 +29,13 @@ function get_rom () {
 #	ROMFILE_SHORT="$SCRIPT_DIR/../roms/${vendor}_${device}.rom"
 
 #	echo "Looking for ${ROMFILE_SHORT}" 1>&2
-	echo ""
-	echo "====> GFX ROM LOOKUP"
+	echo "" 1>&2
+	echo '====> GFX ROM LOOKUP' 1>&2
 	echo "Looking for $vendor:$device $svendor:$sdevice" 1>&2
-	
 	ROM_SHA1=$( cat $SCRIPT_DIR/../roms/table | grep -v "^\#" | grep "$vendor:$device $svendor:$sdevice" | cut -d">" -f 2 | xargs echo)
+	ROMFILE="$( realpath $SCRIPT_DIR/../roms/$ROM_SHA1 || echo -n '' )"
 
-	ROMFILE="$( realpath $SCRIPT_DIR/../roms/$ROM_SHA1 || echo '_no-rom-avail_' )"
-	if [[ -e "$ROMFILE" ]]; then
+	if [[ -n $ROM_SHA1 && -e "$ROMFILE" ]]; then
 		echo "Using  $ROMFILE" 1>&2
 		echo ",romfile=$ROMFILE"
 	fi
@@ -62,15 +61,27 @@ GFX_VGPU=$2
 GFX_ENABLE_VNC=$3
 GFX_VNCPORT=$4
 
-if [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ -z "$GFX_VGPU" ]]; then
-	echo "add_vgpu: GFX_ENABLE_VGPU specified but GFX_VGPU missing"
-	exit -1
-fi
+#if [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ -z "$GFX_VGPU" ]]; then
+#	echo "add_vgpu: GFX_ENABLE_VGPU specified but GFX_VGPU missing"
+#	exit -1
+#fi
 
 if [[ ! -z "$GFX_ENABLE_VNC" ]] && [[ -z "$GFX_VNCPORT" ]]; then
 	echo "add_vgpu: GFX_ENABLE_VNC specified but GFX_VNCPORT missing"
 	exit -1
 fi
+
+if [[ ! -z "$GFX_ENABLE_VNC" ]]; then
+	QEMU_OPTS+=(
+	-vnc $GFX_VNCPORT,password,lossy,share=force-shared
+	-usb -device usb-kbd -device usb-tablet 
+	)
+
+	QMP_CMD+=(
+	'{ "execute": "set_password", "arguments": { "protocol": "vnc", "password": "secret" } }'
+	)
+fi
+}
 
 if [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 	QEMU_OPTS+=(
@@ -81,18 +92,19 @@ elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
 	QEMU_OPTS+=(
 		-vga qxl
 	)
-elif [[ ! -z "$GFX_ENABLE_VGPU" ]] && [[ ! -z "$GFX_VGPU" ]];then 
+elif [[ -n "$GFXPCI" ]]; then 
 #	QEMU_CFG+=(
 #	  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
 #	)
 
+	ROMFILE=$(get_rom $GFXPCI)
 	QEMU_OPTS+=(
 	-vga none
-  -device $GFX_VGPU,bus=$GFXPCI,addr=0x0.0,multifunction=on,rombar=1
-  #-device $GFX_VGPU,bus=gpu.1,addr=0x0.0,slot=0,rombar=1
-	#-display egl-headless
+#	-device VGA,edid=on,xres=1920,yres=1200
+  	-device vfio-pci-nohotplug,bus=gpu.1,x-msix-relocation=bar1,rombar=1,addr=0x0.0,multifunction=on,host=$GFXPCI.0$ROMFILE$GFX_ARGS
+  #,rombar=1
+  #-device $GFX_VGPU,bus=gpu.1,addr=0x0.0,slot=0,rombar=5
 	)
-
 else
 	QEMU_OPTS+=(
 	-vga none
@@ -100,13 +112,4 @@ else
 	)
 fi
 
-if [[ ! -z "$GFX_ENABLE_VNC" ]]; then
-	QEMU_OPTS+=(
-	-vnc $GFX_VNCPORT,password,lossy
-	)
 
-	QMP_CMD+=(
-	'{ "execute": "set_password", "arguments": { "protocol": "vnc", "password": "secret" } }'
-	)
-fi
-}
