@@ -5,6 +5,7 @@ vmware-cpuid-freq=on
 l3-cache=on
 topoext=on
 vendor=GenuineIntel
+migratable=off
 )
 
 #hide kvm from guest, enable tsc timer

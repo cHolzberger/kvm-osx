@@ -5,8 +5,8 @@ QEMU_OPTS+=(
  -nodefaults
  -enable-kvm 
  -m $MEM 
- -machine pc-q35-4.2,accel=kvm,usb=off,kernel-irqchip=on,vmport=off
- -overcommit mem-lock=on,cpu-pm=off
+ -machine pc-q35-4.2,accel=kvm,usb=on #,kernel-irqchip=on,vmport=off
+# -overcommit mem-lock=off,cpu-pm=off
  -smbios type=2
  -rtc clock=vm,base=utc,driftfix=slew
  -nographic

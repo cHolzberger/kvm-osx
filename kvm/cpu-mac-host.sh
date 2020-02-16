@@ -6,6 +6,7 @@ l3-cache=on
 host-cache-info=off
 #topoext=on
 vendor=GenuineIntel
+migratable=off
 )
 
 #hide kvm from guest, enable tsc timer

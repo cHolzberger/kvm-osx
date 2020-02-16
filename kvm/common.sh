@@ -42,7 +42,7 @@ QEMU_OPTS+=(
 	-monitor chardev:monitor	
 	-qmp chardev:qmp
 	-serial chardev:tty0
-	-name $MACHNE,debug-threads=on
+	#-name $MACHNE,debug-threads=on
 )
 GFXPT_BUS="gpu.1"
 GFXPT_ADDR="0x0"

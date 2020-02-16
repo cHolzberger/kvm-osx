@@ -92,16 +92,17 @@ elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
 	QEMU_OPTS+=(
 		-vga qxl
 	)
-elif [[ -n "$GFXPCI" ]]; then 
+fi
+if [[ -n "$GFXPCI" ]]; then 
 #	QEMU_CFG+=(
 #	  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
 #	)
 
 	ROMFILE=$(get_rom $GFXPCI)
 	QEMU_OPTS+=(
-	-vga none
+#	-vga none
 #	-device VGA,edid=on,xres=1920,yres=1200
-  	-device vfio-pci-nohotplug,bus=gpu.1,x-msix-relocation=bar1,rombar=1,addr=0x0.0,multifunction=on,host=$GFXPCI.0$ROMFILE$GFX_ARGS
+  	-device vfio-pci-nohotplug,bus=gpu.1,rombar=1,addr=0x0.0,multifunction=on,host=$GFXPCI.0$ROMFILE$GFX_ARGS
   #,rombar=1
   #-device $GFX_VGPU,bus=gpu.1,addr=0x0.0,slot=0,rombar=5
 	)

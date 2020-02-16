@@ -13,7 +13,8 @@ function add_io3420_port() {
 	NAME=$1
 
 	QEMU_SW+=(
-	-device ioh3420,id=$NAME.1,chassis=1$CHASSIS_COUNT,addr=0x1$CHASSIS_COUNT.0,bus=pcie.0
+	#ioh3420
+	-device pcie-root-port,id=$NAME.1,chassis=1$CHASSIS_COUNT,addr=0x1$CHASSIS_COUNT.0,bus=pcie.0
 	)
 	let CHASSIS_COUNT=$CHASSIS_COUNT+1
 }

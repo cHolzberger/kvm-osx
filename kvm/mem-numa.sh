@@ -2,9 +2,10 @@ if [[ ! -z "1" ]]; then
 	NUMA_NODES=1
 	MEMORY_FLAGS+=(
 	-m $MEM
-	-object memory-backend-file,mem-path=$MEM_PATH/ram,size=${MEM},id=mem,share=on,prealloc=yes
-	-numa node,memdev=mem
  	-mem-prealloc
+	-mem-path $MEM_PATH
+#	-object memory-backend-file,mem-path=$MEM_PATH/ram,size=${MEM},id=mem,share=on,prealloc=yes
+#	-numa node,memdev=mem
 	)
 else
 	MEM_DIVIDED=$(( $MEMORY / $NUMA_NODES ))
