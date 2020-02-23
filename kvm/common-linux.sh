@@ -48,16 +48,20 @@ elif [[ "$QEMU_MACHINE" =~ "q35" ]]; then
 	GFXPT_BUS="gpu.1"
 	GFXPT_ADDR="0x0"
 	QEMU_CFG+=(
- -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
- -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
-# -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
-)
+ 		-readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
+ 		-readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
+ 		-readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
+	)
 	QEMU_OPTS+=(
- 	-machine $QEMU_MACHINE,accel=kvm,kernel_irqchip=on,vmport=off
-# 	-readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
-)
+ 		-machine $QEMU_MACHINE,accel=kvm,kernel_irqchip=on,vmport=off
+	)
+
+	if [[ "$GFX_MODE" == "pt" ]]; then
+
+	QEMU_CFG+=(
+		-readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+  )
+ fi
 fi
 
 #	SCSI_BUS="pcie.1"

@@ -42,8 +42,8 @@ SCSI_BUS="virtio.3"
 SCSI_ADDR="0x0"
 SCSI_CONTROLLER="single"
 
-GFXPCI="gpu.1"
-GFXPT_BUS="pcie.8"
-GFXPT_ADDR="0x0"
+#GFXPCI="gpu.1"
+#GFXPT_BUS="pcie.8"
+#GFXPT_ADDR="0x0"
 
 MACHINE_OS=win
