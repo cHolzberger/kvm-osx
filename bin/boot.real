@@ -41,7 +41,7 @@ elif [ -e /var/run/qemu/$MACHINE.pid ]; then
         rm $MACHINE_PATH/var/pid
 fi 
 
-
+kvm-log-message Booting $MACHINE from $MACHINE_PATH
 cd $RUNTIME_PATH
 echo "[GENCONFIG] running..."
 source kvm/genconfig.sh
