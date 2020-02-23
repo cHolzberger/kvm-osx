@@ -93,6 +93,7 @@ elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
 		-vga qxl
 	)
 fi
+
 if [[ -n "$GFXPCI" ]]; then 
 #	QEMU_CFG+=(
 #	  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
@@ -108,8 +109,6 @@ if [[ -n "$GFXPCI" ]]; then
 	)
 else
 	QEMU_OPTS+=(
-	-vga none
-	-display none
 	)
 fi
 
