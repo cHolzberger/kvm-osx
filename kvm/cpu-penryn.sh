@@ -3,7 +3,7 @@ Penryn
 kvm=on
 vmware-cpuid-freq=on
 l3-cache=on
-migratable=off
+#migratable=off
 +invtsc
 )
 

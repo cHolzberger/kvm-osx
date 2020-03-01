@@ -61,7 +61,7 @@ function add_kvm_flags() {
 
 function add_x86_flags() {
 	CPUFLAGS+=(
-		migratable=no
+#		migratable=no
 		+spec-ctrl
 		+pcid
 		+ssbd

@@ -78,7 +78,7 @@ function diskarg() {
 		"iscsi-tgt") 
 		 	kind="iscsi-tgt"
 			echo "==> Add ISCSI HDD" >&2 
-			ISCSI_TARGET=${ISCSI_TARGET:-iscsi://127.0.0.1/iqn.2001-04.com.$(hostname)-$MACHINE-$name/1}
+			ISCSI_TARGET=${ISCSI_TARGET:-iscsi://127.0.0.1/iqn.2001-04.com.$(hostname).$MACHINE:$name/1}
 			kind="iscsi"
 			;;
 	esac
