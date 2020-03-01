@@ -97,7 +97,6 @@ $CMD \
 	\
         ${QEMU_OPTS[@]} \
 	\
-	${QEMU_EXTRA_OPTS[@]} \
 	\
 	-S \
 	-pidfile $MON_PATH/pid \
@@ -105,6 +104,7 @@ $CMD \
 	-D $MACHINE_VAR/debug.log \
 	-global isa-debugcon.iobase=0x402 \
 	-debugcon file:$MACHINE_VAR/debugcon.log \
+	${QEMU_EXTRA_OPTS[@]} \
 	-boot menu=on 
 
 END

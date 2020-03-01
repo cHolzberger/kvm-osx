@@ -13,20 +13,29 @@ function has_flag() {
 	fi
 }
 
+# see https://github.com/qemu/qemu/blob/master/docs/hyperv.txt
 function add_hyperv_flags() {
 	CPUFLAGS+=(
+		migratable=no
 		hv_relaxed=on
 		hv_spinlocks=0x8191
 		hv_time=on
 		hv_tlbflush
 		hv_ipi
+    hv_frequencies
+		hv_reenlightenment
+	  hv_stimer_direct
+		hv_time
+	  hv_runtime
+		hv_reset
+		hv_vpindex=on
 	#	hv_stimer=on
-		hv_synic=on
 		hv_vpindex=on
 		#+kvm_pv_unhalt
 		hv_reset
 	#	hv_runtime
 		#hv_crash
+	#	hv_synic=on
 #		hv_vapic -> watch it makes problems on cpus not having x2apic
 		$(has_flag x2apic "hv_vapic=on")
 		$(has_flag x2apic "hv_evmcs=on")
@@ -38,13 +47,13 @@ function add_hyperv_flags() {
 function add_kvm_flags() {
 	CPUFLAGS+=(
 		+kvm-asyncpf
-       		+kvm-hint-dedicated
-  		+kvm-mmu 
+   	+kvm-hint-dedicated
+  	+kvm-mmu 
 		+kvm-nopiodelay 
 		+kvm-pv-eoi 
 		+kvm-pv-ipi 
 		+kvm-pv-tlb-flush
-  		+kvm-pv-unhalt 
+  	+kvm-pv-unhalt 
 		+kvm-steal-time 
 		+kvmclock 
 		+kvmclock-stable-bit
@@ -67,11 +76,10 @@ function add_x86_flags() {
 		$(has_flag avx)
 		$(has_flag avx2)
 		$(has_flag aes)
-#		$(has_flag vmx)
+		$(has_flag vmx)
 		$(has_flag pcid)
 		$(has_flag pdpe1gb)
 		+lahf_lm
-		+hv-tlbflush
 		#enforce
 		#$(has_flag ssbd)
 	)

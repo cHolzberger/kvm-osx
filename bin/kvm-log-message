@@ -1,0 +1,8 @@
+#!/bin/bash 
+
+MSG="$@"
+
+systemd-cat -t kvm <<end
+-- MessageID: $(uuidgen)
+-- Message: $MSG
+end
