@@ -14,7 +14,6 @@ function has_flag() {
 }
 
 function add_hyperv_flags() {
-
 	CPUFLAGS+=(
 		hv_relaxed=on
 		hv_spinlocks=0x8191
@@ -22,13 +21,12 @@ function add_hyperv_flags() {
 		hv_tlbflush
 		hv_ipi
 	#	hv_stimer=on
-	#	hv_synic=on
+		hv_synic=on
 		hv_vpindex=on
 		#+kvm_pv_unhalt
 		hv_reset
 	#	hv_runtime
 		#hv_crash
-		#migratable=no
 #		hv_vapic -> watch it makes problems on cpus not having x2apic
 		$(has_flag x2apic "hv_vapic=on")
 		$(has_flag x2apic "hv_evmcs=on")
@@ -58,6 +56,11 @@ function add_kvm_flags() {
 
 function add_x86_flags() {
 	CPUFLAGS+=(
+		migratable=no
+		+spec-ctrl
+		+pcid
+		+ssbd
+		+pdpe1gb
 		$(has_flag ssse3)
 		$(has_flag sse4.1)
 		$(has_flag sse4.2)
@@ -70,7 +73,6 @@ function add_x86_flags() {
 		+lahf_lm
 		+hv-tlbflush
 		#enforce
-		spec-ctrl
 		#$(has_flag ssbd)
 	)
 }

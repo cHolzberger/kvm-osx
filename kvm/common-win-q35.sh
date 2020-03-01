@@ -21,19 +21,19 @@ if [ "x$UUID" != "x" ]; then
 fi
 CLOVER_OPTS=()
 BIOS_OPTS=()
-VPCI_BUS=( 0x1c.0:on 0x1c.1:off 0x1c.2:off 0x1c.3:off 0x1c.4:off 0x1c.5:off 0x1c.6:off 0x1c.7:off 0x1c.8:off
-      0x1d.0:on 0x1d.1:off 0x1d.2:off 0x1d.3:off 0x1d.4:off 0x1d.5:off 0x1d.6:off 0x1d.7:off 0x1d.8:off )
-GFXPCI="gpu.1"
+#VPCI_BUS=( 0x1c.0:on 0x1c.1:off 0x1c.2:off 0x1c.3:off 0x1c.4:off 0x1c.5:off 0x1c.6:off 0x1c.7:off 0x1c.8:off
+#      0x1d.0:on 0x1d.1:off 0x1d.2:off 0x1d.3:off 0x1d.4:off 0x1d.5:off 0x1d.6:off 0x1d.7:off 0x1d.8:off )
+
+VPCI_BUS=( 0x1a.0:on 0x1a.1:off 0x1a.2:off 0x1a.3:off 0x1d.4:off 0x1d.5:off 0x1c.6:off 0x1c.7:off 0x1c.8:off )
+
+#GFXPCI="gpu.1"
 GFXPT_BUS="gpu.1"
 GFXPT_ADDR="0x0"
 QEMU_CFG+=(
  -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
  -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
-# -readconfig $SCRIPT_DIR/../cfg/q35-addr5.0-port05-rng.cfg 
-
-
+ -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
 )
 
 MACHINE_OS=win
