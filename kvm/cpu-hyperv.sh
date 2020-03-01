@@ -3,8 +3,8 @@ source $SCRIPT_DIR/../kvm/lib-cfh.sh
 
 #topoext=on
 CPU=(
-host
-kvm=on
+Penryn
+kvm=off
 l3-cache=on
 )
 

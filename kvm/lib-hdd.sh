@@ -169,7 +169,8 @@ function add_virtio_scsi_disk() {
 
 	if [[ "x$VSCSI_INDEX" == "x0" ]] && [[ "$SCSI_CONTROLLER" != "multi" ]]; then
 		CONTROLLER="vscsi$VSCSI_INDEX.$VSCSI_INDEX"
-		add_vpci SCSI_BUS $STORE_ROOT_PORT
+		#add_vpci SCSI_BUS $STORE_ROOT_PORT
+	#	SCSI_BUS=$STORE_ROOT_PORT
 		SCSI_ADDR="0x0"
 		echo "[VIRTIO[$VIRTIO_MODE]]Creating vrtio-scsi-pci - $SCSI_CONTROLLER (vscsi$VSCSI_INDEX) BUS: $SCSI_BUS ADDR: $SCSI_ADDR"
 
@@ -183,8 +184,8 @@ function add_virtio_scsi_disk() {
 
 		D=(
 			virtio-scsi-pci
-			bus=$SCSI_BUS
-			addr=$SCSI_ADDR
+	#		bus=$SCSI_BUS
+	#		addr=$SCSI_ADDR
 			iothread=iothread$name
 			num_queues=4
 			id=vscsi$VSCSI_INDEX
@@ -211,8 +212,8 @@ function add_virtio_scsi_disk() {
 		)
 		D=(
 			virtio-scsi-pci
-			bus=$SCSI_BUS
-			addr=$PCI_INDEX
+#			bus=$SCSI_BUS
+#			addr=$PCI_INDEX
 			iothread=iothread$name
 			id=vscsi$VSCSI_INDEX
 			$conarg

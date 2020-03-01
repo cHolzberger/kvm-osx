@@ -3,8 +3,10 @@
 function has_flag() {
 	FLAG="$1"
 	NOFLAG="$2"
+  ADD="${3:-""}"
 	lscpu | grep "Flags:" | grep " $FLAG " > /dev/null
 	if [[ "$?" = "0" ]]; then
+		[[ -n $ADD ]] && FLAG="$FLAG,$ADD" 
 		echo "+$FLAG"
 		echo "[CPU] Adding CPU Flag: $FLAG" >&2
 	else 
@@ -17,7 +19,7 @@ function has_flag() {
 function add_hyperv_flags() {
 
 	CPUFLAGS+=(
-		migratable=no
+#		migrateable=no
 		hv_relaxed=on
 		hv_spinlocks=0x8191
 		hv_time=on
@@ -25,18 +27,17 @@ function add_hyperv_flags() {
 		hv_ipi
     hv_frequencies
 		hv_reenlightenment
-	  hv_stimer_direct
-		hv_time
-	  hv_runtime
 		hv_reset
 		hv_vpindex=on
-	#	hv_stimer=on
-	#	hv_synic=on
-#		hv_vapic -> watch it makes problems on cpus not having x2apic
-		$(has_flag x2apic "hv_vapic=on")
-		$(has_flag x2apic "hv_evmcs=on")
+		hv_synic=on
+		hv_stimer=on
+	  hv_stimer_direct
+		hv_vapic
+		-hypervisor
 	)
-
+# to check:
+#		hv_vapic -> watch it makes problems on cpus not having x2apic
+#	add_apic_flags
 	add_x86_flags
 }
 
@@ -67,7 +68,6 @@ function add_x86_flags() {
 		$(has_flag avx)
 		$(has_flag avx2)
 		$(has_flag aes)
-		$(has_flag vmx)
 		$(has_flag pcid)
 		$(has_flag pdpe1gb)
 		+lahf_lm
@@ -78,16 +78,16 @@ function add_x86_flags() {
 }
 
 function add_apic_flags() {
-
 	has_apicv=$(cat /sys/module/kvm_intel/parameters/enable_apicv)
-	if [[ "$has_apicv" != "Y" ]]; then
+	if [[ "$has_apicv" == "Y" ]]; then
 		CPUFLAGS+=(
-			$(has_flag x2apic "hv_vapic=on")
+			"apicv"
 		)
 
 	else
 		CPUFLAGS+=(
-			"apicv"
+			hv_vapic=on
+#			"apicv"
 		)
 	fi
 }
