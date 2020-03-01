@@ -17,7 +17,6 @@ function has_flag() {
 
 # see https://github.com/qemu/qemu/blob/master/docs/hyperv.txt
 function add_hyperv_flags() {
-
 	CPUFLAGS+=(
 #		migrateable=no
 		hv_relaxed=on
@@ -62,6 +61,11 @@ function add_kvm_flags() {
 
 function add_x86_flags() {
 	CPUFLAGS+=(
+		migratable=no
+		+spec-ctrl
+		+pcid
+		+ssbd
+		+pdpe1gb
 		$(has_flag ssse3)
 		$(has_flag sse4.1)
 		$(has_flag sse4.2)
@@ -72,7 +76,6 @@ function add_x86_flags() {
 		$(has_flag pdpe1gb)
 		+lahf_lm
 		#enforce
-		spec-ctrl
 		#$(has_flag ssbd)
 	)
 }

@@ -88,6 +88,10 @@ if [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 		-vga $GFX_VGPU
 	#	-display egl-headless
 	)
+elif [[ "$GFX_ENABLE_VGPU" == "sec" ]]; then
+	QEMU_OPTS+=(
+		-device secondary-vga
+	)
 elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
 	QEMU_OPTS+=(
 		-vga qxl

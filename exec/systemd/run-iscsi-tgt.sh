@@ -34,11 +34,20 @@ for i in clover system data data1 data2 data3; do
  
  DISK_TYPE_VAR="DISK_${i}_TYPE"
  DISK_TYPE=${!DISK_TYPE_VAR}
+ DISK_BLOCKSIZE_VAR="DISK_${i}_BLOCKSIZE"
+ DISK_BLOCKSIZE=${!DISK_BLOCKSIZE_VAR}
+
  IQN="$MACHINE-$i"
  if [[ "$DISK_TYPE" = "iscsi-tgt" ]]; then
 		echo "Starting [TGT ISCSI Server: $IQN] for [Disk: $DISK]" 
-		tgt-setup-lun -n $IQN -d $DISK || true
-	fi
+#		tgt-setup-lun -n $IQN -d $DISK -B $DISK_BLOCKSIZE || true
+	cat <<<-EOF > /etc/tgt/conf.d/$MACHINE.conf
+	<target $IQN> 
+		backing-store $DISK 
+		block-size $DISK_BLOCKSIZE
+	</target>
+ fi
+ tgt-admin --update $IQN
 done
 
 ) >&2
