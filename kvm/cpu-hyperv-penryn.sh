@@ -5,6 +5,7 @@ vmware-cpuid-freq=on
 l3-cache=on
 #migratable=off
 +invtsc
+monitor=on
 )
 
 # not working
