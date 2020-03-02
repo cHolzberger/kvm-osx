@@ -1,0 +1,19 @@
+#!/bin/bash
+vg="$1"
+lv="$2"
+
+if [ "x$vg" == "x" ]; then
+	echo "Volume Group missing"
+	exit 1
+fi
+
+if [ "x$lv" == "x" ]; then
+	echo "Logical Volume missing"
+	exit 2
+fi
+
+date=$(date +%Y%m%d-%H%M%S)
+lvcreate --name $lv-$date --snapshot $vg/$lv
+
+echo desync make /mnt/backup/casync/$vg-$lv-$date.caibx /dev/$vg/$lv-$date
+#desync make -s /some/store file.vmdk.caibx file.vmdk

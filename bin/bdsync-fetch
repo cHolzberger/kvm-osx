@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# Example script to sync from LVM on a remote host to a local zvol 
+# device on zfs, taking a snapshot on the zfs before the sync takes 
+# place.
+
+# Call the script as lvm-to-zfs-sync.sh <volume name> 
+
+# Includes an option to do a baseline transfer against /dev/null to 
+# minimise disk reads
+
+# This assumes that volume name exists as a zvol locally and an lvm 
+# volume remotely.
+
+# Written by Tim Fletcher <tim@night-shade.org.uk>
+
+# ZFS zpool/zfs holding zvols
+localtarget=/dev/vg0/vm-voffice-system
+# LVM device to pull froma
+remotetarget='/mnt/disk.backup1/dell-kvm-1/tags/"disk:vm-office-system"/2020-02-29T02:57:03+01:00/machine_vm-office-system_disk_vm-office-system' 
+
+remotetarget2='/mnt/disk.backup1/dell-kvm-1/tags/"disk:vm-office-system"/2020-02-29T00:48:38Z/machine_voffice_disk_vm-office-system' # /dev/vg0/vm-office-system
+localbds="/opt/qemu/bin/bdsync"
+remotebds="/usr/local/bin/bdsync"
+# Remove username and host
+remotehost=root@192.168.254.219
+# Block size to use, zvols work best with 8k I found
+#blocksize=4096
+blocksize=8192
+# Number of local zfs snaps to keep
+keep=7
+
+if [ $(id -u) -gt 0 ] ; then
+        echo $0 needs to be run as root
+        exit 1
+fi
+
+baseline()
+{
+size=$(blockdev --getsize64 /dev/zvol/$localtarget/$dev)
+$bds --diffsize --progress --blocksize=$blocksize --remdata "ssh $remotehost $bds --server" /dev/null $remotetarget/$dev | pv -s $size | $bds --patch=$localtarget
+}
+
+devcheck()
+{
+if [ ! -b $localtarget ] ; then
+	echo "$localtarget doesn't exist"
+	exit 1
+fi
+}
+
+snapshot()
+{
+	echo "noop"
+#zfs-auto-snapshot.sh --syslog -p snap --label=bdsync --keep=$keep $localtarget/$dev
+}
+
+_patch="--patch"
+transfer()
+{
+	echo "Starting Transfer"
+	size=$(blockdev --getsize64 $localtarget)
+$localbds --zeroblocks --progress --blocksize=$blocksize --remdata "ssh $remotehost $remotebds --zeroblocks --server" $localtarget $remotetarget |pv -s $size| sudo $localbds --patch
+}
+
+case $1 in
+baseline)
+        shift
+	dev=$1
+	devcheck
+	baseline
+;;
+*)
+	dev=$1
+	devcheck
+	snapshot
+	transfer
+;;
+esac
