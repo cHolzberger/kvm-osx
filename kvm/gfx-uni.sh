@@ -9,7 +9,7 @@ if [[ "$BIOS" == "seabios" ]] || [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 
 elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
 	GFX_VGPU=${GFX_VGPU:-qxl}
-	add_vgpu "std" "$GFX_VGPU" "true" "$GFX_VNCPORT"
+	add_vgpu "qxl" "$GFX_VGPU" "true" "$GFX_VNCPORT"
 
 else
 	GFX_VGPU=${GFX_VGPU:-"vmware-svga"}

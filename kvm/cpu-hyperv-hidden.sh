@@ -27,4 +27,5 @@ QEMU_OPTS+=(
  -smbios '"type=1,manufacturer=LENOVO,product=30AH001GPB,version=ThinkStation P300,serial=System Serial,uuid='$UUID',sku=LENOVO_MT_30AH,family=P3"'
 )
 
+hide_hypervisor
 IFS="$OIFS"
