@@ -11,8 +11,8 @@ l3-cache=on
 CPUFLAGS=(
 )
 
-add_hyperv_flags
-
+add_hyperv_nested_flags
+hide_hypervisor
 
 OIFS="$IFS"
 IFS=","

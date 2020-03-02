@@ -15,6 +15,26 @@ function has_flag() {
 	fi
 }
 
+
+function add_hyperv_nested_flags() {
+	add_hyperv_flags
+
+	CPUFLAGS+=(
+	dca
+	xtpr
+	tm2
+	vmx
+	ds_cpl
+	monitor
+	pbe
+	tm
+	ht
+	ss
+	acpi
+	ds
+	vme
+	)
+}
 # see https://github.com/qemu/qemu/blob/master/docs/hyperv.txt
 function add_hyperv_flags() {
 	CPUFLAGS+=(
@@ -32,7 +52,6 @@ function add_hyperv_flags() {
 		hv_stimer=on
 	  hv_stimer_direct
 		hv_vapic
-		-hypervisor
 	)
 # to check:
 #		hv_vapic -> watch it makes problems on cpus not having x2apic
