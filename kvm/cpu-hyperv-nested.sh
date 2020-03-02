@@ -3,9 +3,10 @@ source $SCRIPT_DIR/../kvm/lib-cfh.sh
 
 #topoext=on
 CPU=(
-Penryn
+host
 kvm=off
 l3-cache=on
+monitor=on
 )
 
 CPUFLAGS=(

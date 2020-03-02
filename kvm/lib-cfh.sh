@@ -33,7 +33,7 @@ function add_hyperv_flags() {
 	  hv_stimer_direct
 		hv_vapic
 		-hypervisor
-	)
+)
 # to check:
 #		hv_vapic -> watch it makes problems on cpus not having x2apic
 #	add_apic_flags

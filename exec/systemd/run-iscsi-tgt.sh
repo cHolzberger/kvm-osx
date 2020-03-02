@@ -34,7 +34,7 @@ for i in clover system data data1 data2 data3; do
  DISK_TYPE_VAR="DISK_${i}_TYPE"
  DISK_TYPE=${!DISK_TYPE_VAR}
  DISK_BLOCKSIZE_VAR="DISK_${i}_BLOCKSIZE"
- DISK_BLOCKSIZE=${!DISK_BLOCKSIZE_VAR}
+ DISK_BLOCKSIZE=${!DISK_BLOCKSIZE_VAR:-512}
 
  IQN="iqn.2001-04.com.$(hostname).$MACHINE"
  #IQN="$MACHINE-$i"
