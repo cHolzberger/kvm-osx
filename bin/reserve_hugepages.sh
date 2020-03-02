@@ -7,8 +7,8 @@ if [ "x" != "x$hugepagesize" ]; then
 	export USE_HUGEPAGES=1
 reservedmem=$RESERVE_RAM # GB
 
-let reservedkb=$reservedmem*1024*1024
-let nr_hugepages=$reservedkb/$hugepagesize
+let reservedkb=$reservedmem*1024*1024/2
+#let nr_hugepages=$reservedkb/$hugepagesize
 echo "Reserving $reservedmem GB RAM => $nr_hugepages Hugepages"
 
 sysctl -w vm.nr_hugepages=$nr_hugepages || true

@@ -36,6 +36,8 @@ done
 
 
 QEMU_OPTS+=(
+        -readconfig $SCRIPT_DIR/../cfg/ipmi.cfg
+        -readconfig $SCRIPT_DIR/../cfg/spice-stream.cfg
 	-chardev socket,id=monitor,path=$MACHINE_PATH/var/monitor,server,nowait 
 	-chardev socket,id=qmp,path=$MACHINE_PATH/var/qmp,nowait,server	
 	-chardev socket,id=tty0,path=$MACHINE_POATH/var/tty0,nowait,server

@@ -51,6 +51,7 @@ function add_hyperv_flags() {
 		hv_synic=on
 		hv_stimer=on
 	  hv_stimer_direct
+	  x-hv-synic-kvm-only
 		hv_vapic
 	)
 # to check:

@@ -1,5 +1,5 @@
 #+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
-QEMU_MACHINE="pc-i440fx"
+QEMU_MACHINE="pc-i440fx-4.2"
 QEMU_CFG+=(
  -readconfig $SCRIPT_DIR/../cfg/i440base.cfg
 # -readconfig $SCRIPT_DIR/../cfg/i440rng.cfg
@@ -13,7 +13,7 @@ QEMU_OPTS+=(
  -nographic
  -enable-kvm 
  -m $MEM 
- -machine pc-i440fx-4.2,accel=kvm,kernel_irqchip=on,mem-merge=off 
+# -machine pc-i440fx-4.2,accel=kvm,kernel_irqchip=on,mem-merge=off 
  -overcommit mem-lock=on,cpu-pm=off
  -smbios type=2
  -rtc base=utc

@@ -2,7 +2,7 @@
 source $SCRIPT_DIR/../kvm/lib-net.sh
 source $SCRIPT_DIR/../kvm/lib-pci.sh
 
-if [[ $QEMU_MACHINE = "pc-i440fx" ]]; then
+if [[ $QEMU_MACHINE =~ "pc-i440fx" ]]; then
 	NET_PCI_BUS="pci.0"
 else 
 	NET_PCI_BUS="pcie.0"

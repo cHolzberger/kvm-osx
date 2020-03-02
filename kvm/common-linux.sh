@@ -1,5 +1,5 @@
 #+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+xsaves,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe
-QEMU_MACHINE="pc-q35-4.2,smbus,max-ram-below-4g=1G,usb=off"
+QEMU_MACHINE="pc-q35-4.2"
 VIRTIO_MODE="modern"
 
 QEMU_OPTS+=(
@@ -38,7 +38,7 @@ if [[ "$QEMU_MACHINE" == "i440" ]]; then
  -readconfig $SCRIPT_DIR/../cfg/i440mon.cfg
  -readconfig $SCRIPT_DIR/../cfg/i440input.cfg
  -readconfig $SCRIPT_DIR/../cfg/guest-agent.cfg
- -machine pc,accel=kvm,kernel_irqchip=on,vmport=off
+# -machine pc-i440fx-4.2,accel=kvm,kernel_irqchip=on,vmport=off
 )
 
 elif [[ "$QEMU_MACHINE" =~ "q35" ]]; then
