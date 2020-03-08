@@ -32,7 +32,7 @@ GFXPT_ADDR="0x0"
 QEMU_CFG+=(
  -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
- -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+# -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
 )
 

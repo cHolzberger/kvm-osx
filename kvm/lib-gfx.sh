@@ -107,7 +107,7 @@ if [[ -n "$GFXPCI" ]]; then
 	QEMU_OPTS+=(
 #	-vga none
 #	-device VGA,edid=on,xres=1920,yres=1200
-  	-device vfio-pci-nohotplug,bus=gpu.1,rombar=1,addr=0x0.0,multifunction=on,host=$GFXPCI.0$ROMFILE$GFX_ARGS
+  	-device vfio-pci-nohotplug,bus=gpu.1,addr=0x0.0,multifunction=on,host=$GFXPCI.0$ROMFILE$GFX_ARGS
   #,rombar=1
   #-device $GFX_VGPU,bus=gpu.1,addr=0x0.0,slot=0,rombar=5
 	)
