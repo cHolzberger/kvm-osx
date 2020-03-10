@@ -5,7 +5,7 @@ MACHINE_NAME="$MACHINE"
 [[ ! -z "$MACHINE_NAME" ]] || echo "Machine ($MACHINE) name missing!"
 [[ ! -z "$MACHINE_NAME" ]] || exit -1
 
-MEM_PATH=/dev/hugepages2M
+MEM_PATH=/dev/hugepages/$MACHINE_NAME
 
 #if [[ ! -d $MEM_PATH ]]; then
 #      	mkdir -p $MEM_PATH
@@ -17,8 +17,7 @@ MEM_PATH=/dev/hugepages2M
 #	echo " ===> mounting hugetlbfs on $MEM_PATH"
 #	mount -t hugetlbfs -o pagesize=1G "kvm-vm-$MACHINE_NAME" $MEM_PATH
 #fi
-
-QEMU_OPTS+=( 
-# -mem-path $MEM_PATH
+#QEMU_OPTS+=( 
+# -mem-path $MEM_PATH/$MACHINE_NAME
 # -mem-prealloc
-)
+#)

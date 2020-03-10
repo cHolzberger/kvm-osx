@@ -39,9 +39,12 @@ else
 	PRE_CMD+=(
 	"vfio-bind \"$audio_dev\""
 )
+
+if [[ $GFX_AUDIO == "pt" ]]; then
 QEMU_OPTS+=( 
 	-device vfio-pci,bus=$GFXPT_BUS,addr=0x00.0x1,host=$GFXPCI.1
 	)
+fi
 fi
 
 echo -e "\tUsing GFX Card:\t$dev" 1>&2

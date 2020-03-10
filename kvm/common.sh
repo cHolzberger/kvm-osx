@@ -45,9 +45,11 @@ QEMU_OPTS+=(
 	-qmp chardev:qmp
 	-serial chardev:tty0
 	#-name $MACHNE,debug-threads=on
+ 	-overcommit mem-lock=off,cpu-pm=off
 )
 GFXPT_BUS="gpu.1"
 GFXPT_ADDR="0x0"
+GFX_AUDIO="pt"
 #could be pcie-root-port
 USB_ROOT_PORT=${USB_ROOT_PORT:-"pcie-root-port"}
 NET_ROOT_PORT=${NET_ROOT_PORT-"pcie-root-port"}
