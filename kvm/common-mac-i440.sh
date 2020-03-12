@@ -4,7 +4,6 @@ QEMU_OPTS=(
  -enable-kvm 
  -m $MEM 
  -machine pc,accel=kvm
- -overcommit mem-lock=off,cpu-pm=off
  -smbios type=2
  -nographic
  -rtc clock=vm,base=utc

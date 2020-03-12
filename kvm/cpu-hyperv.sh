@@ -6,7 +6,7 @@ CPU=(
 host
 kvm=off
 l3-cache=on
-monitor=on
+#monitor=on
 )
 
 CPUFLAGS=(

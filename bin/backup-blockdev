@@ -17,7 +17,7 @@ function usage() {
 DISK=$( basename $DEV )
 TAGS="machine:$MACHINE disk:$DISK $TAGS"
 for i in  $TAGS ; do
-	_TAGS="$_TAGS --tag \"$i\""
+	_TAGS="$_TAGS --tag $i"
 done
 
 echo backup-cmd backup --stdin --stdin-filename "machine_${MACHINE}_disk_${DISK}" $_TAGS

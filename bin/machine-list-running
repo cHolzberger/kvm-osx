@@ -14,7 +14,7 @@ if [ -e $MACHINE_PATH/var/pid ]; then
 		vm=$(basename $MACHINE_PATH)
 		source $MACHINE_PATH/config 
 		[[ $VERBOSE == "0" ]] && echo $vm
-		[[ $VERBOSE == "1" ]] && echo -en "$vm \t $MEM\n"
+		[[ $VERBOSE == "1" ]] && echo -en "$vm \t $MEM \t $GFX_VNCPORT\n"
 		
 		let _sum=_sum+"$( echo $MEM | sed -e s/G// )"
 	fi	

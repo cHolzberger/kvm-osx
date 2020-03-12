@@ -74,5 +74,4 @@ QEMU_OPTS+=(
  -m $MEM 
 # -smbios type=2
  -rtc base=utc
-  -overcommit mem-lock=on,cpu-pm=off
 )

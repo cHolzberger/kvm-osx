@@ -8,7 +8,6 @@ QEMU_OPTS+=(
 # -m $MEM 
 # -machine pc-q35-4.2,accel=kvm,kernel_irqchip=on,usb=off,dump-guest-core=off
 # -name "$MACHINE",process="qemu:q35:$MACHINE"
- -overcommit mem-lock=on,cpu-pm=off
  -smbios type=2
  -rtc base=utc
  -net none
@@ -29,9 +28,21 @@ VPCI_BUS=( 0x1a.0:on 0x1a.1:off 0x1a.2:off 0x1a.3:off 0x1d.4:off 0x1d.5:off 0x1c
 #GFXPCI="gpu.1"
 GFXPT_BUS="gpu.1"
 GFXPT_ADDR="0x0"
+if [[ $GFX_MODE == "pt" ]]; then
+ CLOVER_OPTS+=( 	
+ 	-readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
+ )
+fi
+
+if [[ $USB_MODE != "pt" ]]; then
+	CLOVER_OPTS+=( 	
+ -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
+ )
+fi
+
+
 QEMU_CFG+=(
  -readconfig $SCRIPT_DIR/../cfg/q35--base_default.cfg
- -readconfig $SCRIPT_DIR/../cfg/q35-addr3.0-port02-input.cfg 
 # -readconfig $SCRIPT_DIR/../cfg/q35-addr2.0-port01-gpu.cfg
  -readconfig $SCRIPT_DIR/../cfg/q35--mon.cfg
 )

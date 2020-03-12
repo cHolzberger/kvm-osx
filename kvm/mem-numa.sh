@@ -4,8 +4,8 @@ if [[ ! -z "1" ]]; then
 	-m $MEM
  	-mem-prealloc
 	-mem-path $MEM_PATH
-#	-object memory-backend-file,mem-path=$MEM_PATH/ram,size=${MEM},id=mem,share=on,prealloc=yes
-#	-numa node,memdev=mem
+	-object memory-backend-file,mem-path=$MEM_PATH-ram,size=${MEM},id=mem,share=on,prealloc=yes
+	-numa node,memdev=mem
 	)
 else
 	MEM_DIVIDED=$(( $MEMORY / $NUMA_NODES ))
