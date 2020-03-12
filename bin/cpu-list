@@ -1,0 +1,10 @@
+if [ -e /sys/devices/system/cpu/intel_pstate/min_perf_pct ]; then
+	echo pstate per pct
+	cat /sys/devices/system/cpu/intel_pstate/min_perf_pct
+fi
+echo "Found $CPUCOUNT cpus"
+echo "Getting governor"
+
+ls /sys/bus/cpu/devices | while read cpu; do
+	echo "$cpu Gov: $(cat /sys/bus/cpu/devices/$cpu/cpufreq/scaling_governor)"
+done
