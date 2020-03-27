@@ -29,3 +29,9 @@ isolcpus=1-13 nohz_full=1-13 rcu_nocbs=1-13 hugepagesz=1GB hugepages=64 default_
 
 # mounnt cpuset to /dev/cpuset
  mount -t cpuset - /dev/cpuset
+
+# Some HDD options work better than others
+
+TGT as DISK provider and VRITIO_SCSI or AHCI work good 
+
+

@@ -39,16 +39,16 @@ for i in clover system data data1 data2 data3; do
  IQN="iqn.2001-04.com.$(hostname).$MACHINE"
  #IQN="$MACHINE-$i"
  if [[ "$DISK_TYPE" = "iscsi-tgt" ]]; then
-		echo "Starting [TGT ISCSI Server: $IQN] for [Disk: $DISK]" 
-#		tgt-setup-lun -n $IQN -d $DISK -B $DISK_BLOCKSIZE || true
+	echo "Starting [TGT ISCSI Server: $IQN] for [Disk: $DISK]" 
+#	tgt-setup-lun -n $IQN -d $DISK -B $DISK_BLOCKSIZE || true
 	cat <<-EOF > /etc/tgt/conf.d/$MACHINE-$i.conf
 	<target $IQN:$i> 
 		backing-store $DISK 
 		block-size $DISK_BLOCKSIZE
 	</target>
 EOF
- tgt-admin --update "$IQN:$i"
- fi
+tgt-admin --update "$IQN:$i"
+fi
 done
 
 ) >&2
