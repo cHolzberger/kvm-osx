@@ -6,19 +6,17 @@ source $SCRIPT_DIR/../kvm/lib-helper.sh
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
 # must be cache=directsync for virtio-blk
 # when using direct host attached storage
-RAW_OPTS_local_default_="aio=native,cache.direct=on,cache=none,discard=unmap"
-RAW_OPTS_local_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap"
-RAW_OPTS_local_virtio_scsi_pci="aio=native,cache.direct=on,cache=writethrough"
+RAW_OPTS_local_default_="aio=native,cache.direct=on,cache=none,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_local_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_local_virtio_scsi_pci="aio=native,cache.direct=on,cache=writethrough,discard=unmap,detect-zeroes=unmap"
 
-RAW_OPTS_iscsi_default_="aio=native,cache.direct=on,cache=writeback,discard=unmap"
-RAW_OPTS_iscsi_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap"
-RAW_OPTS_iscsi_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback"
+RAW_OPTS_iscsi_default_="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_iscsi_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_iscsi_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
 
-RAW_OPTS_nbd_default_="aio=native,cache.direct=on,cache=writeback,discard=unmap"
-RAW_OPTS_nbd_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap"
-RAW_OPTS_nbd_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback"
-
-
+RAW_OPTS_nbd_default_="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_nbd_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_nbd_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
 
 CONTROLLER_OPTS_default=""
 CONTROLLER_OPTS_virtio_scsi_pci="num_queues=8"
@@ -26,7 +24,7 @@ CONTROLLER_OPTS_virtio_blk_pci="num_queues=8"
 
 QCOW2_OPTS="cache=off,aio=threads,l2-cache-size=60M"
 #QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=on,detect-zeroes=off,cache.direct=on"
-QED_OPTS="cache=writethrough,aio=native,discard=on,detect-zeroes=off,cache.direct=on"
+QED_OPTS="cache=writethrough,aio=native,discard=on,detect-zeroes=discard,cache.direct=on"
 
 export LIBISCSI_CHAP_USERNAME 
 export LIBISCSI_CHAP_PASSWORD 
