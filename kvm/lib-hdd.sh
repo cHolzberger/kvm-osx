@@ -88,6 +88,7 @@ function diskarg() {
 	if [[ $kind == "nbd" ]]; then
 		echo "file=nbd:unix:$NBD_TARGET,format=raw"
 	elif [ $kind == "iscsi" ]; then
+		qemu-img info "$ISCSI_TAGET"
 		echo "file=$ISCSI_TARGET,format=raw,$RAW_OPTS"
   elif [ -e "$DISKS_PATH/$name.raw" ]; then	
 		echo "file=$DISKS_PATH/$name.raw,format=raw,$RAW_OPTS"
