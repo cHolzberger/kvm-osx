@@ -2,17 +2,18 @@ source $SCRIPT_DIR/../kvm/lib-hdd.sh
 
 function add_disk () {
 	_HDD_NAME="$1"
-	eval " V=\$HDD_${_HDD_NAME}_MODE"
-	_HDD_MODE=$(valOr "$HDD_MODE" "$V")
-	echo -e "\n $V or $HDD_MODE"
+	eval " V=\$DISK_${_HDD_NAME}_MODE"
+	_HDD_MODE=$(valOr "$HDD_MODE" ${V})
+
+	echo "DISK> ADDING $_HDD_NAME MODE: $_HDD_MODE" 1>&2
 	add_${_HDD_MODE}_disk $_HDD_NAME
 }
 
 function valOr () {
-	if [[ -z $2 ]]; then
-		echo $1
-	else
+	if [[ -n $2 ]]; then
 		echo $2
+	else
+		echo $1
 	fi
 }
 

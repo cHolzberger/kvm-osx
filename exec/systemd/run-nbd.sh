@@ -44,10 +44,10 @@ for i in clover system data data1 data2 data3; do
 		CMD=( 
 				/opt/qemu/bin/qemu-nbd
         --discard=unmap
-         --detect-zeroes=unmap
-				--persistent --shared=5
-         --socket="$SOCK"
-         --format=raw 
+        --detect-zeroes=unmap
+	--persistent 
+        --socket="$SOCK"
+        --format=raw 
         $DISK 
 		)
 		systemd-run --no-block --unit=qemu-${MACHINE/-/__}-disk-$i --slice=qemu ${CMD[@]} &
