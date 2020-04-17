@@ -87,7 +87,7 @@ function diskarg() {
 		echo "file=nbd:unix:$NBD_TARGET,format=raw"
 	elif [ $kind == "iscsi" ]; then
 		echo "file=$ISCSI_TARGET,format=raw,$RAW_OPTS"
-  elif [ -e "$DISKS_PATH/$name.raw" ]; then	
+	elif [ -e "$DISKS_PATH/$name.raw" ]; then	
 		echo "file=$DISKS_PATH/$name.raw,format=raw,$RAW_OPTS"
 	elif [ -e "$DISKS_PATH/$name.qcow2" ]; then
 		echo "file=$DISKS_PATH/$name.qcow2,format=qcow2,$QCOW2_OPTS"
@@ -95,6 +95,10 @@ function diskarg() {
 		echo "file=$DISKS_PATH/$name.qed,format=qed,$QED_OPTS"
 	elif [ -d "$DISKS_PATH/$name.vfat" ]; then
 		echo "file=fat:rw:$DISKS_PATH/$name.vfat,format=raw"
+	elif [[ $kind == "direct-raw" ]] && [[ -e $name ]]; then
+		echo "file=$name,format=raw,$RAW_OPTS"
+	elif [[ $kind == "direct-qcow2" ]] && [[ -e $name ]]; then
+		echo "file=$name,format=qcow2,$QCOW2_OPTS"
 	else
 		echo "err"
 	fi
