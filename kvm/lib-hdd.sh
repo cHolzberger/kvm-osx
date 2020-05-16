@@ -4,27 +4,33 @@ source $SCRIPT_DIR/../kvm/lib-pci.sh
 source $SCRIPT_DIR/../kvm/lib-helper.sh
 
 DISKS_PATH="$VM_PREFIX/$MACHINE/disks"
+
+AIO_default="io_uring"
 # must be cache=directsync for virtio-blk
 # when using direct host attached storage
-RAW_OPTS_local_default_="aio=native,cache.direct=on,cache=none,discard=unmap,detect-zeroes=unmap"
-RAW_OPTS_local_virtio_blk_pci="aio=native,cache.direct=on,cache=none,discard=unmap,detect-zeroes=unmap"
-RAW_OPTS_local_virtio_scsi_pci="aio=native,cache.direct=on,cache=writethrough,discard=unmap,detect-zeroes=unmap"
+hdd_defaults() {
+RAW_OPTS_local_default="aio=$AIO_default,cache.direct=on,cache=none,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_local_ahci="cache=none"
+RAW_OPTS_local_virtio_blk_pci="aio=$AIO_default,cache.direct=on,cache=none,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_local_virtio_scsi_pci="aio=$AIO_default,cache.direct=on,cache=writethrough,discard=unmap,detect-zeroes=unmap"
 
-RAW_OPTS_iscsi_default_="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
-RAW_OPTS_iscsi_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
-RAW_OPTS_iscsi_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_iscsi_default="aio=$AIO_default,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_iscsi_ahci="aio=$AIO_default,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_iscsi_virtio_blk_pci="aio=$AIO_default,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_iscsi_virtio_scsi_pci="aio=$AIO_default,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
 
-RAW_OPTS_nbd_default_="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
-RAW_OPTS_nbd_virtio_blk_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
-RAW_OPTS_nbd_virtio_scsi_pci="aio=native,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_nbd_default_="aio=$AIO_default,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_nbd_virtio_blk_pci="aio=$AIO_default,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
+RAW_OPTS_nbd_virtio_scsi_pci="aio=$AIO_default,cache.direct=on,cache=writeback,discard=unmap,detect-zeroes=unmap"
 
 CONTROLLER_OPTS_default=""
 CONTROLLER_OPTS_virtio_scsi_pci="num_queues=8"
 CONTROLLER_OPTS_virtio_blk_pci="num_queues=8"
 
 QCOW2_OPTS="cache=off,aio=threads,l2-cache-size=60M"
-#QCOW2_OPTS="cache=writethrough,aio=native,l2-cache-size=40M,discard=on,detect-zeroes=off,cache.direct=on"
-QED_OPTS="cache=writethrough,aio=native,discard=on,detect-zeroes=discard,cache.direct=on"
+#QCOW2_OPTS="cache=writethrough,aio=$AIO_default,l2-cache-size=40M,discard=on,detect-zeroes=off,cache.direct=on"
+QED_OPTS="cache=writethrough,aio=$AIO_default,discard=on,detect-zeroes=discard,cache.direct=on"
+}
 
 export LIBISCSI_CHAP_USERNAME 
 export LIBISCSI_CHAP_PASSWORD 
@@ -59,8 +65,10 @@ function virtioarg() {
 function diskarg() {
  local name="$1"
 	
- local ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
- local ISCSI_TARGET=${!ISCSI_TARGET_VAR}
+	hdd_defaults
+
+	ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
+	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
 	
 	local kind="local"
 
@@ -117,6 +125,9 @@ function diskarg() {
 
 function devicearg() {
 	name=$1
+
+	hdd_defaults
+
 	DISK_SERIAL="$2"
 
 	ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
@@ -274,7 +285,8 @@ function add_virtio_scsi_disk() {
 function add_ahci_disk() {
 	name=$1
 	dformat=raw
-	diskarg=$(diskarg $name)
+
+	diskarg=$(diskarg "$name" ahci)
 	INDEX=0
 	if [ $diskarg == "err" ]; then
 		echo "disk not found $name"
@@ -284,9 +296,8 @@ function add_ahci_disk() {
 	
         let AHCI_INDEX=AHCI_INDEX+1
 	QEMU_OPTS+=( 
-#		-device ich9-ahci,id=ahci$INDEX,addr=4,bus=pcie.0
 		-device ide-hd,bus=ide.$AHCI_INDEX,drive=${name}HDD,bootindex=$BOOTINDEX
-		-drive id=${name}HDD,if=none,$(diskarg $name)
+		-drive id=${name}HDD,if=none,$(diskarg "$name" ahci )
 	)
 	BOOTINDEX=$((BOOTINDEX+1))
 }
