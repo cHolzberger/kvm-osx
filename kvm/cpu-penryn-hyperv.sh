@@ -25,7 +25,6 @@ IFS=","
 QEMU_OPTS+=(
  -cpu "${CPU[*]}","${CPUFLAGS[*]}"
  -smp "$CPU_SMP"
- -global ICH9-LPC.disable_s3=1
  -no-hpet
 )
 

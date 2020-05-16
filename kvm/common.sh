@@ -33,7 +33,22 @@ for t in ${USE_CPUS[@]} ; do
         let i="($i + 1)"
 done 
 
+case $POWERSAVE in 
+	full)
+	QEMU_OPTS+=(
+	-global PIIX4_PM.disable_s3=0 
+	-global PIIX4_PM.disable_s4=0
+	-global ICH9-LPC.disable_s3=0
+	);;
+	*)
+	QEMU_OPTS+=(
+	-global PIIX4_PM.disable_s3=1
+	-global PIIX4_PM.disable_s4=1
+	-global ICH9-LPC.disable_s3=1
+	);;
+esac
 
+	
 
 QEMU_OPTS+=(
         -readconfig $SCRIPT_DIR/../cfg/ipmi.cfg

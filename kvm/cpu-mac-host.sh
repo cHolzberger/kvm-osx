@@ -1,32 +1,43 @@
 CPU=(
 host
 kvm=on
+#vmx=off
+hypervisor=on 
 vmware-cpuid-freq=on
 l3-cache=on
-host-cache-info=off
-#topoext=on
+#host-cache-info=off
+topoext=on
 vendor=GenuineIntel
-migratable=off
+migratable=no
 )
 
 #hide kvm from guest, enable tsc timer
 
 CPUFLAGS=(
--erms
+#needed by macos
++bmi1
++bmi2
 +invtsc
-+pcid
-+ssse3
-+sse4.2
-+popcnt
 +aes
 +avx
-+avx2
++fma
+# 
+-erms
++pcid
++ssse3
++sse4_1
++sse4.2
++popcnt
 +xsave
-+xsaveopt,
++xsaveopt
 +vmx
-+bmi2,+smep,+bmi1,+fma,+movbe
++movbe
 +x2apic
 +misalignsse,+movbe,+osvw,+pclmuldq,+pdpe1gb,+rdrand,+rdseed,+rdtscp,+sha-ni,+smap,+smep,+svm,+vme,+xgetbv1,+xsave,+xsavec,+clwb,+umip,+topoext,+perfctr-core,+wbnoinvd
++avx2
++fma
+check
+
 )
 OIFS="$IFS"
 IFS=","
@@ -34,7 +45,6 @@ IFS=","
 QEMU_OPTS+=(
  -cpu "${CPU[*]}","${CPUFLAGS[*]}"
  -smp "$CPU_SMP"
- -global ICH9-LPC.disable_s3=1
  -no-hpet
 )
 
