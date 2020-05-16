@@ -92,6 +92,10 @@ elif [[ "$GFX_ENABLE_VGPU" == "sec" ]]; then
 	QEMU_OPTS+=(
 		-device secondary-vga
 	)
+elif [[ "$GFX_ENABLE_VGPU" == "bochs-display" ]]; then
+	QEMU_OPTS+=(
+		-device bochs-display
+	)
 elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
 	QEMU_OPTS+=(
 		-vga qxl

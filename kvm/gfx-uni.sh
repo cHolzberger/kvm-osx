@@ -1,7 +1,7 @@
 #!/bin/bash
 source $SCRIPT_DIR/../kvm/lib-gfx.sh
 
-echo "Using VGPU: std/vmware"
+echo "Using VGPU: $GFX_VGPU/$GFX_ENABLE_VGPU"
 
 if [[ "$BIOS" == "seabios" ]] || [[ "$GFX_ENABLE_VGPU" == "std" ]]; then
 	GFX_VGPU=${GFX_VGPU:-std}
@@ -11,6 +11,9 @@ elif [[ "$GFX_ENABLE_VGPU" == "qxl" ]]; then
 	GFX_VGPU=${GFX_VGPU:-qxl}
 	add_vgpu "qxl" "$GFX_VGPU" "true" "$GFX_VNCPORT"
 
+elif [[ "$GFX_ENABLE_VGPU" == "bochs-display" ]]; then
+GFX_VGPU=${GFX_VGPU:-"bochs-display"}
+	add_vgpu "none" "bochs-display" "true" "$GFX_VNCPORT"
 else
 	GFX_VGPU=${GFX_VGPU:-"vmware-svga"}
 	add_vgpu "true" "$GFX_VGPU" "true" "$GFX_VNCPORT"

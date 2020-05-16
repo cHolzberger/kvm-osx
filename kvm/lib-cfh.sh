@@ -20,19 +20,19 @@ function add_hyperv_nested_flags() {
 	add_hyperv_flags
 
 	CPUFLAGS+=(
-	dca
-	xtpr
-	tm2
-	vmx
-	ds_cpl
-	monitor
-	pbe
-	tm
-	ht
-	ss
-	acpi
-	ds
-	vme
+	+dca
+	+xtpr
+	+tm2
+	+vmx
+	+ds_cpl
+	+monitor
+	+pbe
+	+tm
+	+ht
+	+ss
+	+acpi
+	+ds
+	+vme
 	)
 }
 # see https://github.com/qemu/qemu/blob/master/docs/hyperv.txt
@@ -115,6 +115,12 @@ function add_apic_flags() {
 	fi
 }
 
+function expose_hypervisor() {
+CPUFLAGS+=(
+	kvm=on
+	hypervisor=on
+)
+}
 
 function hide_hypervisor() {
 #	hv_vendor_id=Nvidia43FIX

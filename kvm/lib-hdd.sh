@@ -57,15 +57,19 @@ function virtioarg() {
 }
 
 function diskarg() {
-	name=$1
+ local name="$1"
 	
-	ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
-	ISCSI_TARGET=${!ISCSI_TARGET_VAR}
+ local ISCSI_TARGET_VAR="HDD_${name}_ISCSI_TARGET"
+ local ISCSI_TARGET=${!ISCSI_TARGET_VAR}
 	
-	kind="local"
+	local kind="local"
 
-	DISK_TYPE_VAR="DISK_${name}_TYPE"
-	DISK_TYPE=${!DISK_TYPE_VAR}
+	local DISK_TYPE_VAR="DISK_${name}_TYPE"
+	local DISK_TYPE=${!DISK_TYPE_VAR}
+	
+	local DISK_VAR="DISK_${name}"
+	local DISK=${!DISK_VAR}
+
 
 	case "$DISK_TYPE" in
 		"nbd") 
@@ -78,6 +82,12 @@ function diskarg() {
 			echo "==> Add ISCSI HDD" >&2 
 			ISCSI_TARGET=${ISCSI_TARGET:-iscsi://127.0.0.1/iqn.2001-04.com.$(hostname).$MACHINE:$name/1}
 			kind="iscsi"
+			;;
+		"direct-raw")
+			kind="direct_raw"
+			;;
+		"direct-qcow2")
+			kind="direct_qcow2"
 			;;
 	esac
 	controller=RAW_OPTS_${kind}_${2:default}
@@ -96,10 +106,10 @@ function diskarg() {
 		echo "file=$DISKS_PATH/$name.qed,format=qed,$QED_OPTS"
 	elif [ -d "$DISKS_PATH/$name.vfat" ]; then
 		echo "file=fat:rw:$DISKS_PATH/$name.vfat,format=raw"
-	elif [[ $kind == "direct-raw" ]] && [[ -e $name ]]; then
-		echo "file=$name,format=raw,$RAW_OPTS"
-	elif [[ $kind == "direct-qcow2" ]] && [[ -e $name ]]; then
-		echo "file=$name,format=qcow2,$QCOW2_OPTS"
+	elif [[ $kind == "direct_raw" ]]; then
+		echo "file=$DISK,format=raw,$RAW_OPTS"
+	elif [[ $kind == "direct_qcow2" ]] ; then
+		echo "file=$DISK,format=qcow2,$QCOW2_OPTS"
 	else
 		echo "err"
 	fi
