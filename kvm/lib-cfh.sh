@@ -53,6 +53,9 @@ function add_hyperv_flags() {
 	  hv_stimer_direct
 	  x-hv-synic-kvm-only
 		hv_vapic
+		#n 
+		hv_frequencies 
+		hv_evmcs
 )
 # to check:
 #		hv_vapic -> watch it makes problems on cpus not having x2apic

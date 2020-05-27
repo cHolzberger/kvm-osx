@@ -17,7 +17,6 @@ POST_CMD=()
 #echo "Loading Hostconfig: $VM_PREFIX/config"
 source $VM_PREFIX/config
 
-
 export PATH="$PATH:/opt/qemu-ms/bin/:/opt/qemu-ms/sbin:$SCRIPT_DIR"
 
 ## CHECKS
