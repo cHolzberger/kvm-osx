@@ -101,7 +101,7 @@ function diskarg() {
 	controller=RAW_OPTS_${kind}_${2:default}
 	RAW_OPTS=${!controller}
 	
-	if [[ $kind == "nbd" ]]; then
+  if [[ $kind == "nbd" ]]; then
 		echo "file=nbd:unix:$NBD_TARGET,format=raw"
 	elif [ $kind == "iscsi" ]; then
 		qemu-img info "$ISCSI_TAGET"
@@ -249,9 +249,6 @@ function add_virtio_scsi_disk() {
 		)
 	fi
 
-	#		-device scsi-hd,bus=$CONTROLLER,lun=$VSCSI_INDEX,serial=$DISK_SERIAL,drive=${name}HDD,bootindex=$INDEX,needs_vpd_emulation=1024
-	#	-device scsi-block,bus=$CONTROLLER,lun=$VSCSI_INDEX,drive=${name}HDD,bootindex=$INDEX
-	#	-drive id=${name}HDD,if=none,$diskarg
 	_DEVICE=(
        		"$devicearg"
 		"bus=$CONTROLLER"
@@ -312,4 +309,20 @@ function add_virtio-blk-raw_disk() {
 
 function add_virtio-scsi-raw_disk () {
 	add_virtio_scsi_disk ${@}
+}
+
+function add_virtiofsd_disk() {
+	name="$1"
+	local DISK_TYPE_VAR="DISK_${name}_TYPE"
+	local DISK_TYPE=${!DISK_TYPE_VAR}
+	
+	local DISK_VAR="DISK_${name}"
+	local DISK=${!DISK_VAR}
+
+	local SOCK="$MACHINE_VAR/$name.virtiofsd.sock"
+
+	QEMU_OPTS+=( 
+		-chardev socket,id=vfs-$name,path=$SOCK
+	 	-device vhost-user-fs-pci,chardev=vfs-$name,tag="$DISK",queue-size=1024
+	)
 }

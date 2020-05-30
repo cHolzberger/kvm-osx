@@ -80,8 +80,9 @@ source /srv/kvm/vms/config
 source /srv/kvm/vms/config.host
 
 echo -e "\n\n"
-echo "================>> NBD / ISCSI"
+echo "================>> NBD / ISCSI / VIRTIOFSD"
 /srv/kvm/OSX-KVM/exec/systemd/run-nbd.sh $MACHINE
+/srv/kvm/OSX-KVM/exec/systemd/run-virtiofsd.sh $MACHINE
 /srv/kvm/OSX-KVM/exec/systemd/run-iscsi-tgt.sh $MACHINE
 echo "<================="
 

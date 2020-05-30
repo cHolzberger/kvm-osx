@@ -47,6 +47,7 @@ for i in clover system data data1 data2 data3; do
 		block-size $DISK_BLOCKSIZE
 	</target>
 EOF
+
 tgt-admin --update "$IQN:$i"
 fi
 done
