@@ -127,7 +127,7 @@ function add_macvtap_iface() {
 		)
 		VD="vhostfd=${FD_INDEX}1"
 		QEMU_OPTS+=(
- 			-netdev "tap,$FD,id=net$NET_INDEX,vhost=on,vhostforce=on,$VD" 
+ 			-netdev "tap,$FD,id=net$NET_INDEX" 
 		)
 	echo "Calling: $CB"
 	$CB "$NET_MACADDR" "$NET_BUS" "$NET_ADDR" "$QEMU_DEVICE"
@@ -272,8 +272,8 @@ function add_sriov_iface() {
 }
 
 function _add_virtio_device() {
-	DISABLE_OFFL=",mrg_rxbuf=off,csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
-	
+#	DISABLE_OFFL=",mrg_rxbuf=off,csum=off,gso=off,guest_tso4=off,guest_tso6=off,guest_ecn=off"
+  DISABLE_OFFL=""	
 	NET_MACADDR=$1
 	NET_BUS="${2:-virtio.$NET_VIRTIO_CURRENT_SLOT}"
 	NET_ADDR="${3:-'0'}"	

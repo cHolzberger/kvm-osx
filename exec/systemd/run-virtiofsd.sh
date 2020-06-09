@@ -44,15 +44,16 @@ for i in clover system data data1 data2 data3; do
 	
 		systemctl stop qemu-${MACHINE/-/__}-disk-$i 2>/dev/null || true
 		systemctl reset-failed qemu-${MACHINE/-/__}-disk-$i 2>/dev/null || true
-
+		rm $SOCK
 		CMD=( 
 			/opt/qemu/libexec/virtiofsd 
 			-f 
 			--socket-path=$SOCK
 			-o source=$DISK_PATH
 			-o cache=auto 
-			-o xattr 
-			-o log_level=debug 
+			-o writeback 
+			-o no_posix_lock
+#			-o xattr
 		)
 		systemd-run --no-block --unit=qemu-${MACHINE/-/__}-disk-$i --slice=qemu ${CMD[@]} &
 	fi

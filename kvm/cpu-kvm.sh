@@ -1,18 +1,13 @@
+source $SCRIPT_DIR/../kvm/lib-cfh.sh
+
 CPU=(
-Penryn
-vmware-cpuid-freq=on
+qemu64
 l3-cache=on
 )
 
 #hide kvm from guest, enable tsc timer
-
+add_kvm_flags
 CPUFLAGS=(
-kvm=off
-+invtsc
-+x2apic
-+tsc-deadline
-+tsc-adjust
-+avx
 )
 OIFS="$IFS"
 IFS=","
@@ -20,7 +15,6 @@ IFS=","
 QEMU_OPTS+=(
  -cpu "${CPU[*]}","${CPUFLAGS[*]}"
  -smp "$CPU_SMP"
- -no-hpet
 )
 
 IFS="$OIFS"

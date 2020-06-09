@@ -1,3 +1,5 @@
+[[ -e $MEM_PATH-ram ]] && rm $MEM_PATH-ram
+
 if [[ ! -z "1" ]]; then
 	NUMA_NODES=1
 	MEMORY_FLAGS+=(
