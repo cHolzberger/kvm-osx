@@ -58,4 +58,5 @@ for i in clover system data data1 data2 data3; do
 		systemd-run --no-block --unit=qemu-${MACHINE/-/__}-disk-$i --slice=qemu ${CMD[@]} &
 	fi
 done
+sleep 2
 ) >&2

@@ -1,0 +1,7 @@
+for i in /dev/vg0/vm-*; do
+	echo "Running backup for $i
+	  ~/go/bin/desync make -n 40 \
+	-s "http://10.99.99.33:9181/" \
+	 "http://10.99.99.33:9180/(basename $i).caibx" \
+	 $i 
+done
