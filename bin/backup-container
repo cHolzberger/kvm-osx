@@ -2,16 +2,16 @@
 export PATH="/srv/kvm/OSX-KVM/bin:$PATH"
 set -o pipefail 
 
-CPATH="$2"
 MACHINE="$1" 
-TAGS="$3"
+TAGS="$2"
+
+CPATH="/var/lib/machines/$MACHINE"
 
 function usage() {
 	echo "Usage: "
-	echo "backup-container MACHINE PATH [TAG1 TAG2 ... TAGn]"
+	echo "backup-container CONTAINER [TAG1 TAG2 ... TAGn]"
 }
 
-[[ -z $CPATH ]] && usage && exit 1
 [[ -z $MACHINE ]] && usage && exit 2
 
 
@@ -20,5 +20,5 @@ for i in  $TAGS ; do
 	_TAGS="$_TAGS --tag \"$i\""
 done
 
-echo backup-cmd backup "$CPATH" $_TAGS   
+echo backup-cmd backup "$MACHINE" $_TAGS   
 backup-cmd backup "$CPATH" /etc/systemd/nspawn/$MACHINE.nspawn $_TAGS   

@@ -1,32 +1,30 @@
 #!/bin/bash
 set -o pipefail 
 
-DEV="$2"
+DISK="$2"
+DEV="$3"
 MACHINE="$1" 
-TAGS="$3"
+TAGS="$4"
 
 function usage() {
 	echo "Usage: "
-	echo "backup-blockdev MACHINE DEVICE [TAG1 TAG2 ... TAGn]"
+	echo "backup-blockdev MACHINE VM-DEVICE DEVICE [TAG1 TAG2 ... TAGn]"
 }
 
 [[ -z $DEV ]] && usage && exit 1
 [[ -z $MACHINE ]] && usage && exit 2
+[[ -z $DISK ]] && usage && exit 2
 
-DISK=$( basename $DEV )
 TAGS="machine:$MACHINE disk:$DISK $TAGS"
 for i in  $TAGS ; do
 	_TAGS="$_TAGS --tag $i"
 done
 
-cd $( dirname $DEV)
-echo backup-cmd backup --stdin --stdin-filename "${DISK}" $_TAGS
-pushd "$CWD"
-cd $(dirname $DEV)
 #xz -0 -c -T 0 $DEV | backup-cmd backup --stdin --stdin-filename "${DISK}.xz" $_TAGS
 #gzip -0 -c  $DEV | backup-cmd backup --stdin --stdin-filename "${DISK}.gz" $_TAGS
 #pigz -0 -R -c  $DEV | backup-cmd backup --stdin --stdin-filename "${DISK}.gz" $_TAGS
 #dd if=$DEV bs=4M conv=sparse | lzop -1 -c | backup-cmd backup --stdin --stdin-filename "${DISK}.gz" $_TAGS
-nice ionice -c 3 dd if=$DEV bs=4M conv=sparse | nice ionice -c 3 xz -0 -c -T 0 | backup-cmd backup --stdin --stdin-filename "${DISK}.xz" $_TAGS
+echo "Saving as: /vm/$MACHINE/$DISK.xz" >&2
+echo "With Tags: $_TAGS" >&2
+nice ionice -c 3 dd if=$DEV bs=4M conv=sparse | nice ionice -c 3 xz -0 -c -T 0 | backup-cmd backup --stdin --stdin-filename "/vm/$MACHINE/${DISK}.xz" $_TAGS
 
-popd

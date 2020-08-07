@@ -20,9 +20,10 @@ VM_SEAT=$(echo $VM | cut -d: -f2)
 VMPATH="$VM_PREFIX/$VM_NAME"
 
 if [ -e "$VMPATH" ]; then
-	pid=$(cat $VMPATH/var/pid)
+	pid=$( cat $VMPATH/var/pid || echo "-1" ) 
 	if [ ! -e "/proc/$pid" ]; then
-		$SCRIPT_DIR/boot $VM > /dev/null &
+		$SCRIPT_DIR/boot.real $VM &
+	sleep 5
 	else
 		echo $VM allready running
 	fi
