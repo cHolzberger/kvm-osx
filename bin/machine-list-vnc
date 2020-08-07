@@ -1,0 +1,28 @@
+#!/bin/bash
+
+VERBOSE=0
+if [[ "$1" == "-v" ]]; then
+	VERBOSE=1
+fi
+
+_sum=0
+
+for MACHINE_PATH  in /srv/kvm/vms/*; do
+{
+	RUNNING="[ ] "
+	HOST="-unknown-"
+	{
+	p=$(<$MACHINE_PATH/var/pid)
+	if [ -n "$p" ] && [ -e "/proc/$p" ]; then
+		RUNNING="[*] "
+	fi } 2>/dev/null
+
+		vm=$(basename $MACHINE_PATH)
+		if [ -f $MACHINE_PATH/config ]; then
+			source $MACHINE_PATH/config 
+			source $MACHINE_PATH/../../seats/seat-$vm 
+			echo -e "$RUNNING\t $HOST\t $vm \t VNC_PORT: $GFX_VNCPORT "
+		fi
+}
+done
+

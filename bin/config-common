@@ -13,11 +13,11 @@ OPEN_FD=()
 PRE_CMD=()
 POST_CMD=()
 
+
 #echo "Loading Hostconfig: $VM_PREFIX/config"
 source $VM_PREFIX/config
 
-
-export PATH="/opt/qemu-ms/bin/:$PATH:$SCRIPT_DIR"
+export PATH="$PATH:/opt/qemu-ms/bin/:/opt/qemu-ms/sbin:$SCRIPT_DIR"
 
 ## CHECKS
 if [ $(ip -h 2>&1| grep BusyBox > /dev/null; echo $?) -eq 0 ]; then

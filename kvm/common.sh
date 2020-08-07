@@ -3,9 +3,9 @@ set -x
 case $VIRTIO_MODE in
 	modern)
 	QEMU_OPTS+=(
-		-global virtio-pci.disable-legacy=on
-		-global virtio-pci.disable-modern=off
-		-global virtio-pci.modern-pio-notify=on
+#		-global virtio-pci.disable-legacy=on
+#		-global virtio-pci.disable-modern=off
+#		-global virtio-pci.modern-pio-notify=on
 	);;
 	transitional)
 	QEMU_OPTS+=(
@@ -14,12 +14,15 @@ case $VIRTIO_MODE in
 		-global virtio-pci.modern-pio-notify=off
 	)
 	;;
-	*)
+	default)
 	QEMU_OPTS+=(
 		-global virtio-pci.disable-legacy=off
 		-global virtio-pci.disable-modern=on
 		-global virtio-pci.modern-pio-notify=off
 	)
+	;;
+	*)
+	echo "disable virtio overrides"
 	;;
 esac
 

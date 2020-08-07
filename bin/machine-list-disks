@@ -3,26 +3,49 @@
 disks=( system data data1 data2 data3 clover )
 
 backup_disks() {
+	  local HOST="$1"
+		if [[ -n "$HOST" && "$HOST" != "$(hostname)" ]]; then
+			return
+		fi
+		shift 
 		local MACHINE_PATH="$1"
 		local vm="$2"
 		local d="$3"
-	
+		local t=""
+
 		local var="\$DISK_$d"
 		iscsi_disk=""
 		eval iscsi_disk="$var"
 		local path_rawdisk=$(realpath $MACHINE_PATH/disks/$d.raw 2>/dev/null )		
 		local path_qcowdisk=$(realpath $MACHINE_PATH/disks/$d.qcow2 2>/dev/null )		
 		local disk=""
-		if [[ -n $iscsi_disk ]]; then
-			disk="$iscsi_disk"
-	  elif [[ -f $path_rawdisk || -b $path_rawdisk ]]; then
-			disk="disks/$d.raw"
+	
+	  if [[ -b $path_rawdisk && "$path_rawdisk" =~ ^/dev/dm-.* ]]; then
+	  	local info_vg=$( lvdisplay -c $(readlink $MACHINE_PATH/disks/$d.raw ) 2>/dev/null)
+			local path=$(echo $info_vg | cut -d":" -f 1)
+			local vg=$(echo $info_vg | cut -d":" -f 2)
+			local lv=$(basename $path)
+			disk="$vg:$lv:$path"
+		  t="blockdev-lvm"
+	  elif [[ -b $path_rawdisk ]]; then
+			disk=$path_rawdisk
+		  t="blockdev-raw"
+	  elif [[ -f $path_rawdisk ]]; then
+			disk=$path_rawdisk
+			t="image-file-raw"
 		elif [[ -f $path_qcowdisk || -b $path_rawdisk ]]; then
-			disk="disks/$d.qcow2"
-		fi
+			disk=$path_qcowdisk
+		  t="image-file-qcow2"
+		elif [[ -b $path_rawdisk ]]; then
+			disk=$path_qcowdisk
+		  t="blockdev-qcow2"
+		elif [[ -n $iscsi_disk ]]; then
+			disk="$iscsi_disk"
+			t="iscsi"
+ 	 fi
 
 		if [[ -n $disk ]]; then
-			echo $vm $disk
+			echo $vm $d $t $disk
 		fi
 }
 
@@ -36,6 +59,6 @@ for m in /srv/kvm/vms/*/config; do
   source $MACHINE_PATH/config
 
 	for d in ${disks[@]}; do 
-		backup_disks "$MACHINE_PATH" "$vm" "$d"
+		backup_disks "$HOST" "$MACHINE_PATH" "$vm" "$d"
 	done
 done

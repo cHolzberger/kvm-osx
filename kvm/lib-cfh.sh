@@ -25,19 +25,17 @@ function add_hyperv_nested_flags() {
 	add_hyperv_flags
 
 	CPUFLAGS+=(
-	+dca
-	+xtpr
-	+tm2
-	+vmx
-	+ds_cpl
-	+monitor
-	+pbe
-	+tm
-	+ht
-	+ss
-	+acpi
-	+ds
-	+vme
+	vmx
+	$(has_flag dca)
+	$(has_flag xtpr)
+	$(has_flag tm2)
+	$(has_flag ds_cpl)
+	$(has_flag pbe)
+	$(has_flag tm)
+	$(has_flag ht)
+	$(has_flag ss)
+	$(has_flag acpi)
+	$(has_flag vme)
 	)
 }
 # see https://github.com/qemu/qemu/blob/master/docs/hyperv.txt
@@ -58,6 +56,8 @@ function add_hyperv_flags() {
 	  hv_stimer_direct
 	  x-hv-synic-kvm-only
 		hv_vapic
+		hv_frequencies 
+		hv_evmcs
 )
 # to check:
 #		hv_vapic -> watch it makes problems on cpus not having x2apic
@@ -86,13 +86,11 @@ function add_kvm_flags() {
 
 function add_x86_flags() {
 	CPUFLAGS+=(
-#		migratable=no
-		+spec-ctrl
-		+pcid
-		+ssbd
-		+pdpe1gb
+		migratable=no
 		$(has_flag sse)
 		$(has_flag sse2)
+		$(has_flag spec-ctrl)
+		$(has_flag pcid)
 		$(has_flag ssse3)
 		$(has_flag sse4_1)
 		$(has_flag sse4_2)
@@ -103,7 +101,7 @@ function add_x86_flags() {
 		$(has_flag pdpe1gb)
 		$(has_flag popcnt)
 		+lahf_lm
-		#enforce
+		$(has_flag qlahf_lm)
 		#$(has_flag ssbd)
 	)
 }

@@ -1,0 +1,8 @@
+[Unit]
+Description=Makes KVM Backups using restic
+
+[Service]
+ExecStart=/srv/kvm/local-backup.sh
+
+[Install]
+WantedBy=basic.target

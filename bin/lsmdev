@@ -1,0 +1,7 @@
+for device in /sys/class/mdev_bus/*; do
+  for mdev_type in $device/mdev_supported_types/*; do
+    MDEV_TYPE=$(basename $mdev_type)
+    DESCRIPTION=$(cat $mdev_type/description)
+    echo "mdev_type: $MDEV_TYPE --- description: $DESCRIPTION";
+  done;
+done | sort | uniq
