@@ -1,16 +1,20 @@
 #!/bin/bash
 vg="$1"
 lv="$2"
+date=$(date +%s)
 
+snaplv="snap-$lv-$date"
+(
 if [ "x$vg" == "x" ]; then
-	echo "Volume Group missing"
-	exit 1
+        echo "Volume Group missing"
+        exit 1
 fi
 
 if [ "x$lv" == "x" ]; then
-	echo "Logical Volume missing"
-	exit 2
+        echo "Logical Volume missing"
+        exit 2
 fi
 
-date=$(date +%Y%m%d-%H%M%S)
-lvcreate --name $lv-$date --snapshot $vg/$lv
+lvcreate --name "$snaplv" --snapshot $vg/$lv
+) >&2
+echo "$snaplv"
