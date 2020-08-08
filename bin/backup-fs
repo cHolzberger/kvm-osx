@@ -1,9 +1,10 @@
 #!/bin/bash
 set -o pipefail 
-
-DEV="$2"
+BV=1
 MACHINE="$1" 
-TAGS="$3"
+DEV="$2"
+shift 2
+TAGS="$@"
 
 function usage() {
 	echo "Usage: "
@@ -13,9 +14,11 @@ function usage() {
 [[ -z $DEV ]] && usage && exit 1
 [[ -z $MACHINE ]] && usage && exit 2
 
-TAGS="machine:$MACHINE path:$DEV backup_type:fs $TAGS"
+TAGS="bversion:$BV machine:$MACHINE path:$DEV backup_type:fs $TAGS"
+
 for i in  $TAGS ; do
-	_TAGS="$_TAGS --tag \"$i\""
+	_TAGS="$_TAGS --tag $i"
 done
 
-backup-cmd backup $_TAGS $DEV  
+echo "Backing-up machine:$MACHINE with path path:$DEV" >&2
+backup-cmd backup $_TAGS $DEV
