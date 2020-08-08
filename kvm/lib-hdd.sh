@@ -52,6 +52,7 @@ if [ $DISK_INIT == true ]; then
 fi
 
 function virtioarg() {
+	DISK=$1
 	VTM=""
 	if [[ "$VIRTIO_MODE" = "modern" ]]; then
 		VTM=""
@@ -59,7 +60,13 @@ function virtioarg() {
 	else 
 		VTM="disable-legacy=off,disable-modern=off"
 	fi
-	echo $VTM
+	
+	_VBLK="DISK_$DISK_BLOCKSIZE"
+	VBLK=${!_VBLK}
+	if [[ -n $VBLK ]]; then
+	BS="logical_block_size=$VBLK"
+	fi
+	echo $VTM$BS
 }
 
 function diskarg() {

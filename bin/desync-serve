@@ -1,0 +1,15 @@
+#!/bin/bash 
+
+export BACKUP_DIR=/mnt/backup/vstore-1
+export PATH=$PATH:/root/go/bin
+
+if [[ ! -d $BACKUP_DIR ]]; then
+	mkdir -p $BACKUP_DIR/data $BACKUP_DIR/index
+	echo '{"store-options": {"'$BACKUP_DIR'/data":{"uncompressed": true}}}' > $BACKUP_DIR/_repo.json
+fi
+
+echo "Starting Index Server on 9180 ..."
+desync index-server -w --log - -s $BACKUP_DIR/index/ -l :9180 &
+
+echo "Starting Chunk Server on 9181 ..."
+desync chunk-server --config "$BACKUP_DIR/_repo.json" -u -n 100 -w --log -  -s "$BACKUP_DIR/data/" -l :9181 

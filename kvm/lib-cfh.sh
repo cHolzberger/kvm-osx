@@ -1,10 +1,15 @@
 #!/bin/bash
 
+#see https://unix.stackexchange.com/questions/43539/what-do-the-flags-in-proc-cpuinfo-mean
+function list_flags() {
+	 lscpu | grep "Flags:" | sed -e 's/ /\n/g' | grep -v "Flags:"
+}
+
 function has_flag() {
 	FLAG="$1"
 	NOFLAG="$2"
-  ADD="${3:-""}"
-	lscpu | grep "Flags:" | grep " $FLAG " > /dev/null
+	ADD="${3:-""}"
+	list_flags | grep '^'$FLAG'$' > /dev/null
 	if [[ "$?" = "0" ]]; then
 		[[ -n $ADD ]] && FLAG="$FLAG,$ADD" 
 		echo "+$FLAG"
@@ -82,20 +87,21 @@ function add_kvm_flags() {
 function add_x86_flags() {
 	CPUFLAGS+=(
 		migratable=no
+		$(has_flag sse)
+		$(has_flag sse2)
 		$(has_flag spec-ctrl)
 		$(has_flag pcid)
-		$(has_flag ssbd)
-		$(has_flag pdpe1gb)
 		$(has_flag ssse3)
-		$(has_flag sse4.1)
-		$(has_flag sse4.2)
+		$(has_flag sse4_1)
+		$(has_flag sse4_2)
 		$(has_flag avx)
 		$(has_flag avx2)
 		$(has_flag aes)
 		$(has_flag pcid)
 		$(has_flag pdpe1gb)
+		$(has_flag popcnt)
+		+lahf_lm
 		$(has_flag qlahf_lm)
-		enforce
 		#$(has_flag ssbd)
 	)
 }
