@@ -2,6 +2,8 @@
 
 disks=( system data data1 data2 data3 clover )
 
+MACHINE="$1"
+
 backup_disks() {
 	  local HOST="$1"
 		if [[ -n "$HOST" && "$HOST" != "$(hostname)" ]]; then
@@ -48,7 +50,7 @@ backup_disks() {
 			echo $vm $d $t $disk
 		fi
 }
-
+if [[ -z $MACHINE ]]; then
 for m in /srv/kvm/vms/*/config; do
 	MACHINE_PATH="$(dirname $m)"
 	vm=$(basename $MACHINE_PATH)
@@ -62,3 +64,17 @@ for m in /srv/kvm/vms/*/config; do
 		backup_disks "$HOST" "$MACHINE_PATH" "$vm" "$d"
 	done
 done
+else 
+	MACHINE_PATH="/srv/kvm/vms/$MACHINE"
+	vm=$(basename $MACHINE_PATH)
+	for d in ${disks[@]}; do 
+		declare "DISK_$d"=""
+	done
+
+  source $MACHINE_PATH/config
+
+	for d in ${disks[@]}; do 
+		backup_disks "$HOST" "$MACHINE_PATH" "$vm" "$d"
+	done
+
+fi
