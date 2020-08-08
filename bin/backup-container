@@ -15,7 +15,7 @@ function usage() {
 [[ -z $MACHINE ]] && usage && exit 2
 
 
-TAGS="container:$MACHINE $TAGS"
+TAGS="container:$MACHINE backup_type:container $TAGS"
 for i in  $TAGS ; do
 	_TAGS="$_TAGS --tag \"$i\""
 done

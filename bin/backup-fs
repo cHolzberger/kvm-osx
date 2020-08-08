@@ -13,7 +13,7 @@ function usage() {
 [[ -z $DEV ]] && usage && exit 1
 [[ -z $MACHINE ]] && usage && exit 2
 
-TAGS="machine:$MACHINE path:$DEV $TAGS"
+TAGS="machine:$MACHINE path:$DEV backup_type:fs $TAGS"
 for i in  $TAGS ; do
 	_TAGS="$_TAGS --tag \"$i\""
 done

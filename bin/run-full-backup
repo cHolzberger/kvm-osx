@@ -1,0 +1,59 @@
+
+export PATH=$PATH:~/go/bin/:/srv/kvm/OSX-KVM/bin
+
+vg=vg0
+lv="test"
+
+INDEX_PATH="/srv/kvm/index/"
+TEMP_PATH="/tmp"
+
+REMOTE_STORE="http://10.99.99.33:9181"
+
+backup-fs $(hostname) /srv/kvm/vms
+backup-fs $(hostname) /srv/kvm/seats
+
+machine-list-disks | while read d; do
+  vm=$( echo $d | cut -d" " -f 1 )
+	disk=$( echo $d | cut -d" " -f 2 )
+	t=$( echo $d | cut -d" " -f 3 )
+	p=$( echo $d | cut -d" " -f 4 )
+
+	echo "$vm/$disk => $t => $p"
+
+	case "$t" in 
+		"blockdev-lvm")
+			vg=$(echo $p | cut -d":" -f 1)
+			lv=$(echo $p | cut -d":" -f 2)
+			p=$(echo $p | cut -d":" -f 3)
+		 	echo "Syncing $vg/$lv"
+			sn=$(lvm-snapshot-lv "$vg" "$lv")
+	
+			lvchange -a ay -K $vg/$sn
+			lvscan 2>&1 >/dev/null
+	
+			time backup-blockdev $vm $disk /dev/$vg/$sn "type:$t"
+
+			lvchange -a n $vg/$sn
+			lvremove -y $vg/$sn
+			lvscan 2>&1 >/dev/null
+			
+			time backup-blockdev $vm config /srv/kvm/vms/$vm/ "type:config"
+			time backup-blockdev $vm seat /srv/kvm/seats/seat-$vm "type:seat"
+
+			;;
+			"image-file-qcow2")
+			time backup-blockdev $vm $disk $p "type:$t"
+			;;
+			"image-file-raw")
+			time backup-blockdev $vm $disk $p "type:$t"
+			;;
+			*)
+			echo "Skipping $vm $disk type=$t unknown"
+			;;
+	esac
+done
+
+for i in $(machinectl list -o short --no-legend | cut -d" " -f 1); do
+  time backup-container "$i"
+done
+

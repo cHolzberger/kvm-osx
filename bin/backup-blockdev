@@ -15,7 +15,7 @@ function usage() {
 [[ -z $MACHINE ]] && usage && exit 2
 [[ -z $DISK ]] && usage && exit 2
 
-TAGS="machine:$MACHINE disk:$DISK $TAGS"
+TAGS="machine:$MACHINE disk:$DISK backup_type:disk $TAGS"
 for i in  $TAGS ; do
 	_TAGS="$_TAGS --tag $i"
 done
@@ -24,6 +24,9 @@ done
 #gzip -0 -c  $DEV | backup-cmd backup --stdin --stdin-filename "${DISK}.gz" $_TAGS
 #pigz -0 -R -c  $DEV | backup-cmd backup --stdin --stdin-filename "${DISK}.gz" $_TAGS
 #dd if=$DEV bs=4M conv=sparse | lzop -1 -c | backup-cmd backup --stdin --stdin-filename "${DISK}.gz" $_TAGS
-echo "Saving as: /vm/$MACHINE/$DISK.xz" >&2
+echo "Saving as: /srv/kvm/vms/$MACHINE/machine/$DISK.xz" >&2
 echo "With Tags: $_TAGS" >&2
-nice ionice -c 3 dd if=$DEV bs=4M conv=sparse | nice ionice -c 3 xz -0 -c -T 0 | backup-cmd backup --stdin --stdin-filename "/vm/$MACHINE/${DISK}.xz" $_TAGS
+
+nice ionice -c 3 dd if=$DEV bs=4M conv=sparse | \
+	nice ionice -c 3 xz -0 -c -T 0 | \
+	backup-cmd backup --stdin --stdin-filename "/srv/kvm/vms/$MACHINE/disks/${DISK}.xz" $_TAGS
