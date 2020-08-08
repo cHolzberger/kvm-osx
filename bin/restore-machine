@@ -6,14 +6,22 @@ TAGS="$2"
 
 function usage() {
 	echo "Usage: "
-	echo "restore-blockdev MACHINE [TAG1 TAG2 ... TAGn]"
+	echo "restore-machine MACHINE [TAG1 TAG2 ... TAGn]"
 }
 
 [[ -z $MACHINE ]] && usage && exit 2
 
-TAGS="machine:$MACHINE backup_type:blockdev $TAGS"
+TAGS="machine:$MACHINE $TAGS"
 for i in  $TAGS ; do
 	_TAGS="$_TAGS --tag $i"
+done
+
+echo "Restoring CONFIG"
+restore-fs $MACHINE /srv/kvm/vms/$MACHINE
+
+echo "Restoring DISKS"
+for disk  in system; do 
+	restore-blockdev $MACHONE $disk 
 done
 
 backup-cmd snapshots --last $_TAGS --json | jq -r '.[] | . as $itm | .tags as $tags | [ $tags[] | split(":") | { (.[0]): (.[1]) }] |group_by("keys")| reduce . as $x (.[];add) | . + {"path": $itm.paths[0], "id": $itm.id} | "\(.machine)!\(.disk)!\(.path)!\(.id)" ' | while IFS="!" read m d p id; do
