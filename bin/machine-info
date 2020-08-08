@@ -42,7 +42,14 @@ if [ ! -e "/proc/$QEMU_PID" ]; then
 fi
 
 #LOADING MACHINE CONFIG
-source $SEAT_PREFIX/seat-$WANT_SEAT
+if [[ -f "$MACHINE_PATH/seat" ]]; then
+	source $MACHINE_PATH/seat 
+fi
+if [[ -f "$SEAT_PREFIX/seat-$WANT_SEAT" ]]; then
+	source $SEAT_PREFIX/seat-$WANT_SEAT
+fi
+
+
 source $SCRIPT_DIR/../kvm/lib-cpu.sh
 
 SOCKET=$MACHINE_PATH/var/control

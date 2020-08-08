@@ -1,8 +1,11 @@
 #!/bin/bash
 set -o pipefail 
+BV=1 
 
 MACHINE="$1" 
-TAGS="$2"
+DISK="$2"
+shift 2
+TAGS="$@"
 
 function usage() {
 	echo "Usage: "
@@ -11,16 +14,19 @@ function usage() {
 
 [[ -z $MACHINE ]] && usage && exit 2
 
-TAGS="machine:$MACHINE backup_type:blockdev $TAGS"
+TAGS="bversion:1 backup_type:disk disk:$DISK $TAGS"
+_TAGS=()
 for i in  $TAGS ; do
-	_TAGS="$_TAGS --tag $i"
+	_TAGS+=( $i )
 done
+IFS=, eval '_TAGS="--tag ${_TAGS[*]}"'
 
-backup-cmd snapshots --last $_TAGS --json | jq -r '.[] | . as $itm | .tags as $tags | [ $tags[] | split(":") | { (.[0]): (.[1]) }] |group_by("keys")| reduce . as $x (.[];add) | . + {"path": $itm.paths[0], "id": $itm.id} | "\(.machine)!\(.disk)!\(.path)!\(.id)" ' | while IFS="!" read m d p id; do
+backup-query-snapshots $MACHINE $TAGS | while IFS="!" read m p d id btype type; do
 	echo "fixme for non raw disks"
-	target="/srv/kvm/vms/$m/disks/$d.raw"
-	mkdir -p "$( dirname $target)"
+	target="/srv/kvm/vms/$MACHINE/disks/$DISK.raw"
+
+	mkdir -p "$( dirname $target )"
 	echo Restoring machine:$m disk:$d to path:$target
-	backup-cmd dump $_TAGS --tag "disk:$d" "$id" "$p" | pv -B 100M | nice ionice -c 3 unxz -T8 > $target
+	backup-cmd dump $_TAGS "$id" "$p" | pv -B 100M | nice ionice -c 3 unxz -T8 > $target
 done
 

@@ -14,6 +14,7 @@ for MACHINE_PATH  in /srv/kvm/vms/*; do
 		vm=$(basename $MACHINE_PATH)
 		if [ -f $MACHINE_PATH/config ]; then
 			source $MACHINE_PATH/config 
+			source $MACHINE_PATH/seat 
 			source $MACHINE_PATH/../../seats/seat-$vm 
 			if [[ "$HOST" == $(hostname) ]]; then
 				echo -e "$vm" 

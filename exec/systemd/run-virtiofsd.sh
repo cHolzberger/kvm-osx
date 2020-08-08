@@ -44,7 +44,7 @@ for i in clover system data data1 data2 data3; do
 	
 		systemctl stop qemu-${MACHINE/-/__}-disk-$i 2>/dev/null || true
 		systemctl reset-failed qemu-${MACHINE/-/__}-disk-$i 2>/dev/null || true
-		rm $SOCK
+		rm $SOCK || true
 		CMD=( 
 			/opt/qemu/libexec/virtiofsd 
 			-f 

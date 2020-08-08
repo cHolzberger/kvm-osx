@@ -45,8 +45,13 @@ fi
 #echo "Using IO CPUs: ${IO_CPUS[@]}"
 
 #LOADING SEAT
+if [[ -f "$MACHINE_PATH/seat" ]]; then
+	source $MACHINE_PATH/seat 
+fi
+if [[ -f "$SEAT_PREFIX/seat-$SEAT" ]]; then
+	source $SEAT_PREFIX/seat-$SEAT
+fi
 
-source $SEAT_PREFIX/seat-$SEAT
 
 #echo "Loaded Machine: $MACHINE"
 #echo "Loaded Seat: $SEAT"

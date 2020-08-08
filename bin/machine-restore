@@ -1,6 +1,6 @@
 #!/bin/bash
 set -o pipefail 
-
+export PATH=$PATH:/srv/kvm/OSX-KVM/bin
 MACHINE="$1" 
 TAGS="$2"
 
@@ -11,11 +11,16 @@ function usage() {
 
 [[ -z $MACHINE ]] && usage && exit 2
 
-echo "Restoring FS"
-restore-fs $MACHINE /srv/kvm/vms/$MACHINE type:fs
-restore-fs $MACHINE /srv/kvm/seats/seat-$MACHINE type:fs
+echo -e "Restoring FS\n\n"
 
-echo "Restoring DISKS"
-for disk  in system; do 
-	restore-blockdev $MACHONE $disk 
+restore-fs $MACHINE /srv/kvm/vms/$MACHINE /srv/kvm/vms/$MACHINE 
+
+if [[ -e "/srv/kvm/vms/$MACHINE/disks" ]]; then
+	mv "/srv/kvm/vms/$MACHINE/disks" "/srv/kvm/vms/$MACHINE/disks.$( date +"%Y-%M-%d-%H%M" )"
+fi
+
+echo -e "Restoring DISKS\n\n"
+disks=("system" "data" "data1" "data2" "data3" "clover" )
+for disk in ${disks[@]}; do
+	restore-blockdev $MACHINE $disk  || true
 done

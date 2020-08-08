@@ -1,0 +1,23 @@
+#!/bin/bash
+set -o pipefail 
+BV=1
+MACHINE="$1" 
+shift 
+TAGS="$@"
+
+function usage() {
+	echo "Usage: "
+	echo "backup-query-snapshots MACHINE [TAG1 TAG2 ... TAGn]"
+}
+
+[[ -z $MACHINE ]] && usage && exit 2
+
+TAGS="bversion:$BV machine:$MACHINE $TAGS"
+_TAGS=()
+for i in  $TAGS ; do
+	_TAGS+=( $i )
+done
+IFS=, eval '_TAGS="--tag ${_TAGS[*]}"'
+
+echo "Query: --last $_TAGS --json" >&2
+backup-cmd snapshots --last $_TAGS --json | jq -r '.[] | . as $itm | .tags as $tags | [ $tags[] | split(":") | { (.[0]): (.[1]) }] |group_by("keys")| reduce . as $x (.[];add) | . + {"diskpath": $itm.paths[0], "id": $itm.id } | "\(.machine)!\(.diskpath)!\(.path)!\(.id)!\(.backup_type)!\(.type)" ' 
