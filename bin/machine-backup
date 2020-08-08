@@ -48,6 +48,7 @@ echo "==> BACKING UP machine:$vm"
 			;;
 	esac
 
-	backup-fs "$vm" "/srv/kvm/seats/seat-$vm" "type:seat"
+	cp "/srv/kvm/seats/seat-$vm" "/srv/kvm/vms/$vm/seat"
+
 	backup-fs "$vm" "/srv/kvm/vms/$vm" "type:config"
 done
